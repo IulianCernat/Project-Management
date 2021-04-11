@@ -1,9 +1,11 @@
 import React from 'react'
 import { Box, Typography, Button, Grid, Paper, Link } from '@material-ui/core';
-import { TextFieldWrapper } from './InputFields'
+import { TextFieldWrapper } from './InputFieldsWrappers'
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { emailValidationSchema, passwordValidationSchema } from '../../utils/validationSchemas';
+import { Link as RouterLink } from 'react-router-dom'
+
 
 const validationSchema = Yup.object({
     email: emailValidationSchema,
@@ -17,7 +19,7 @@ export default function LoginForm() {
 
                 <Typography>
                     Login into your account
-                    </Typography>
+                </Typography>
                 <Formik
                     initialValues={{
                         email: '',
@@ -44,7 +46,6 @@ export default function LoginForm() {
                                 label="Email Address"
                                 name="email"
                                 autoComplete="email"
-                                autoFocus
                             />
                             <TextFieldWrapper
                                 variant="outlined"
@@ -63,21 +64,26 @@ export default function LoginForm() {
                                 color="primary"
                                 disabled={isSubmitting}
                             >
-                                Sign In
-                        </Button>
+                                <Typography>
+                                    Sign In
+                                </Typography>
+
+                            </Button>
                         </Form>
                     )}
                 </Formik>
 
                 <Grid container justify="space-between" mt={8}>
                     <Grid item>
-                        <Link href="#">
+                        <Link onMouseDown={(event) => { event.preventDefault() }} component={RouterLink} to="/forgotPassword">
                             Forgot password?
                         </Link>
                     </Grid>
                     <Grid item>
-                        <Link href="#">
-                            Don't have an account? Sign Up
+                        <Link onMouseDown={(event) => { event.preventDefault() }} component={RouterLink} to="/signup">
+                            <Typography>
+                                Don't have an account? Sign Up
+                            </Typography>
                         </Link>
                     </Grid>
                 </Grid>
