@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Box, Typography, Button, Grid, Paper, Link } from '@material-ui/core';
 import { TextFieldWrapper } from './InputFieldsWrappers'
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { emailValidationSchema, passwordValidationSchema } from '../../utils/validationSchemas';
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink} from 'react-router-dom';
 
 
 const validationSchema = Yup.object({
@@ -13,6 +13,8 @@ const validationSchema = Yup.object({
 });
 
 export default function LoginForm() {
+ 
+
     return (
         <Paper elevation={3} >
             <Box p={5}>
@@ -28,7 +30,6 @@ export default function LoginForm() {
                     validationSchema={validationSchema}
                     onSubmit={(values, { setSubmitting }) => {
                         setTimeout(() => {
-                            console.log(values);
                             setSubmitting(false);
                         }, 400);
                     }}

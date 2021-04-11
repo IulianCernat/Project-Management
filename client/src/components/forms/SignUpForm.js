@@ -1,31 +1,28 @@
 import React, { useState } from 'react'
-import { Box, Typography, Button, Grid, Paper, Link, MenuItem, makeStyles } from '@material-ui/core';
-import { TextFieldWrapper, SelectFieldWrapper } from './InputFieldsWrappers'
+import { Box, Typography, Button, Grid, Paper, Link } from '@material-ui/core';
+import { TextFieldWrapper } from './InputFieldsWrappers'
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, useHistory } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext';
 import {
     emailValidationSchema,
     passwordValidationSchema,
-    firstNameValidationSchema,
-    lastNameValidationSchema,
-    studentGroupValidationSchema,
-    jobTypeValidationSchema,
-    userTypeValidationSchema
+    fullNameValidationSchema,
 } from '../../utils/validationSchemas';
-
 
 const validationSchema = Yup.object().shape({
     email: emailValidationSchema,
-    lastName: lastNameValidationSchema,
-    firstName: firstNameValidationSchema,
+    fullName: fullNameValidationSchema,
     password: passwordValidationSchema
 })
 
 
 
 export default function SignUpForm() {
-
+    const { signUp } = useAuth();
+    const [error, setError] = useState('');
+    const history = useHistory();
 
     return (
         <Paper elevation={3} >
@@ -36,16 +33,23 @@ export default function SignUpForm() {
                 <Formik
                     initialValues={{
                         email: '',
-                        lastName: '',
-                        firstName: '',
+                        fullName: '',
                         password: ''
                     }}
                     validationSchema={validationSchema}
-                    onSubmit={(values, { setSubmitting }) => {
-                        setTimeout(() => {
-                            console.log(values);
+                    onSubmit={async (values, { setSubmitting }) => {
+                        try {
+                            setError('');
+                            await signUp(values.email, values.fullName, values.password);
+                            history.push('/login');
                             setSubmitting(false);
-                        }, 400);
+
+                        } catch(err) {
+                            console.log(err)
+                            setError("Failed to create an account");
+                        }
+                            
+                      
                     }}
                 >
                     {({ values, isSubmitting }) => (
@@ -64,32 +68,17 @@ export default function SignUpForm() {
 
                                     />
                                 </Grid>
-
-                                <Grid item container spacing={3}>
-                                    <Grid item xs={false} sm={6}>
-                                        <TextFieldWrapper
-                                            variant="outlined"
-                                            margin="normal"
-                                            required
-                                            fullWidth
-                                            name="lastName"
-                                            label="Last name"
-                                            type="text"
-                                            id="lastName"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={false} sm={6}>
-                                        <TextFieldWrapper
-                                            variant="outlined"
-                                            margin="normal"
-                                            required
-                                            fullWidth
-                                            name="firstName"
-                                            label="first name"
-                                            type="text"
-                                            id="firstName"
-                                        />
-                                    </Grid>
+                                <Grid item xs={false} sm={6}>
+                                    <TextFieldWrapper
+                                        variant="outlined"
+                                        margin="normal"
+                                        required
+                                        fullWidth
+                                        name="fullName"
+                                        label="Full name"
+                                        type="text"
+                                        id="fullName"
+                                    />
                                 </Grid>
 
                                 <Grid item>
@@ -115,7 +104,6 @@ export default function SignUpForm() {
                                         <Typography>
                                             Sign In
                                         </Typography>
-
                                     </Button>
                                 </Grid>
                                 <Grid item>
@@ -124,7 +112,9 @@ export default function SignUpForm() {
                                             Already have an account? Login
                                         </Typography>
                                     </Link>
+                                    {error && <Button color="secondary">{error}</Button>}
                                 </Grid>
+                                
                             </Grid>
                         </Form>
                     )}
