@@ -41,7 +41,7 @@ export default function SignUpForm() {
                         try {
                             setError('');
                             await signUp(values.email, values.fullName, values.password);
-                            history.push('/login');
+                            history.push('/');
                             setSubmitting(false);
 
                         } catch(err) {

@@ -4,7 +4,8 @@ import { TextFieldWrapper } from './InputFieldsWrappers'
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { emailValidationSchema, passwordValidationSchema } from '../../utils/validationSchemas';
-import { Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 
 const validationSchema = Yup.object({
@@ -13,7 +14,9 @@ const validationSchema = Yup.object({
 });
 
 export default function LoginForm() {
- 
+    const { login } = useAuth();
+    const [error, setError] = useState('');
+    const history = useHistory();
 
     return (
         <Paper elevation={3} >
@@ -28,10 +31,15 @@ export default function LoginForm() {
                         password: ''
                     }}
                     validationSchema={validationSchema}
-                    onSubmit={(values, { setSubmitting }) => {
-                        setTimeout(() => {
+                    onSubmit={async (values, { setSubmitting }) => {
+                        try {
+                            await login(values.email, values.password);
+                            history.push('/')
                             setSubmitting(false);
-                        }, 400);
+                        } catch (err) {
+                            console.log(err);
+                        }
+
                     }}
                 >
                     {({ isSubmitting }) => (
