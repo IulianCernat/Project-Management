@@ -40,16 +40,25 @@ export default function SignUpForm() {
                     onSubmit={async (values, { setSubmitting }) => {
                         try {
                             setError('');
-                            await signUp(values.email, values.fullName, values.password);
+                            let userCredential = await signUp(values.email, values.fullName, values.password);
+                            let userIdToken = await userCredential.user.getIdToken()
+                            let response = await fetch('api/users/',
+                                {
+                                    headers: {
+                                        'Authorization': userIdToken,
+                                        'Content-Type': 'application/json',
+                                    },
+                                    method: 'POST',
+                                    body: JSON.stringify({ fullName: values.fullName })
+                                });
+
                             history.push('/');
                             setSubmitting(false);
 
-                        } catch(err) {
+                        } catch (err) {
                             console.log(err)
                             setError("Failed to create an account");
                         }
-                            
-                      
                     }}
                 >
                     {({ values, isSubmitting }) => (
@@ -114,7 +123,7 @@ export default function SignUpForm() {
                                     </Link>
                                     {error && <Button color="secondary">{error}</Button>}
                                 </Grid>
-                                
+
                             </Grid>
                         </Form>
                     )}

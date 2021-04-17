@@ -34,6 +34,7 @@ export default function LoginForm() {
                     onSubmit={async (values, { setSubmitting }) => {
                         try {
                             await login(values.email, values.password);
+                           
                             history.push('/')
                             setSubmitting(false);
                         } catch (err) {

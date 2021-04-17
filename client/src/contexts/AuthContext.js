@@ -33,7 +33,6 @@ export function AuthProvider({ children }) {
         const unsubscribe = auth.onAuthStateChanged(user => {
             try {
                 setCurrentUser(user);
-
             } catch (err) {
                 console.log(err);
 
