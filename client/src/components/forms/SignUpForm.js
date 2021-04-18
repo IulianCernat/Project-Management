@@ -40,7 +40,7 @@ export default function SignUpForm() {
                     onSubmit={async (values, { setSubmitting }) => {
                         try {
                             setError('');
-                            let userCredential = await signUp(values.email, values.fullName, values.password);
+                            let userCredential = await signUp(values.email, values.password);
                             let userIdToken = await userCredential.user.getIdToken()
                             let response = await fetch('api/users/',
                                 {

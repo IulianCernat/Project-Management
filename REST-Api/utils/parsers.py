@@ -1,4 +1,4 @@
 from utils.restx import api
 
 authorization_header = api.parser()
-authorization_header.add_argument('Authorization', location='headers')
+authorization_header.add_argument('Authorization', location='headers', required=False)

@@ -10,10 +10,10 @@ export function useAuth() {
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState();
     const [addiditionalUserInfo, setAdditionalUserInfo] = useState();
-
+    const [tokenId, setTokenId] = useState();
     const [loading, setLoading] = useState(true);
 
-    function signUp(email, password, fullName) {
+    function signUp(email, password) {
         return auth.createUserWithEmailAndPassword(email, password);
     }
 
@@ -30,21 +30,36 @@ export function AuthProvider({ children }) {
     }
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
+        const unsubscribe = auth.onAuthStateChanged(async user => {
+            setCurrentUser(user);
+            if (user)
             try {
-                setCurrentUser(user);
+                let userIdToken = await user.getIdToken();
+                let response = await fetch('api/users/loggedUser',
+                    {
+                        headers: {
+                            'Authorization': userIdToken,
+                        },
+                        method: 'GET'
+                    });
+                setTokenId(userIdToken)
+                let profile = await response.json()
+                setAdditionalUserInfo(profile)
+
             } catch (err) {
                 console.log(err);
 
             }
 
-            setCurrentUser(user);
+
             setLoading(false);
         });
         return unsubscribe;
     }, [])
 
     const value = {
+        addiditionalUserInfo,
+        setAdditionalUserInfo,
         currentUser,
         login,
         signUp,
