@@ -26,9 +26,6 @@ class ProfilesCollection(Resource):
         user_profile = request.json
         profile_id = create_user(decoded_token['uid'], user_profile)
 
-        # save in session the user's firebase id for future API authorization
-        session['uid'] = decoded_token['uid']
-
         return {"location": f"{api.base_url}{users_namespace.path[1:]}/{profile_id}"}, 201
 
 
@@ -55,7 +52,5 @@ class LogedUser(Resource):
     @api.marshal_with(user_output)
     def get(self):
         decoded_token = verify_id_token(request.headers)
-        # save in session the user's firebase id for future API authorization
-        session['uid'] = decoded_token['uid']
 
         return get_self(decoded_token['uid'])

@@ -6,6 +6,7 @@ import settings
 from utils.restx import api
 from database import db
 from endpoints.users_endpoint import users_namespace
+from endpoints.projects_endpoint import projects_namespace
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -35,6 +36,7 @@ def initialize_app(flask_app):
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
     api.add_namespace(users_namespace)
+    api.add_namespace(projects_namespace)
     flask_app.register_blueprint(blueprint)
 
     db.init_app(flask_app)

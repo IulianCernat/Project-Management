@@ -1,9 +1,6 @@
 from database import db
 from database.models import User
 
-from sqlalchemy.orm.exc import NoResultFound
-
-
 def create_user(uid, data):
     name = data.get('fullName')
     profile = User(uid, name)

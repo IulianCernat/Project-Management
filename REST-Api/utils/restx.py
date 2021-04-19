@@ -2,6 +2,7 @@ import logging
 import traceback
 
 from flask_restx import Api
+from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import MethodNotAllowed
 from utils.custom_exceptions import AuthorizationFailed
 import settings
@@ -24,10 +25,18 @@ def method_not_allowed(e):
     log.error(e)
     return {'message': 'Method not allowed'}, 405
 
+
 @api.errorhandler(AuthorizationFailed)
 def authorization_failed(e):
     log.warning(e)
     return {'message': f"{e}"}, 401
+
+
+@api.errorhandler(IntegrityError)
+def integrity_error(e):
+    log.error(e)
+    return {'message': "Foreign key check failure"}, 404
+
 
 @api.errorhandler
 def default_error_handler(e):
