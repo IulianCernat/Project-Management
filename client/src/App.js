@@ -5,26 +5,27 @@ import SignUp from './components/authentication/SignUp';
 import ForgotPassword from './components/authentication/ForgotPassword';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './utils/PrivateRoute';
-import Profile from './components/application/Profile';
+import Profile from './components/application/profile/Profile';
+
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Switch>
-          <PrivateRoute exact path="/" component={Profile} />
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/signUp">
-            <SignUp />
-          </Route>
-          <Route path="/forgotPassword">
-            <ForgotPassword />
-          </Route>
-        </Switch>
-      </AuthProvider>
-    </BrowserRouter>
-
+    // <BrowserRouter>
+    //   <AuthProvider>
+    //     <Switch>
+    //       <PrivateRoute exact path="/" component={Profile} />
+    //       <Route path="/login">
+    //         <Login />
+    //       </Route>
+    //       <Route path="/signUp">
+    //         <SignUp />
+    //       </Route>
+    //       <Route path="/forgotPassword">
+    //         <ForgotPassword />
+    //       </Route>
+    //     </Switch>
+    //   </AuthProvider>
+    // </BrowserRouter>
+    <Profile/>
 
   );
 }
