@@ -15,3 +15,7 @@ def add_project(input_data):
 
 def get_project(project_id):
     return Project.query.filter(Project.id == project_id).one()
+
+def get_projects(user_id, user_type):
+    if user_type == 'productOwner':
+        return Project.query.filter(Project.product_owner_id == user_id).all()

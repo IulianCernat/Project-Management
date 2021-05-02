@@ -1,4 +1,4 @@
-from flask_restx.fields import Integer, String, Wildcard, DateTime
+from flask_restx.fields import Integer, String, Wildcard, DateTime, List, Nested
 from utils.restx import api
 
 location = api.model('Resource location', {
@@ -34,4 +34,8 @@ project_input = api.model('Project input', {
 project_output = api.inherit('Project_output', project_input, {
     'id': Integer(required=True, description="Project id"),
     'progress': String(required=True, description="The percentage of project tasks that are done")
+})
+
+page_of_projects = api.model('Page of projects', {
+    'projects': List(Nested(project_output))
 })

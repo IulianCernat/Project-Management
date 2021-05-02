@@ -1,5 +1,12 @@
-import { Paper, Typography, Box, Divider, Avatar } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import {
+  Paper,
+  Typography,
+  Box,
+  Divider,
+  Avatar,
+  useMediaQuery,
+} from "@material-ui/core";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { LabelledLiniarProgress } from "../../components/subComponents/Progress";
 import AvatarGroup from "@material-ui/lab/AvatarGroup";
 const useStyles = makeStyles((theme) => ({
@@ -23,9 +30,6 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: "ellipsis",
     overflow: "hidden",
     wordWrap: "break-word",
-  },
-  divider: {
-    orientation: "vertical",
   },
 }));
 
@@ -58,9 +62,14 @@ export default function ProjectCard() {
         </Typography>
       </Box>
 
-      {/* <Divider flexItem className={classes.divider} orientation="vertical" /> */}
+      {/* <Divider flexItem orientation="vertical" /> */}
 
-      <Box flex={1} display="flex" flexDirection="column" justifyContent="space-between">
+      <Box
+        flex={1}
+        display="flex"
+        flexDirection="column"
+        justifyContent="space-between"
+      >
         <LabelledLiniarProgress value={50} />
         <Box display="flex">
           <Box flex="1 1 100%">

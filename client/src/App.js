@@ -26,6 +26,7 @@ function App() {
     //   </AuthProvider>
     // </BrowserRouter>
     <Profile/>
+   
 
   );
 }

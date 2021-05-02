@@ -38,3 +38,4 @@ class Project(db.Model):
         self.created_at = datetime.fromisoformat(input_obj['created_at'])
         # TODO: fix datetime with utc
         self.product_owner_id = input_obj['product_owner_id']
+

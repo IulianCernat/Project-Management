@@ -13,6 +13,8 @@ import PropTypes from "prop-types";
 import AddIcon from "@material-ui/icons/Add";
 import { grey } from "@material-ui/core/colors";
 import ProjectCard from "../../subComponents/ProjectCard";
+import DialogForm from "../../subComponents/DialogForm";
+import ProjectCreationForm from "../../forms/ProjectCreationForm";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -72,10 +74,20 @@ function a11yProps(index) {
 
 export default function Main() {
   const [currentTab, setCurrentTab] = useState(0);
+  const [openProjectCreation, setOpenProjectCreation] = useState(false);
   const classes = useStyles();
+
   function handleTabChange(event, newTab) {
     setCurrentTab(newTab);
   }
+
+  function openProjectCreationForm() {
+    setOpenProjectCreation(true);
+  }
+  function handleCancel() {
+    setOpenProjectCreation(false);
+  }
+
   return (
     <Paper className={classes.main} elevation={3}>
       <AppBar position="sticky" color="default">
@@ -98,9 +110,12 @@ export default function Main() {
         <ProjectCard />
         <ProjectCard />
         <Box alignSelf="flex-end">
-          <Fab  color="primary">
+          <Fab color="primary" onClick={openProjectCreationForm}>
             <AddIcon />
           </Fab>
+          <DialogForm title="Create project" open={openProjectCreation} onClose={handleCancel}>
+            <ProjectCreationForm />
+          </DialogForm>
         </Box>
       </TabPanel>
       <TabPanel value={currentTab} index={1}>
