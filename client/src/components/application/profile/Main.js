@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Box,
   makeStyles,
@@ -12,9 +12,11 @@ import {
 import PropTypes from "prop-types";
 import AddIcon from "@material-ui/icons/Add";
 import { grey } from "@material-ui/core/colors";
+import Alert from "@material-ui/lab/Alert";
 import ProjectCard from "../../subComponents/ProjectCard";
 import DialogForm from "../../subComponents/DialogForm";
 import ProjectCreationForm from "../../forms/ProjectCreationForm";
+import { useGetFetch } from "../../../customHooks/useFetch";
 
 const useStyles = makeStyles((theme) => ({
   main: {
@@ -29,33 +31,23 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexFlow: "column wrap",
     "&>:not(:first-child)": {
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(2),
     },
   },
 }));
-function TabPanel(props) {
-  const classes = useStyles();
-  const { children, value, index, ...other } = props;
 
+const tabs = {
+  0: "productOwner",
+  1: "scrumMaster",
+  2: "developer",
+};
+function ProjectComponentList(projectList) {
   return (
-    <Box
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box
-          className={classes.tabPanel}
-          p={3}
-          display="flex"
-          flexDirection="column"
-        >
-          {children}
-        </Box>
-      )}
-    </Box>
+    <>
+      {projectList.length
+        ? projectList.map((item) => <ProjectCard key={item.id} {...item} />)
+        : null}
+    </>
   );
 }
 
@@ -64,12 +56,46 @@ TabPanel.propTypes = {
   index: PropTypes.any.isRequired,
   value: PropTypes.any.isRequired,
 };
+function TabPanel(props) {
+  const classes = useStyles();
+  const { children, value, index, ...other } = props;
 
-function a11yProps(index) {
-  return {
-    id: `tab-${index}`,
-    "aria-controls": `tabpanel-${index}`,
-  };
+  const getParams = useRef({ user_id: 3, user_type: tabs[index] });
+
+  const {
+    status,
+    receivedData,
+    error,
+    isLoading,
+    isResolved,
+    isRejected,
+  } = useGetFetch("api/projects/", getParams.current);
+
+  return (
+    <Box
+      maxWidth="100%"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box
+          maxWidth="100%"
+          className={classes.tabPanel}
+          p={3}
+          display="flex"
+          flexDirection="column"
+        >
+          {isResolved ? ProjectComponentList(receivedData) : null}
+          {isLoading ? "loading" : null}
+          {isRejected ? <Alert severity="error">{error} </Alert> : null}
+          {children}
+        </Box>
+      )}
+    </Box>
+  );
 }
 
 export default function Main() {
@@ -79,6 +105,7 @@ export default function Main() {
 
   function handleTabChange(event, newTab) {
     setCurrentTab(newTab);
+    console.log(newTab);
   }
 
   function openProjectCreationForm() {
@@ -99,34 +126,27 @@ export default function Main() {
           variant="scrollable"
           scrollButtons="auto"
         >
-          <Tab label="Product Owner" {...a11yProps(0)} />
-          <Tab label="Scrum Master" {...a11yProps(1)} />
-          <Tab label="Developer" {...a11yProps(2)} />
+          <Tab label="Product Owner" />
+          <Tab label="Scrum Master" />
+          <Tab label="Developer" />
         </Tabs>
       </AppBar>
       <TabPanel value={currentTab} index={0}>
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
-        <ProjectCard />
         <Box alignSelf="flex-end">
           <Fab color="primary" onClick={openProjectCreationForm}>
             <AddIcon />
           </Fab>
-          <DialogForm title="Create project" open={openProjectCreation} onClose={handleCancel}>
+          <DialogForm
+            title="Create project"
+            open={openProjectCreation}
+            onClose={handleCancel}
+          >
             <ProjectCreationForm />
           </DialogForm>
         </Box>
       </TabPanel>
-      <TabPanel value={currentTab} index={1}>
-        <ProjectCard />
-      </TabPanel>
-      <TabPanel value={currentTab} index={2}>
-        <ProjectCard />
-      </TabPanel>
-      <TabPanel value={currentTab} index={3}>
-        <ProjectCard />
-      </TabPanel>
+      <TabPanel value={currentTab} index={1} />
+      <TabPanel value={currentTab} index={2} />
     </Paper>
   );
 }

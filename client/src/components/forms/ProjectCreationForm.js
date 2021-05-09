@@ -1,41 +1,65 @@
+import { useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import {Button, Typography} from "@material-ui/core"
-import { TextFieldWrapper, TextAreaWrapper} from "./InputFieldsWrappers";
+import { Button, Typography, Backdrop, makeStyles } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
+import { TextFieldWrapper } from "./InputFieldsWrappers";
 import {
   projectNameValidSchema,
   projectDescriptionValidSchema,
 } from "../../utils/validationSchemas";
+import { usePostFetch } from "../../customHooks/useFetch.js";
+
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: "#fff",
+  },
+}));
 
 const validationSchema = Yup.object({
-  projectName: projectNameValidSchema,
-  projectDescription: projectDescriptionValidSchema,
+  name: projectNameValidSchema,
+  description: projectDescriptionValidSchema,
 });
+
 export default function ProjectCreationForm() {
+  const [requestBody, setRequestBody] = useState(null);
+  const {
+    status,
+    receivedData,
+    error,
+    isLoading,
+    isRejected,
+    isResolved,
+  } = usePostFetch("api/projects/", requestBody);
+
   return (
-    <Formik
-      initialValues={{
-        projectName: "",
-        projectDescription: "",
-      }}
-      validationSchema={validationSchema}
-      onSubmit={async (values) => {
-        console.log(JSON.stringify(values));
-        
-      }}
-    >
-      {({ isSubmitting }) => (
+    <>
+      <Formik
+        initialValues={{
+          name: "",
+          description: "",
+        }}
+        validationSchema={validationSchema}
+        onSubmit={async (values) => {
+          values["created_at"] = new Date().toISOString();
+          values["product_owner_id"] = 3;
+          const stringifiedData = JSON.stringify(values);
+          setRequestBody(stringifiedData);
+        }}
+      >
         <Form>
           <TextFieldWrapper
             variant="outlined"
             required
             fullWidth
             margin="normal"
-            id="projectName"
+            id="name"
             label="Name"
-            name="projectName"
+            name="name"
+            disabled={isLoading}
           />
-          
+
           <TextFieldWrapper
             multiline
             variant="outlined"
@@ -44,22 +68,33 @@ export default function ProjectCreationForm() {
             rows={8}
             maxTextWidth={500}
             margin="normal"
-            id="projectDescription"
-            label="Description"
-            name="projectDescription"
+            id="description"
+            label="description"
+            name="description"
+            disabled={isLoading}
           />
-        
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
-            disabled={isSubmitting}
+            disabled={isLoading}
           >
-            <Typography>Sign In</Typography>
+            <Typography>Create project</Typography>
           </Button>
+          {isResolved && (
+            <Alert severity="success">
+              <Typography>{receivedData}</Typography>
+            </Alert>
+          )}
+          {isRejected && (
+            <Alert severity="error">
+              <Typography>{error}</Typography>
+            </Alert>
+          )}
         </Form>
-      )}
-    </Formik>
+      </Formik>
+    </>
   );
 }

@@ -6,11 +6,13 @@ import {
   Avatar,
   useMediaQuery,
 } from "@material-ui/core";
+import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { LabelledLiniarProgress } from "../../components/subComponents/Progress";
-import AvatarGroup from "@material-ui/lab/AvatarGroup";
+import TextDisplayWrapper from "../../components/subComponents/TextDisplayWrapper";
 const useStyles = makeStyles((theme) => ({
   paper: {
+    maxWidth: "100%",
     display: "flex",
     flexFlow: "wrap",
     padding: theme.spacing(2),
@@ -33,60 +35,54 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ProjectCard() {
+export default function ProjectCard(props) {
   const classes = useStyles();
   return (
     <Paper elevation={3} className={classes.paper}>
-      <Box flex={1} display="flex" flexDirection="column" mr={1}>
-        <Typography color="primary" variant="h6">
-          Project title
-        </Typography>
-        <Typography
-          component="div"
-          variant="body1"
-          color="textSecondary"
-          align="left"
-        >
-          <Box className={classes.textWrapper}>
-            It is a long established fact that a reader will be distracted by
-            the readable content of a page when looking at its layout. The point
-            of using Lorem Ipsum is that it has a more-or-less normal
-            distribution of letters, as opposed to using 'Content here, content
-            here', making it look like readable English. Many desktop publishing
-            packages and web page editors now use Lorem Ipsum as their default
-            model text, and a search for 'lorem ipsum' will uncover many web
-            sites still in their infancy. Various versions have evolved over the
-            years, sometimes by accident, sometimes on purpose (injected humour
-            and the like).
-          </Box>
-        </Typography>
+      <Box
+        maxWidth="100%"
+        flex={1}
+        display="flex"
+        flexDirection="column"
+        mr={1}
+      >
+        <Box flex={1}>
+          <Typography color="primary" variant="h6">
+            {props.name}
+          </Typography>
+        </Box>
+        <Box flex={1}>
+          <TextDisplayWrapper
+            variant="body1"
+            color="textSecondary"
+            align="left"
+          >
+            {props.description.substr(0, 100) + "..."}
+          </TextDisplayWrapper>
+        </Box>
       </Box>
-
       {/* <Divider flexItem orientation="vertical" /> */}
 
       <Box
         flex={1}
         display="flex"
         flexDirection="column"
-        justifyContent="space-between"
+        justifyContent="flex-start"
       >
         <LabelledLiniarProgress value={50} />
-        <Box display="flex">
-          <Box flex="1 1 100%">
+        <Box display="flex" mt={2}>
+          <Box flex={1}>
             <AvatarGroup spacing="small" max={4}>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-              <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
-              <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-              <Avatar alt="Agnes Walker" src="/static/images/avatar/4.jpg" />
-              <Avatar
-                alt="Trevor Henderson"
-                src="/static/images/avatar/5.jpg"
-              />
+              <Avatar alt="Remy Sharp" />
+              <Avatar alt="Travis Howard" />
+              <Avatar alt="Cindy Baker" />
+              <Avatar alt="Agnes Walker" />
+              <Avatar alt="Trevor Henderson" />
             </AvatarGroup>
           </Box>
           <Box flex={1}>
-            <Typography>Created at</Typography>
-            <Typography>21.10.2018</Typography>
+            <Typography align="right">Created at</Typography>
+            <Typography align="right">{props.created_at}</Typography>
           </Box>
         </Box>
       </Box>

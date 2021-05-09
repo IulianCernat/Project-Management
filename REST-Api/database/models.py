@@ -1,5 +1,7 @@
 from database import db
 from datetime import datetime
+import zulu
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -35,7 +37,6 @@ class Project(db.Model):
         self.name = input_obj['name']
         self.description = input_obj['description']
         self.progress = input_obj.setdefault('progress', None)
-        self.created_at = datetime.fromisoformat(input_obj['created_at'])
+        self.created_at = zulu.parse(input_obj['created_at']).datetime
         # TODO: fix datetime with utc
         self.product_owner_id = input_obj['product_owner_id']
-

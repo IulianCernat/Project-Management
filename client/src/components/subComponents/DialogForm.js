@@ -1,10 +1,7 @@
-import { useState } from "react";
 import {
-    Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContextText,
   DialogTitle,
   IconButton,
   useMediaQuery,
@@ -14,13 +11,11 @@ import CancelIcon from "@material-ui/icons/Cancel";
 import PropTypes from "prop-types";
 
 DialogForm.propTypes = {
-    title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
 };
 export default function DialogForm(props) {
- 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
 
   return (
     <Dialog
@@ -32,14 +27,12 @@ export default function DialogForm(props) {
       maxWidth="sm"
     >
       <DialogActions>
-       <IconButton onClick={props.onClose}>
-            <CancelIcon/>
-       </IconButton>
+        <IconButton onClick={props.onClose}>
+          <CancelIcon />
+        </IconButton>
       </DialogActions>
       <DialogTitle id="dialog-title">{props.title}</DialogTitle>
-      <DialogContent>
-          {props.children}
-      </DialogContent>
+      <DialogContent>{props.children}</DialogContent>
     </Dialog>
   );
 }

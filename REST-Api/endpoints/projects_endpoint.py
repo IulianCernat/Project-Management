@@ -22,7 +22,6 @@ class ProjectsCollection(Resource):
         project_id = add_project(input_data)
         return {"location": f"{api.base_url}{projects_namespace.path[1:]}/{project_id}"}, 201
 
-
     @api.response(200, 'Projects successfully queried')
     @api.response(400, 'Bad request', bad_request)
     @api.marshal_list_with(project_output)
@@ -33,6 +32,7 @@ class ProjectsCollection(Resource):
         user_type = args.get('user_type', None)
         return get_projects(user_id, user_type)
 
+
 @api.response(404, 'Project not found', message)
 @projects_namespace.route('/<id>')
 class ProjectItem(Resource):
@@ -40,4 +40,3 @@ class ProjectItem(Resource):
     @api.marshal_with(project_output)
     def get(self, id):
         return get_project(id)
-
