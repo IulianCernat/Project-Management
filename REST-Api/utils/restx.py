@@ -38,7 +38,7 @@ def integrity_error(e):
     return {'message': "Foreign key check failure"}, 404
 
 
-@api.errorhandler
+@api.errorhandler(Exception)
 def default_error_handler(e):
     message = "An unhandled exception occurred"
     log.error(e)

@@ -1,6 +1,7 @@
 from database import db
 from database.models import User
 
+
 def create_user(uid, data):
     name = data.get('fullName')
     profile = User(uid, name)
@@ -12,6 +13,10 @@ def create_user(uid, data):
 def get_other_user(user_id):
     user = User.query.filter(User.id == user_id).one()
     return user
+
+
+def get_users_by_search_keyword(keyword):
+    return User.query.filter(User.fullName.contains(keyword)).all()
 
 
 def get_self(uid):

@@ -31,11 +31,38 @@ project_input = api.model('Project input', {
     'product_owner_id': Integer(required=True, description="The id of owner user")
 })
 
-project_output = api.inherit('Project_output', project_input, {
+project_output = api.inherit('Project output', project_input, {
     'id': Integer(required=True, description="Project id"),
     'progress': String(required=True, description="The percentage of project tasks that are done")
 })
 
 page_of_projects = api.model('Page of projects', {
     'projects': List(Nested(project_output))
+})
+
+team_member_input = api.model('Team member input', {
+    'user_id': Integer(required=True, description="The id of user which need to be added to team"),
+    'team_id': Integer(required=True, description="The id of the team on which a new team member is added"),
+    'user_type': String(required=True, enum=['developer', 'scrumMaster']),
+    'created_at': DateTime(required=True, description="Date and time when the product owner adds the team members")
+})
+
+team_member_output = api.inherit('Team member output', team_member_input, {
+    'id': Integer(required=True, description="Team member's database id")
+})
+team_input = api.model('Team input', {
+    'name': String(required=True, description="Team name"),
+    'description': String(required=True, description="Team's role in project"),
+    'avatar_url': String(required=False, description="Avatar image url"),
+    'created_at': DateTime(required=True,
+                           description="Date and time when the product owner submitted the team creation form",
+                           ),
+    'project_id': Integer(required=True, description="The id of the project which will have this team")
+
+})
+
+team_output = api.inherit('Team output', team_input, {
+    'team_members': List(Nested(team_member_output)),
+    'id': Integer(required=True, description="Team's database id")
+
 })

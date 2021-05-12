@@ -2,9 +2,9 @@ from flask_restx import Resource
 from flask import request, session
 from utils.restx import api
 from utils.serializers import user_input, message, bad_request, user_output
-from controllers.users_controller import create_user, get_self, get_other_user
+from controllers.users_controller import *
 from utils.firebase_auth import verify_id_token
-from utils.parsers import authorization_header
+from utils.parsers import authorization_header, user_filtering_args
 from utils.custom_exceptions import AuthorizationFailed
 
 users_namespace = api.namespace('users', description='Operations related to user profiles')
@@ -28,12 +28,21 @@ class ProfilesCollection(Resource):
 
         return {"location": f"{api.base_url}{users_namespace.path[1:]}/{profile_id}"}, 201
 
+    @api.response(200, 'teams_members successfully queried')
+    @api.response(400, 'Bad request', bad_request)
+    @api.marshal_list_with(user_output)
+    @api.expect(user_filtering_args)
+    def get(self):
+        args = user_filtering_args.parse_args(request)
+        search_keyword = args.get('search', None)
+        return get_users_by_search_keyword(search_keyword)
+
 
 @api.response(404, 'User not found', message)
 @users_namespace.route('/<id>')
 class ProfileItem(Resource):
 
-    @api.response(200, 'Users successfully queried', message)
+    @api.response(200, 'Users successfully queried',  user_output)
     @api.response(400, 'Bad request', bad_request)
     @api.marshal_with(user_output)
     def get(self, id):
@@ -45,7 +54,7 @@ class ProfileItem(Resource):
 @users_namespace.route('/loggedUser')
 class LogedUser(Resource):
 
-    @api.response(200, 'Users successfully queried', message)
+    @api.response(200, 'Users successfully queried', user_output)
     @api.response(400, 'Bad request', bad_request)
     @api.response(401, 'Authorization failed', message)
     @api.expect(authorization_header)
