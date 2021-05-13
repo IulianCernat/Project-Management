@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import {
-  Box,
-  makeStyles,
-  AppBar,
-  Tabs,
-  Tab,
-  Paper,
-  Typography,
-  Fab,
+	Box,
+	makeStyles,
+	AppBar,
+	Tabs,
+	Tab,
+	Paper,
+	Typography,
+	Fab,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import AddIcon from "@material-ui/icons/Add";
@@ -19,134 +19,128 @@ import ProjectCreationForm from "../../forms/ProjectCreationForm";
 import { useGetFetch } from "../../../customHooks/useFetch";
 
 const useStyles = makeStyles((theme) => ({
-  main: {
-    minHeight: "75vh",
-    backgroundColor: grey[200],
-  },
-  textWrapper: {
-    maxWidth: "100%",
-    wordWrap: "break-word",
-  },
-  tabPanel: {
-    display: "flex",
-    flexFlow: "column wrap",
-    "&>:not(:first-child)": {
-      marginTop: theme.spacing(2),
-    },
-  },
+	main: {
+		minHeight: "75vh",
+		backgroundColor: grey[200],
+	},
+	textWrapper: {
+		maxWidth: "100%",
+		wordWrap: "break-word",
+	},
+	tabPanel: {
+		display: "flex",
+		flexFlow: "column wrap",
+		"&>:not(:first-child)": {
+			marginTop: theme.spacing(2),
+		},
+	},
 }));
 
 const tabs = {
-  0: "productOwner",
-  1: "scrumMaster",
-  2: "developer",
+	0: "productOwner",
+	1: "scrumMaster",
+	2: "developer",
 };
 function ProjectComponentList(projectList) {
-  return (
-    <>
-      {projectList.length
-        ? projectList.map((item) => <ProjectCard key={item.id} {...item} />)
-        : null}
-    </>
-  );
+	return (
+		<>
+			{projectList.length
+				? projectList.map((item) => <ProjectCard key={item.id} {...item} />)
+				: null}
+		</>
+	);
 }
 
 TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
+	children: PropTypes.node,
+	index: PropTypes.any.isRequired,
+	value: PropTypes.any.isRequired,
 };
 function TabPanel(props) {
-  const classes = useStyles();
-  const { children, value, index, ...other } = props;
+	const classes = useStyles();
+	const { children, value, index, ...other } = props;
 
-  const getParams = useRef({ user_id: 3, user_type: tabs[index] });
+	const getParams = useRef({ user_id: 3, user_type: tabs[index] });
 
-  const {
-    status,
-    receivedData,
-    error,
-    isLoading,
-    isResolved,
-    isRejected,
-  } = useGetFetch("api/projects/", getParams.current);
+	const { status, receivedData, error, isLoading, isResolved, isRejected } =
+		useGetFetch("api/projects/", getParams.current);
 
-  return (
-    <Box
-      maxWidth="100%"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box
-          maxWidth="100%"
-          className={classes.tabPanel}
-          p={3}
-          display="flex"
-          flexDirection="column"
-        >
-          {isResolved ? ProjectComponentList(receivedData) : null}
-          {isLoading ? "loading" : null}
-          {isRejected ? <Alert severity="error">{error} </Alert> : null}
-          {children}
-        </Box>
-      )}
-    </Box>
-  );
+	return (
+		<Box
+			maxWidth="100%"
+			role="tabpanel"
+			hidden={value !== index}
+			id={`tabpanel-${index}`}
+			aria-labelledby={`tab-${index}`}
+			{...other}
+		>
+			{value === index && (
+				<Box
+					maxWidth="100%"
+					className={classes.tabPanel}
+					p={3}
+					display="flex"
+					flexDirection="column"
+				>
+					{isResolved ? ProjectComponentList(receivedData) : null}
+					{isLoading ? "loading" : null}
+					{isRejected ? <Alert severity="error">{error} </Alert> : null}
+					{children}
+				</Box>
+			)}
+		</Box>
+	);
 }
 
 export default function Main() {
-  const [currentTab, setCurrentTab] = useState(0);
-  const [openProjectCreation, setOpenProjectCreation] = useState(false);
-  const classes = useStyles();
+	const [currentTab, setCurrentTab] = useState(0);
+	const [openProjectCreation, setOpenProjectCreation] = useState(false);
+	const classes = useStyles();
 
-  function handleTabChange(event, newTab) {
-    setCurrentTab(newTab);
-    console.log(newTab);
-  }
+	function handleTabChange(event, newTab) {
+		setCurrentTab(newTab);
+		console.log(newTab);
+	}
 
-  function openProjectCreationForm() {
-    setOpenProjectCreation(true);
-  }
-  function handleCancel() {
-    setOpenProjectCreation(false);
-  }
+	function openProjectCreationForm() {
+		setOpenProjectCreation(true);
+	}
+	function handleCancel() {
+		setOpenProjectCreation(false);
+	}
 
-  return (
-    <Paper className={classes.main} elevation={3}>
-      <AppBar position="sticky" color="default">
-        <Tabs
-          value={currentTab}
-          onChange={handleTabChange}
-          textColor="primary"
-          indicatorColor="primary"
-          variant="scrollable"
-          scrollButtons="auto"
-        >
-          <Tab label="Product Owner" />
-          <Tab label="Scrum Master" />
-          <Tab label="Developer" />
-        </Tabs>
-      </AppBar>
-      <TabPanel value={currentTab} index={0}>
-        <Box alignSelf="flex-end">
-          <Fab color="primary" onClick={openProjectCreationForm}>
-            <AddIcon />
-          </Fab>
-          <DialogForm
-            title="Create project"
-            open={openProjectCreation}
-            onClose={handleCancel}
-          >
-            <ProjectCreationForm />
-          </DialogForm>
-        </Box>
-      </TabPanel>
-      <TabPanel value={currentTab} index={1} />
-      <TabPanel value={currentTab} index={2} />
-    </Paper>
-  );
+	return (
+		<Paper className={classes.main} elevation={3}>
+			<AppBar position="sticky" color="default">
+				<Tabs
+					value={currentTab}
+					onChange={handleTabChange}
+					textColor="primary"
+					indicatorColor="primary"
+					variant="scrollable"
+					scrollButtons="auto"
+				>
+					<Tab label="Product Owner" />
+					<Tab label="Scrum Master" />
+					<Tab label="Developer" />
+				</Tabs>
+			</AppBar>
+			<TabPanel value={currentTab} index={0}>
+				<Box alignSelf="flex-end">
+					<Fab color="primary" onClick={openProjectCreationForm}>
+						<AddIcon />
+					</Fab>
+					<DialogForm
+						title="Create project"
+						open={openProjectCreation}
+						onClose={handleCancel}
+					>
+						<ProjectCreationForm />
+					</DialogForm>
+				</Box>
+			</TabPanel>
+			<TabPanel value={currentTab} index={1} />
+			<TabPanel value={currentTab} index={2} />
+		</Paper>
+	);
 }

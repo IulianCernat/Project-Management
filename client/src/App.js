@@ -1,18 +1,18 @@
-import 'fontsource-roboto';
-import {CssBaseline} from "@material-ui/core"
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import Login from './components/authentication/Login';
-import SignUp from './components/authentication/SignUp';
-import ForgotPassword from './components/authentication/ForgotPassword';
-import { AuthProvider } from './contexts/AuthContext';
-import PrivateRoute from './utils/PrivateRoute';
-import Profile from './components/application/profile/Profile';
-import Dashboard from './components/application/dashboard/Dashboard';
+import "fontsource-roboto";
+import { CssBaseline } from "@material-ui/core";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import Login from "./components/authentication/Login";
+import SignUp from "./components/authentication/SignUp";
+import ForgotPassword from "./components/authentication/ForgotPassword";
+import { AuthProvider } from "./contexts/AuthContext";
+import PrivateRoute from "./utils/PrivateRoute";
+import Profile from "./components/application/profile/Profile";
+import Dashboard from "./components/application/dashboard/Dashboard";
 function App() {
-  return (
-    <>
-    <CssBaseline/>
-    {/* <BrowserRouter>
+	return (
+		<>
+			<CssBaseline />
+			{/* <BrowserRouter>
       <AuthProvider>
         <Switch>
           <PrivateRoute exact path="/" component={Profile} />
@@ -28,12 +28,13 @@ function App() {
         </Switch>
       </AuthProvider>
     </BrowserRouter> */}
-    <Dashboard/>
-   
-    </>
-    
-
-  );
+			<BrowserRouter>
+				<Route path="/dashboard">
+					<Dashboard />
+				</Route>
+			</BrowserRouter>
+		</>
+	);
 }
 
 export default App;
