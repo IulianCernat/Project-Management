@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Aside() {
+export default function ProfileAside() {
 	const classes = useStyles();
 	return (
 		<Paper elevation={5}>

@@ -1,15 +1,7 @@
 import { useState, useRef } from "react";
 import { useField } from "formik";
-import {
-	FormControl,
-	FormHelperText,
-	InputLabel,
-	Select,
-	TextField,
-	Typography,
-	TextareaAutosize,
-	Box,
-} from "@material-ui/core";
+import { TextField, Box } from "@material-ui/core";
+
 import PropTypes from "prop-types";
 
 TextFieldWrapper.propTypes = {
@@ -39,24 +31,5 @@ export function TextFieldWrapper({ label, maxTextWidth, ...props }) {
 				</Box>
 			}
 		/>
-	);
-}
-
-export function SelectFieldWrapper({ label, required, ...props }) {
-	const [field, meta] = useField(props);
-	return (
-		<>
-			<FormControl
-				fullWidth
-				required={required}
-				error={meta.touched && Boolean(meta.error)}
-			>
-				<InputLabel id={props.id || props.name}>{label}</InputLabel>
-				<Select labelId={label} {...field} {...props} />
-				<FormHelperText>
-					{meta.touched && meta.error ? meta.error : null}
-				</FormHelperText>
-			</FormControl>
-		</>
 	);
 }

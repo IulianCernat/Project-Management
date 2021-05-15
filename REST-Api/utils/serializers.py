@@ -1,4 +1,4 @@
-from flask_restx.fields import Integer, String, Wildcard, DateTime, List, Nested
+from flask_restx.fields import Integer, String, Wildcard, DateTime, List, Nested, Boolean
 from utils.restx import api
 
 location = api.model('Resource location', {
@@ -21,7 +21,8 @@ user_output = api.model('User output', {
     'id': Integer(required=True, description="User's database id"),
     'fullName': String(required=True, description="User's full name"),
     'avatar_url': String(required=True, description="User's avatar url"),
-    'contact': String(required=True, description="User's contact information(email)")
+    'contact': String(required=True, description="User's contact information(email)"),
+    'is_part_of_project': Boolean(required=False, description="Whether user is part of specified query project")
 })
 
 project_input = api.model('Project input', {

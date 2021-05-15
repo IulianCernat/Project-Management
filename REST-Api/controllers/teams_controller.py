@@ -11,3 +11,6 @@ def add_team(input_data):
 
 def get_team(team_id):
     return Team.query.filter(Team.id == team_id).one()
+
+def get_teams(project_id):
+    return Team.query.filter(Team.project_id == project_id).all()

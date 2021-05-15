@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Grid, makeStyles, Container } from "@material-ui/core";
-import Aside from "./Aside";
-import Main from "./Main";
+import ProfileAside from "./ProfileAside";
+import ProfileMain from "./ProfileMain";
 import { useAuth } from "../../../contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -35,10 +35,10 @@ export default function Profile() {
 				<Grid container justify="space-evenly">
 					<Grid item xs={false} md={12} style={{ minHeight: "10em" }} />
 					<Grid item xs={12} md={3}>
-						<Aside />
+						<ProfileAside />
 					</Grid>
 					<Grid item xs={12} md={8}>
-						<Main />
+						<ProfileMain />
 					</Grid>
 				</Grid>
 			</Box>

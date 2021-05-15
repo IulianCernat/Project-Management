@@ -35,7 +35,8 @@ class ProfilesCollection(Resource):
     def get(self):
         args = user_filtering_args.parse_args(request)
         search_keyword = args.get('search', None)
-        return get_users_by_search_keyword(search_keyword)
+        part_of_project_id = args.get('part_of_project_id', None)
+        return get_users_by_filters(search_keyword, part_of_project_id)
 
 
 @api.response(404, 'User not found', message)

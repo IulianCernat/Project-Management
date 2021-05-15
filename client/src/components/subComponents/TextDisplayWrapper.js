@@ -4,9 +4,8 @@ import { lightBlue } from "@material-ui/core/colors";
 const useStyles = makeStyles((theme) => ({
 	textWrapper: {
 		maxWidth: "100%",
-		wordWrap: "break-word",
+		overflowWrap: "break-word",
 		overflow: "hidden",
-		background: "lightBlue",
 		textOverflow: "ellipsis",
 	},
 }));

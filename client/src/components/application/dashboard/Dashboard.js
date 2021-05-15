@@ -8,19 +8,11 @@ import {
 	Box,
 	makeStyles,
 } from "@material-ui/core";
-import {
-	BrowserRouter as Router,
-	Switch,
-	Route,
-	Link,
-	useRouteMatch,
-	BrowserRouter,
-} from "react-router-dom";
-
-import { AddBoxRounded, Menu } from "@material-ui/icons";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
+import { Menu } from "@material-ui/icons";
 import CustomDrawer from "../../subComponents/CustomDrawer";
 import Teams from "./Teams";
-
+import SearchField from "../../forms/SearchField";
 const drawerWidth = "18rem";
 
 const useStyles = makeStyles((theme) => ({
@@ -31,9 +23,8 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 	content: {
-		flexGrow: 1,
-		backgroundColor: "lightGreen",
-		padding: theme.spacing(3),
+		width: "100%",
+		padding: theme.spacing(6),
 	},
 	toolbar: theme.mixins.toolbar,
 }));

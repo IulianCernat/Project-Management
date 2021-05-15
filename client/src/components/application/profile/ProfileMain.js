@@ -92,7 +92,7 @@ function TabPanel(props) {
 	);
 }
 
-export default function Main() {
+export default function ProfileMain() {
 	const [currentTab, setCurrentTab] = useState(0);
 	const [openProjectCreation, setOpenProjectCreation] = useState(false);
 	const classes = useStyles();

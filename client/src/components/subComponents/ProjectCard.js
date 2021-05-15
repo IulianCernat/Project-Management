@@ -10,6 +10,8 @@ import AvatarGroup from "@material-ui/lab/AvatarGroup";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { LabelledLiniarProgress } from "../../components/subComponents/Progress";
 import TextDisplayWrapper from "../../components/subComponents/TextDisplayWrapper";
+import PropTypes from "prop-types";
+
 const useStyles = makeStyles((theme) => ({
 	paper: {
 		maxWidth: "100%",
@@ -26,15 +28,13 @@ const useStyles = makeStyles((theme) => ({
 			},
 		},
 	},
-	textWrapper: {
-		maxWidth: "100%",
-		maxHeight: "8ch",
-		textOverflow: "ellipsis",
-		overflow: "hidden",
-		wordWrap: "break-word",
-	},
 }));
 
+ProjectCard.propTypes = {
+	name: PropTypes.string.isRequired,
+	description: PropTypes.string.isRequired,
+	created_at: PropTypes.string.isRequired,
+};
 export default function ProjectCard(props) {
 	const classes = useStyles();
 	return (

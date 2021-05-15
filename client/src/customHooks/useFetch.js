@@ -65,6 +65,7 @@ async function doPost(url, stringifiedData) {
 async function doGet(url, parameters = null) {
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
+
 		url += "?" + new URLSearchParams(parameters).toString();
 		let response = await fetch(url, {
 			method: "GET",
@@ -84,9 +85,12 @@ async function doGet(url, parameters = null) {
 		return { error: err, receivedData: null };
 	}
 }
-export function useGetFetch(url, parameters) {
+export function useGetFetch(url, parameters, start = true) {
 	const [state, dispatch] = useReducer(reducer, initialState);
+
 	useEffect(() => {
+		if (!start) return;
+
 		async function doFetch() {
 			dispatch({ type: "started" });
 			let fetchResponse = await doGet(url, parameters);
@@ -100,7 +104,7 @@ export function useGetFetch(url, parameters) {
 		}
 
 		doFetch();
-	}, [url, parameters]);
+	}, [url, parameters, start]);
 
 	return {
 		isLoading: state.status === "pending",

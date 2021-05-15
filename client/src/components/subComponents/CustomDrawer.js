@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Drawer, Box, Hidden, makeStyles } from "@material-ui/core";
 import DrawerListItems from "./DrawerListItems";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
 	drawerPaper: {
@@ -14,6 +15,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+CustomDrawer.propTypes = {
+	drawerWidth: PropTypes.string.isRequired,
+	handleDrawerToggle: PropTypes.func.isRequired,
+	mobileOpen: PropTypes.bool.isRequired,
+};
 export default function CustomDrawer(props) {
 	const classes = useStyles({ width: props.drawerWidth });
 	return (

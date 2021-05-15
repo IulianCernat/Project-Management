@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 		fontWeight: 500,
 	},
 }));
-export default function DrawerListItems(props) {
+export default function DrawerListItems() {
 	const classes = useStyles();
 	let match = useRouteMatch();
 	return (

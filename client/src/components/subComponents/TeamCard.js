@@ -7,43 +7,58 @@ import {
 	makeStyles,
 	Box,
 	Badge,
+	Avatar,
 } from "@material-ui/core";
-import { blue } from "@material-ui/core/colors";
+import { blue, grey } from "@material-ui/core/colors";
 import { People } from "@material-ui/icons";
-import Avatar from "./Avatar";
+import PropTypes from "prop-types";
+
+import TextDisplayWrapper from "../../components/subComponents/TextDisplayWrapper";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		minWidth: "40ch",
-		maxWidth: "40ch",
-		flex: 1,
+		minWidth: (props) => props.width,
+		maxWidth: (props) => props.width,
+		backgroundColor: grey[100],
+	},
+	paper: {
+		border: "5px, dashed, red",
 	},
 }));
-export default function TeamCard() {
-	const styles = useStyles();
+
+TeamCard.propTypes = {
+	name: PropTypes.string.isRequired,
+	team_members: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.any)).isRequired,
+	created_at: PropTypes.string.isRequired,
+	description: PropTypes.string.isRequired,
+};
+export default function TeamCard(props) {
+	const styles = useStyles(props);
 	return (
 		<Card className={styles.root} variant="outlined">
 			<CardActionArea>
 				<CardHeader
 					title={
 						<Box display="flex" justifyContent="space-between">
-							<Typography variant="h6">C++ clone</Typography>
-							<Badge badgeContent={4} color="primary">
+							<Typography variant="h6">{props.name}</Typography>
+							<Badge
+								badgeContent={props.team_members.length}
+								color="primary"
+								showZero
+							>
 								<People fontSize="large" />
 							</Badge>
 						</Box>
 					}
-					subheader="12/12/1998"
+					subheader={props.created_at}
 				/>
 				<CardContent>
 					<Typography variant="h6" gutterBottom>
 						Description
 					</Typography>
-					<Typography gutterBottom>
-						hello world hello worldhello worldhello worldhello world hello world
-						hello world hello world hello world hello worldhello worldhello
-						worldhello world hello world hello world hello world
-					</Typography>
+					<TextDisplayWrapper gutterBottom>
+						{props.description.substr(0, 100) + "..."}
+					</TextDisplayWrapper>
 					<Box
 						display="flex"
 						justifyContent="center"
@@ -53,11 +68,15 @@ export default function TeamCard() {
 						borderRadius={20}
 					>
 						<Box style={{ width: "4rem", height: "4rem" }} mr={1}>
-							<Avatar />
+							<Avatar src="../../assets/defaultProfile.svg" />
 						</Box>
 						<Box>
-							<Typography align="center">Scrum master</Typography>
-							<Typography>Cernat Iulian Constantin</Typography>
+							<Typography align="center" variant="h6">
+								Scrum master
+							</Typography>
+							<Typography align="center">
+								Cernat Iulian Constantin Iulian Constantin
+							</Typography>
 						</Box>
 					</Box>
 				</CardContent>

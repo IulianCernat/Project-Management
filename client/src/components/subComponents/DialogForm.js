@@ -12,6 +12,9 @@ import PropTypes from "prop-types";
 
 DialogForm.propTypes = {
 	title: PropTypes.string.isRequired,
+	open: PropTypes.bool.isRequired,
+	onClose: PropTypes.func.isRequired,
+	children: PropTypes.any,
 };
 export default function DialogForm(props) {
 	const theme = useTheme();
@@ -25,6 +28,7 @@ export default function DialogForm(props) {
 			aria-labelledby="dialog-title"
 			fullWidth
 			maxWidth="sm"
+			disableBackdropClick
 		>
 			<DialogActions>
 				<IconButton onClick={props.onClose}>
