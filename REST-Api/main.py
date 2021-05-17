@@ -15,11 +15,10 @@ app = Flask(__name__)
 # logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'logging.conf'))
 # logging.config.fileConfig(logging_conf_path)
 log = logging.getLogger(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources=r'/api/*')
 
 
 def configure_app(flask_app):
-
     # flask_app.config['SERVER_NAME'] = settings.FLASK_SERVER_NAME
     flask_app.config['SQLALCHEMY_DATABASE_URI'] = settings.SQLALCHEMY_DATABASE_URI
     flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = settings.SQLALCHEMY_TRACK_MODIFICATIONS
@@ -49,11 +48,6 @@ def initialize_app(flask_app):
     with flask_app.app_context():
         db.create_all()  # Create database tables for our data models
 
-
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
 
 
 def main():

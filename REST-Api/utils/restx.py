@@ -3,7 +3,7 @@ import traceback
 
 from flask_restx import Api
 from sqlalchemy.exc import IntegrityError
-from werkzeug.exceptions import MethodNotAllowed
+from werkzeug.exceptions import MethodNotAllowed, BadRequest
 from utils.custom_exceptions import AuthorizationFailed
 import settings
 from sqlalchemy.orm.exc import NoResultFound
@@ -36,6 +36,12 @@ def authorization_failed(e):
 def integrity_error(e):
     log.error(e)
     return {'message': "Foreign key check failure"}, 404
+
+
+@api.errorhandler(BadRequest)
+def bad_request_error(e):
+    log.error(e)
+    return {'message': "Bad request"}, 400
 
 
 @api.errorhandler(Exception)

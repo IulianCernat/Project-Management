@@ -11,10 +11,10 @@ projects_namespace = api.namespace('projects', description='Operations related t
 
 
 @projects_namespace.route('/')
+@api.response(400, 'Bad request', bad_request)
 @api.response(404, 'Projects not found', message)
 class ProjectsCollection(Resource):
     @api.response(201, 'Project successfully created', location)
-    @api.response(400, 'Bad request', bad_request)
     @api.response(401, 'Authorization failed', message)
     @api.expect(project_input)
     def post(self):
@@ -23,7 +23,6 @@ class ProjectsCollection(Resource):
         return {"location": f"{api.base_url}{projects_namespace.path[1:]}/{project_id}"}, 201
 
     @api.response(200, 'Projects successfully queried', [project_output])
-    @api.response(400, 'Bad request', bad_request)
     @api.marshal_list_with(project_output)
     @api.expect(projects_sorting_arguments)
     def get(self):

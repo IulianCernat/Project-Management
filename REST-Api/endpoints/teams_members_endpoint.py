@@ -1,4 +1,4 @@
-from flask_restx import Resource
+from flask_restx import Resource, cors
 from flask import request
 from utils.restx import api
 from utils.serializers import team_member_input, message, bad_request, team_member_output, location

@@ -34,6 +34,10 @@ SearchField.propTypes = {
 	 * textfield
 	 */
 	setResourceId: PropTypes.func.isRequired,
+	/**
+	 * The url which which will be called with user's search input
+	 */
+	fetchUrl: PropTypes.string.isRequired,
 };
 export function SearchField({
 	optionLabel,
@@ -41,16 +45,17 @@ export function SearchField({
 	optionWireFrame,
 	inputNode,
 	setResourceId,
+	fetchUrl,
 	...other
 }) {
 	const [open, setOpen] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [options, setOptions] = useState([]);
-	const [start, setStart] = useState(false);
+	const [startFetching, setStartFetching] = useState(false);
 	const getParams = useRef({ search: "", part_of_project_id: 73 });
 
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch("api/users/", getParams.current, start);
+		useGetFetch(fetchUrl, getParams.current, startFetching);
 
 	useEffect(() => {
 		setOptions((prev) => (receivedData ? receivedData : []));
@@ -58,12 +63,12 @@ export function SearchField({
 
 	useEffect(() => {
 		if (!searchTerm) {
-			setStart(false);
+			setStartFetching(false);
 			setOptions([]);
 			return;
 		}
 		getParams.current.search = searchTerm;
-		setStart(true);
+		setStartFetching(true);
 	}, [searchTerm]);
 
 	return (
@@ -94,6 +99,7 @@ export function SearchField({
 				loading={isLoading}
 				renderOption={optionWireFrame}
 				renderInput={(params) => cloneElement(inputNode, params)}
+				fullWidth
 			/>
 		</>
 	);

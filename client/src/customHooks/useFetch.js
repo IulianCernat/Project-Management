@@ -65,8 +65,8 @@ async function doPost(url, stringifiedData) {
 async function doGet(url, parameters = null) {
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
+		if (parameters) url += "?" + new URLSearchParams(parameters).toString();
 
-		url += "?" + new URLSearchParams(parameters).toString();
 		let response = await fetch(url, {
 			method: "GET",
 		});
@@ -85,7 +85,7 @@ async function doGet(url, parameters = null) {
 		return { error: err, receivedData: null };
 	}
 }
-export function useGetFetch(url, parameters, start = true) {
+export function useGetFetch(url, parameters = null, start = true) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	useEffect(() => {
@@ -125,7 +125,7 @@ export function usePostFetch(url, bodyContent) {
 			dispatch({ type: "started" });
 			let fetchResponse = await doPost(url, bodyContent);
 			if (fetchResponse.error) {
-				dispatch({ type: "error", error: fetchResponse.error });
+				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;
 			}
 			dispatch({ type: "success", receivedData: fetchResponse.location });

@@ -10,7 +10,6 @@ import {
 	makeStyles,
 } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
-
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import {
 	teamNameValidSchema,
@@ -20,6 +19,7 @@ import {
 } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
+import CustomStepper from "../subComponents/CustomStepper";
 
 const useStyles = makeStyles((theme) => ({
 	backdrop: {
@@ -31,8 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const validationSchema = Yup.object({
 	name: teamNameValidSchema,
 	description: teamDescriptionValidSchema,
-	searchTerm: searchTermValidSchema,
-	userId: idValidSchema,
+	scrum_master_id: idValidSchema,
 });
 
 export default function TeamCreationForm() {
@@ -46,12 +45,15 @@ export default function TeamCreationForm() {
 				initialValues={{
 					name: "",
 					description: "",
-					searchTerm: "",
-					userId: "",
+					scrum_master_id: "",
 				}}
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
-					console.log(values);
+					values["created_at"] = new Date().toISOString();
+					values["project_id"] = 73;
+					const stringifiedData = JSON.stringify(values);
+					console.log(stringifiedData);
+					setRequestBody(stringifiedData);
 				}}
 			>
 				{({ setFieldValue }) => (
@@ -66,29 +68,15 @@ export default function TeamCreationForm() {
 							name="name"
 							disabled={isLoading}
 						/>
-						<TextFieldWrapper
-							multiline
-							variant="outlined"
-							required
-							fullWidth
-							rows={8}
-							maxTextWidth={500}
-							margin="normal"
-							id="description"
-							label="description"
-							name="description"
-							disabled={isLoading}
-						/>
-
 						<SearchField
+							fetchUrl="api/users/"
 							setResourceId={(id) => {
-								setFieldValue("userId", id);
+								setFieldValue("scrum_master_id", id);
 							}}
 							inputNode={
 								<TextFieldWrapper
 									variant="outlined"
 									required
-									fullWidth
 									margin="normal"
 									id="searchTerm"
 									label="Add scrum master"
@@ -116,8 +104,22 @@ export default function TeamCreationForm() {
 							isOptionDisabled={(option) => option.is_part_of_project}
 						/>
 						<Hidden xsUp>
-							<TextFieldWrapper id="userId" label="userId" name="userId" />
+							<TextFieldWrapper id="user_id" label="userId" name="user_id" />
 						</Hidden>
+
+						<TextFieldWrapper
+							multiline
+							variant="outlined"
+							required
+							fullWidth
+							rows={8}
+							maxTextWidth={500}
+							margin="normal"
+							id="description"
+							label="description"
+							name="description"
+							disabled={isLoading}
+						/>
 
 						<Button
 							type="submit"

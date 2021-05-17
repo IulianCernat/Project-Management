@@ -49,8 +49,10 @@ team_member_input = api.model('Team member input', {
 })
 
 team_member_output = api.inherit('Team member output', team_member_input, {
-    'id': Integer(required=True, description="Team member's database id")
+    'id': Integer(required=True, description="Team member's database id"),
+    'user_profile': Nested(user_output, description="The profile for every teammate")
 })
+
 team_input = api.model('Team input', {
     'name': String(required=True, description="Team name"),
     'description': String(required=True, description="Team's role in project"),
@@ -58,12 +60,13 @@ team_input = api.model('Team input', {
     'created_at': DateTime(required=True,
                            description="Date and time when the product owner submitted the team creation form",
                            ),
-    'project_id': Integer(required=True, description="The id of the project which will have this team")
+    'project_id': Integer(required=True, description="The id of the project which will have this team"),
+    'scrum_master_id': Integer(required=True, description="The id of the user who will be the scrum master of the team")
 
 })
 
 team_output = api.inherit('Team output', team_input, {
-    'team_members': List(Nested(team_member_output)),
-    'id': Integer(required=True, description="Team's database id")
+    'team_members': List(Nested(team_member_output), description="All the people that are part of the team"),
+    'id': Integer(required=True, description="Team's database id"),
 
 })
