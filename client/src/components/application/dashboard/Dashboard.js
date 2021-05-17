@@ -64,7 +64,6 @@ export default function Dashboard() {
 					<Route path={`${match.path}/teams`}>
 						<Teams />
 					</Route>
-					<Route path={`${match.path}/overview`}>hello world</Route>
 				</Switch>
 			</main>
 		</Box>
