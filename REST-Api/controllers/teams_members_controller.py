@@ -2,17 +2,10 @@ from database import db
 from database.models import TeamMember
 
 
-def add_team_member(input_data):
-    new_team_member = TeamMember(input_data)
-    db.session.add(new_team_member)
-    db.session.commit()
-    return new_team_member.id
-
-
-def add_developers(input_data):
+def add_team_members(input_data):
     ids = []
-    for developer in input_data['developers']:
-        new_team_member = TeamMember(developer)
+    for team_member in input_data['team_members']:
+        new_team_member = TeamMember(team_member)
         db.session.add(new_team_member)
         db.session.commit()
         ids.append(new_team_member.id)

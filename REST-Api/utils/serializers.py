@@ -48,14 +48,9 @@ team_member_input = api.model('Team member input', {
     'created_at': DateTime(required=True, description="Date and time when the product owner adds the team members")
 })
 
-developer_input = api.model('Developer input', {
-    'user_id': Integer(required=True, description="The id of the developer which needs to be added to team"),
-    'team_id': Integer(required=True, description="The id of the team on which a new developer is added"),
-    'user_type': String(required=True, enum=['developer']),
-    'created_at': DateTime(required=True, description="Date and time when the developer is added")
+multiple_team_members_input = api.model('Array of team members', {
+    'team_members': List(Nested(team_member_input))
 })
-developers_input = api.model('Array of multiple people to be added', {
-    'developers': List(Nested(developer_input))})
 
 team_member_output = api.inherit('Team member output', team_member_input, {
     'id': Integer(required=True, description="Team member's database id"),
