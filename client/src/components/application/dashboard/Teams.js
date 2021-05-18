@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
 	root: {
 		minWidth: "15rem",
 	},
+	toolbar: theme.mixins.toolbar,
 }));
 
 function TeamComponentList(teamList) {
@@ -46,11 +47,11 @@ function TeamComponentList(teamList) {
 }
 export default function Teams() {
 	let match = useRouteMatch();
-	const styles = useStyles();
+	const classes = useStyles();
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
 	const getParams = useRef({ project_id: 73 });
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch("api/teams/", getParams.current, false);
+		useGetFetch("api/teams/", getParams.current);
 
 	function openTeamCreationForm() {
 		setOpenTeamCreation(true);

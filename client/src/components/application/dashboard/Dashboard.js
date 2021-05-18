@@ -57,7 +57,7 @@ export default function Dashboard() {
 				mobileOpen={mobileOpen}
 				handleDrawerToggle={handleDrawerToggle}
 			/>
-			<main className={classes.content}>
+			<Box className={classes.content}>
 				<div className={classes.toolbar} />
 
 				<Switch>
@@ -65,7 +65,7 @@ export default function Dashboard() {
 						<Teams />
 					</Route>
 				</Switch>
-			</main>
+			</Box>
 		</Box>
 	);
 }

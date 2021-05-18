@@ -13,7 +13,7 @@ import { blue, grey } from "@material-ui/core/colors";
 import { People } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
-import TextDisplayWrapper from "../../components/subComponents/TextDisplayWrapper";
+import TextDisplayWrapper from "../subComponents/TextDisplayWrapper";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: grey[100],
 	},
 	paper: {
-		border: "5px, dashed, red",
+		border: "5px dashed red",
 	},
 }));
 
@@ -35,7 +35,7 @@ TeamCard.propTypes = {
 };
 export default function TeamCard(props) {
 	const styles = useStyles(props);
-	const scrumMasterProfile = props.team_members[0];
+	const scrumMasterProfile = props.team_members[0]?.user_profile;
 	const nrOfTeammates = props.team_members.length;
 	return (
 		<Card className={styles.root} variant="outlined">
@@ -44,11 +44,7 @@ export default function TeamCard(props) {
 					title={
 						<Box display="flex" justifyContent="space-between">
 							<Typography variant="h6">{props.name}</Typography>
-							<Badge
-								badgeContent={props.team_members.length}
-								color="primary"
-								showZero
-							>
+							<Badge badgeContent={nrOfTeammates} color="primary" showZero>
 								<People fontSize="large" />
 							</Badge>
 						</Box>
