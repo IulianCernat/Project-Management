@@ -7,12 +7,13 @@ def add_team(input_data):
     new_team = Team(input_data)
     db.session.add(new_team)
     db.session.commit()
-    add_team_members([{
-        'user_id': input_data['scrum_master_id'],
-        'team_id': new_team.id,
-        'user_type': 'scrumMaster',
-        'created_at': input_data['created_at']
-    }])
+    add_team_members(
+        {'team_members': [{
+            'user_id': input_data['scrum_master_id'],
+            'team_id': new_team.id,
+            'user_type': 'scrumMaster',
+            'created_at': input_data['created_at']
+        }]})
 
     return new_team.id
 

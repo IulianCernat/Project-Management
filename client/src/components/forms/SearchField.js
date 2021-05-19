@@ -33,7 +33,7 @@ SearchField.propTypes = {
 	 * Function that sets the id of the searched resources in a hidden
 	 * textfield
 	 */
-	setResourceId: PropTypes.func.isRequired,
+	setSelecteResource: PropTypes.func.isRequired,
 	/**
 	 * The url which which will be called with user's search input
 	 */
@@ -44,7 +44,7 @@ export function SearchField({
 	isOptionDisabled,
 	optionWireFrame,
 	inputNode,
-	setResourceId,
+	setSelecteResource,
 	fetchUrl,
 	...other
 }) {
@@ -84,7 +84,16 @@ export function SearchField({
 					setOpen(false);
 				}}
 				onChange={(event, value) => {
-					setResourceId(value ? value.id : "");
+					if (!value) {
+						setSelecteResource("");
+						return;
+					}
+					if (typeof value === "object") {
+						setSelecteResource(JSON.stringify(value));
+						return;
+					}
+
+					setSelecteResource(value.id);
 				}}
 				onInputChange={async (event, value, reason) => {
 					await sleep();

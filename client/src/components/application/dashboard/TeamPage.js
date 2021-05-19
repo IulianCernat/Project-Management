@@ -15,7 +15,8 @@ import { Alert } from "@material-ui/lab";
 import UserProfile from "../../subComponents/UserProfileCard";
 import { blue, blueGrey, indigo } from "@material-ui/core/colors";
 import UserProfileCard from "../../subComponents/UserProfileCard";
-
+import DialogForm from "../../subComponents/DialogForm";
+import AddingDevsForm from "../../forms/AddingDevsForm";
 const useStyles = makeStyles((theme) => ({
 	membersTab: {
 		display: "flex",
@@ -41,16 +42,22 @@ function TabPanel(props) {
 }
 function developersList(developersList) {
 	return developersList.map((item) => (
-		<UserProfileCard width={"30ch"} {...item}></UserProfileCard>
+		<UserProfileCard key={item.id} width={"30ch"} {...item}></UserProfileCard>
 	));
 }
 export default function TeamPage() {
 	const classes = useStyles();
 	let { teamId } = useParams();
 	const [currentTab, setCurrentTab] = useState(0);
+	const [openDevAddition, setOpenDevAddition] = useState(false);
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch(`api/teams/${teamId}`);
-
+	function openDevsAdditionForm() {
+		setOpenDevAddition(true);
+	}
+	function handleCancel() {
+		setOpenDevAddition(false);
+	}
 	const handleTabChange = (event, newValue) => {
 		setCurrentTab(newValue);
 	};
@@ -104,7 +111,12 @@ export default function TeamPage() {
 								</Box>
 							</Paper>
 							<Box display="flex" justifyContent="center">
-								<UserProfile width={"30ch"} {...receivedData.team_members[0]} />
+								{receivedData.team_members.length ? (
+									<UserProfile
+										width={"30ch"}
+										{...receivedData.team_members[0]}
+									/>
+								) : null}
 							</Box>
 						</Box>
 						<Box flex={"1 1 0"}>
@@ -117,7 +129,11 @@ export default function TeamPage() {
 									bgcolor={indigo["A100"]}
 								>
 									<Typography variant="h6">Developers</Typography>
-									<Button variant="contained" color="primary">
+									<Button
+										variant="contained"
+										color="primary"
+										onClick={() => openDevsAdditionForm()}
+									>
 										<Typography>Add new developers</Typography>
 									</Button>
 								</Box>
@@ -148,6 +164,13 @@ export default function TeamPage() {
 				{isLoading ? "loading" : null}
 				{isRejected ? <Alert severity="error">{error} </Alert> : null}
 			</Typography>
+			<DialogForm
+				title="Add new team"
+				open={openDevAddition}
+				onClose={handleCancel}
+			>
+				<AddingDevsForm teamId={teamId} />
+			</DialogForm>
 		</>
 	);
 }

@@ -6,12 +6,13 @@ from controllers.users_controller import *
 from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, user_filtering_args
 from utils.custom_exceptions import AuthorizationFailed
-
+from utils.cors import *
 users_namespace = api.namespace('users', description='Operations related to user profiles')
 
 
 @users_namespace.route('/')
 class ProfilesCollection(Resource):
+
     @api.response(201, 'Profile successfully created', message)
     @api.response(400, 'Bad request', bad_request)
     @api.response(401, 'Authorization failed', message)
@@ -36,7 +37,7 @@ class ProfilesCollection(Resource):
         args = user_filtering_args.parse_args(request)
         search_keyword = args.get('search', None)
         part_of_project_id = args.get('part_of_project_id', None)
-        return get_users_by_filters(search_keyword, part_of_project_id)
+        return get_users_by_filters(search_keyword, part_of_project_id), 200
 
 
 @api.response(404, 'User not found', message)

@@ -7,7 +7,7 @@ from werkzeug.exceptions import MethodNotAllowed, BadRequest
 from utils.custom_exceptions import AuthorizationFailed
 import settings
 from sqlalchemy.orm.exc import NoResultFound
-
+from flask_cors import cross_origin
 log = logging.getLogger(__name__)
 
 api = Api(version='1.0', title="Projects management API",

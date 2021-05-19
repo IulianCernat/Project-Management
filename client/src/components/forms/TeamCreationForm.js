@@ -14,7 +14,7 @@ import { TextFieldWrapper } from "./InputFieldsWrappers";
 import {
 	teamNameValidSchema,
 	teamDescriptionValidSchema,
-	searchTermValidSchema,
+	generalInputString,
 	idValidSchema,
 } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 const validationSchema = Yup.object({
 	name: teamNameValidSchema,
 	description: teamDescriptionValidSchema,
-	scrum_master_id: idValidSchema,
+	scrum_master: generalInputString,
 });
 
 export default function TeamCreationForm() {
@@ -45,14 +45,20 @@ export default function TeamCreationForm() {
 				initialValues={{
 					name: "",
 					description: "",
-					scrum_master_id: "",
+					scrum_master: "",
 				}}
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
-					values["created_at"] = new Date().toISOString();
-					values["project_id"] = 73;
-					const stringifiedData = JSON.stringify(values);
-					console.log(stringifiedData);
+					console.log(values.scrum_master);
+					let requestObj = {};
+					requestObj["name"] = values.name;
+					requestObj["description"] = values.description;
+					requestObj["created_at"] = new Date().toISOString();
+					requestObj["project_id"] = 73;
+					requestObj["scrum_master_id"] = JSON.parse(values.scrum_master).id;
+
+					const stringifiedData = JSON.stringify(requestObj);
+
 					setRequestBody(stringifiedData);
 				}}
 			>
@@ -70,8 +76,8 @@ export default function TeamCreationForm() {
 						/>
 						<SearchField
 							fetchUrl="api/users/"
-							setResourceId={(id) => {
-								setFieldValue("scrum_master_id", id);
+							setSelecteResource={(resource) => {
+								setFieldValue("scrum_master", resource);
 							}}
 							inputNode={
 								<TextFieldWrapper
@@ -104,7 +110,11 @@ export default function TeamCreationForm() {
 							isOptionDisabled={(option) => option.is_part_of_project}
 						/>
 						<Hidden xsUp>
-							<TextFieldWrapper id="user_id" label="userId" name="user_id" />
+							<TextFieldWrapper
+								id="scrum_master"
+								label="userId"
+								name="scrum_master"
+							/>
 						</Hidden>
 
 						<TextFieldWrapper

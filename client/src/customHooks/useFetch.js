@@ -55,7 +55,8 @@ async function doPost(url, stringifiedData) {
 			case 201:
 				return { error: null, location: result["location"] };
 			default:
-				return { error: result["message"], location: null };
+				console.log(result);
+				return { error: result.toString(), location: null };
 		}
 	} catch (err) {
 		return { error: err, location: null };
@@ -79,7 +80,7 @@ async function doGet(url, parameters = null) {
 			case 200:
 				return { error: null, receivedData: result };
 			default:
-				return { error: result.message, receivedData: null };
+				return { error: result.toString(), receivedData: null };
 		}
 	} catch (err) {
 		return { error: err, receivedData: null };

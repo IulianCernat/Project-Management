@@ -1,15 +1,20 @@
 from flask_restx import Resource, cors
+
 from flask import request
 from utils.restx import api
 from utils.serializers import message, bad_request, team_member_output, location, multiple_team_members_input
 from controllers.teams_members_controller import *
 from utils.parsers import teams_members_filtering_args
+from utils.cors import *
+from flask_cors import cross_origin
 
-teams_members_namespace = api.namespace('teams_members', description='Operations related to managing teams_members')
+teams_members_namespace = api.namespace('teams_members', description='Operations related to managing teams_members',
+                                        decorators=[cross_origin()])
 
 
-@teams_members_namespace.route('/')
+@teams_members_namespace.route('/', methods=['GET', 'POST', 'OPTIONS'])
 class TeamsMembersCollection(Resource):
+
     @api.response(201, 'Team successfully created', [location])
     @api.response(400, 'Bad request', bad_request)
     @api.response(404, "Foreign key check failure", message)
@@ -30,7 +35,7 @@ class TeamsMembersCollection(Resource):
         args = teams_members_filtering_args.parse_args(request)
         team_id = args.get('team_id', None)
 
-        return get_team_members(team_id)
+        return get_team_members(team_id), 200
 
 
 @api.response(404, 'team not found', message)
@@ -39,4 +44,4 @@ class TeamItem(Resource):
     @api.response(200, 'teams_members successfully queried', team_member_output)
     @api.marshal_with(team_member_output)
     def get(self, id):
-        return get_team_member(id)
+        return get_team_member(id), 200

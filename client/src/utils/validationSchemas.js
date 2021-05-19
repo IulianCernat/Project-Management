@@ -13,7 +13,7 @@ const maxTeamNameLen = 255;
 const minTeamDescriptionLen = 50;
 const maxTeamDescriptionLen = 500;
 
-export const idValidSchema = Yup.string().required();
+export const generalInputString = Yup.string().required();
 
 export const emailValidationSchema = Yup.string("Enter your email")
 	.email("Enter a valid email")

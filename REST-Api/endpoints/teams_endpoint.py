@@ -4,10 +4,9 @@ from utils.restx import api
 from utils.serializers import team_input, message, bad_request, team_output, location
 from controllers.teams_controller import *
 from utils.parsers import team_filtering_args
-from flask_cors import cross_origin
+from utils.cors import *
 
-teams_namespace = api.namespace('teams', description='Operations related to managing teams',
-                                decorators=[cross_origin()])
+teams_namespace = api.namespace('teams', description='Operations related to managing teams')
 
 
 @teams_namespace.route('/')
@@ -32,7 +31,7 @@ class TeamsCollection(Resource):
     def get(self):
         args = team_filtering_args.parse_args(request)
         project_id = args.get('project_id', None)
-        return get_teams(project_id)
+        return get_teams(project_id), 200
 
 
 @api.response(404, 'team not found', message)
@@ -41,4 +40,4 @@ class TeamItem(Resource):
     @api.response(200, 'teams successfully queried', team_output)
     @api.marshal_with(team_output)
     def get(self, id):
-        return get_team(id)
+        return get_team(id), 200
