@@ -14,6 +14,7 @@
         "firebase": "^8.3.3",
         "fontsource-roboto": "^4.0.0",
         "formik": "^2.2.6",
+        "http-proxy-middleware": "^2.0.0",
         "prop-types": "^15.7.2",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",

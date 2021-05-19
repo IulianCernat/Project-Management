@@ -10,9 +10,9 @@ import {
 } from "@material-ui/core";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { Menu } from "@material-ui/icons";
-import CustomDrawer from "../../subComponents/CustomDrawer";
-import Teams from "./Teams";
-import SearchField from "../../forms/SearchField";
+import CustomDrawer from "components/subComponents/CustomDrawer";
+import Teams from "./teams/Teams";
+import SearchField from "components/forms/SearchField";
 const drawerWidth = "18rem";
 
 const useStyles = makeStyles((theme) => ({

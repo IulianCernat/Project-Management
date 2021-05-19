@@ -8,8 +8,7 @@ from utils.parsers import teams_members_filtering_args
 from utils.cors import *
 from flask_cors import cross_origin
 
-teams_members_namespace = api.namespace('teams_members', description='Operations related to managing teams_members',
-                                        decorators=[cross_origin()])
+teams_members_namespace = api.namespace('teams_members', description='Operations related to managing teams_members')
 
 
 @teams_members_namespace.route('/', methods=['GET', 'POST', 'OPTIONS'])
@@ -27,7 +26,7 @@ class TeamsMembersCollection(Resource):
             locations.append({"location": f"{api.base_url}{teams_members_namespace.path[1:]}/{team_member_id}"})
         return locations, 201
 
-    @api.response(200, 'teams_members successfully queried', [team_member_output])
+    @api.response(200, 'Team members successfully queried', [team_member_output])
     @api.response(400, 'Bad request', bad_request)
     @api.marshal_list_with(team_member_output)
     @api.expect(teams_members_filtering_args)
@@ -38,10 +37,17 @@ class TeamsMembersCollection(Resource):
         return get_team_members(team_id), 200
 
 
-@api.response(404, 'team not found', message)
+@api.response(404, 'Team not found', message)
 @teams_members_namespace.route('/<id>')
 class TeamItem(Resource):
-    @api.response(200, 'teams_members successfully queried', team_member_output)
+    @api.response(200, 'Teams_members successfully queried', team_member_output)
+    @api.response(404, 'Team member was not found')
     @api.marshal_with(team_member_output)
     def get(self, id):
         return get_team_member(id), 200
+
+    @api.response(200, 'Teams_members successfully deleted', team_member_output)
+    @api.response(404, 'Team member was not found')
+    def delete(self, id):
+        delete_team_member(id)
+        return {'message': f'Team member with id {id} succesfully deleted '}, 200

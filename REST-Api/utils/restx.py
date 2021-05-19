@@ -11,7 +11,7 @@ from flask_cors import cross_origin
 log = logging.getLogger(__name__)
 
 api = Api(version='1.0', title="Projects management API",
-          description="A REST api which serves as backend for the client side")
+          description="A REST api which serves as backend for the client side", decorators=[cross_origin()])
 
 
 @api.errorhandler(NoResultFound)

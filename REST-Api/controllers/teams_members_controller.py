@@ -1,7 +1,6 @@
 from database import db
 from database.models import TeamMember
 
-
 def add_team_members(input_data):
     ids = []
     for team_member in input_data['team_members']:
@@ -12,10 +11,13 @@ def add_team_members(input_data):
 
     return ids
 
-
 def get_team_members(team_id):
     return TeamMember.query.filter(TeamMember.team_id == team_id).all()
 
-
 def get_team_member(team_member_id):
     return TeamMember.query.filter(TeamMember.id == team_member_id).one()
+
+def delete_team_member(team_member_id):
+    team_member = get_team_member(team_member_id)
+    db.session.delete(team_member)
+    db.session.commit()

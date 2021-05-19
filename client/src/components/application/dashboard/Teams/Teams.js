@@ -8,10 +8,11 @@ import {
 	Button,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import TeamCard from "../../subComponents/TeamCard";
-import { useGetFetch } from "../../../customHooks/useFetch";
-import TeamCreationForm from "../../forms/TeamCreationForm";
-import DialogForm from "../../subComponents/DialogForm";
+import TeamCard from "components/subComponents/TeamCard";
+import DialogForm from "components/subComponents/DialogForm";
+import { useGetFetch } from "customHooks/useFetch";
+import TeamCreationForm from "components/forms/TeamCreationForm";
+
 import {
 	Link as RouterLink,
 	Switch,
