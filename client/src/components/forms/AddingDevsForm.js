@@ -99,7 +99,7 @@ export default function AddingDevsForm(props) {
 
 						{isResolved && (
 							<Alert severity="success">
-								<Typography>{receivedData}</Typography>
+								<Typography>Team member added</Typography>
 							</Alert>
 						)}
 						{isRejected && (

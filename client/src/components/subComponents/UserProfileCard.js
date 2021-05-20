@@ -1,3 +1,5 @@
+import { cloneElement, useState } from "react";
+
 import {
 	Avatar,
 	Card,
@@ -6,7 +8,6 @@ import {
 	Typography,
 	Box,
 	Divider,
-	Badge,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { deepPurple, blueGrey, grey } from "@material-ui/core/colors";
@@ -65,8 +66,21 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UserProfileCard(props) {
 	const classes = useStyles(props);
+	const [openBackdrop, setOpenBackdrop] = useState(false);
 	return (
-		<Card className={classes.root} elevation={4}>
+		<Card
+			onMouseEnter={() => {
+				setOpenBackdrop(true);
+			}}
+			onMouseLeave={() => {
+				setOpenBackdrop(false);
+			}}
+			className={classes.root}
+			elevation={4}
+		>
+			{props.backdrop
+				? cloneElement(props.backdrop, { open: openBackdrop })
+				: null}
 			<IconContext.Provider
 				value={{
 					size: "2rem",

@@ -72,7 +72,7 @@ export default function TeamPage() {
 			</TabPanel>
 			<TabPanel value={currentTab} index={1} />
 			<TabPanel value={currentTab} index={2}>
-				{isResolved ? <TeamMembers /> : null}
+				<TeamMembers />
 			</TabPanel>
 		</>
 	);

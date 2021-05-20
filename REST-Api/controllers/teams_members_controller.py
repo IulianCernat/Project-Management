@@ -1,5 +1,6 @@
 from database import db
 from database.models import TeamMember
+import zulu
 
 def add_team_members(input_data):
     ids = []
@@ -20,4 +21,12 @@ def get_team_member(team_member_id):
 def delete_team_member(team_member_id):
     team_member = get_team_member(team_member_id)
     db.session.delete(team_member)
+    db.session.commit()
+
+def update_team_member_info(team_member_id, input_data):
+    team_member = get_team_member(team_member_id)
+    input_data['created_at'] = zulu.parse(input_data['created_at']).datetime
+    for field, value in input_data.items():
+        setattr(team_member, field, value)
+
     db.session.commit()

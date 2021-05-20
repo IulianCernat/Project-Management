@@ -48,6 +48,12 @@ team_member_input = api.model('Team member input', {
     'created_at': DateTime(required=True, description="Date and time when the product owner adds the team members")
 })
 
+team_member_update_input = api.model('Team member input', {
+    'team_id': Integer(required=False, description="The id of the team for transferring user"),
+    'user_type': String(required=False, enum=['developer', 'scrumMaster'], description="To change the role"),
+    'created_at': DateTime(required=True, description="Date and time when the update was performed")
+})
+
 multiple_team_members_input = api.model('Array of team members', {
     'team_members': List(Nested(team_member_input))
 })

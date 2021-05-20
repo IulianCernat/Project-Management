@@ -5,88 +5,25 @@ import {
 	Box,
 	Paper,
 	makeStyles,
-	Backdrop,
 	LinearProgress,
-	CircularProgress,
-	Snackbar,
 } from "@material-ui/core";
 import { useParams } from "react-router-dom";
-import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
+import { useGetFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
 import UserProfile from "components/subComponents/UserProfileCard";
-import { blue, blueGrey, indigo } from "@material-ui/core/colors";
-import UserProfileCard from "components/subComponents/UserProfileCard";
+import { indigo } from "@material-ui/core/colors";
 import DialogForm from "components/subComponents/DialogForm";
 import AddingDevsForm from "components/forms/AddingDevsForm";
+import DevelopersList from "./DevelopersList";
 
 const useStyles = makeStyles((theme) => ({
 	membersTab: {
-		position: "relative",
 		display: "flex",
 		flexFlow: "wrap row",
 		gap: theme.spacing(6),
 	},
 }));
 
-function DevelopersList(props) {
-	const [developers, setDevelopers] = useState(props.developers);
-	const [developerUriToDelete, setDeveloperUriToDelete] = useState(null);
-	const [devIdTobeDeleted, setDevIdToBeDeleted] = useState(null);
-	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useDeleteFetch(developerUriToDelete);
-
-	const [openDeleteSucces, setOpenDeleteSuccess] = useState(false);
-
-	function handleDeletionClick(devId) {
-		setDeveloperUriToDelete(`api/teams_members/${devId}`);
-		setDevIdToBeDeleted(devId);
-		setOpenDeleteSuccess(true);
-	}
-
-	function closeDeletionSuccess() {
-		setOpenDeleteSuccess(false);
-	}
-	useEffect(() => {
-		let deletedDevIdIndex;
-		if (devIdTobeDeleted) {
-			deletedDevIdIndex = developers.findIndex((item) =>
-				item.id === devIdTobeDeleted ? true : false
-			);
-			developers.splice(deletedDevIdIndex, 1);
-		}
-	}, [devIdTobeDeleted]);
-
-	return developers.map((item) => (
-		<>
-			<Box>
-				<UserProfileCard
-					key={item.id}
-					width={"30ch"}
-					{...item}
-				></UserProfileCard>{" "}
-				<Button
-					onClick={() => {
-						handleDeletionClick(item.id);
-					}}
-				>
-					{isLoading ? <CircularProgress /> : "Delete"}
-				</Button>
-			</Box>
-			<Snackbar
-				open={openDeleteSucces}
-				autoHideDuration={6000}
-				onClose={closeDeletionSuccess}
-			>
-				<Alert
-					onClose={closeDeletionSuccess}
-					severity={isResolved ? "success" : isRejected ? "error" : "info"}
-				>
-					{isResolved ? "Developer deleted" : isRejected ? error : null}
-				</Alert>
-			</Snackbar>
-		</>
-	));
-}
 export default function TeamMembers() {
 	const { teamId } = useParams();
 	const [reRender, setReRender] = useState(false);

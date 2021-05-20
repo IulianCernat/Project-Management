@@ -68,6 +68,7 @@ class TeamMember(db.Model):
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
     user_type = db.Column(db.Enum('developer', 'scrumMaster'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
+
     user_profile = db.relationship('User', backref="users", lazy=True)
 
     def __init__(self, input_obj):

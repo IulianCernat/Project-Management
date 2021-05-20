@@ -49,6 +49,7 @@
         ]
     },
     "devDependencies": {
+        "eslint-plugin-react-hooks": "^4.2.0",
         "miragejs": "^0.1.41"
     }
 }
