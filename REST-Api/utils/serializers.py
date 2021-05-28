@@ -80,3 +80,37 @@ team_output = api.inherit('Team output', team_input, {
     'id': Integer(required=True, description="Team's database id"),
 
 })
+
+issue_input = api.model('Issue input', {
+    'title': String(required=True, description="A short description of the issue"),
+    'description': String(description="More details about this issue"),
+    'type': String(required=True, enum=['story', 'bug', 'task'], description="What kind of issue it is"),
+    'priority': String(required=True, enum=['1', '2', '3', '4', '5'],
+                       description="Number after which the issue will be chosen for sprints"),
+    'created_at': DateTime(required=True, description="When was the issue created"),
+    'project_id': Integer(required=True, description="The database id of the project on which the issue is added"),
+    'creator_user_id': Integer(required=True, description="The id of the user who created this issue"),
+
+})
+
+issue_output = api.inherit('Issue output', issue_input, {
+    'id': Integer(required=True, description="The issue database id"),
+    'sprint_id': Integer(required=True, description="The sprint id when this issue is added to a sprint")
+})
+
+sprint_input = api.model('Sprint input', {
+    'name': String(required=True, description="Name to idetify the sprint"),
+    'start_date': DateTime(required=True, description="Planned date to start this sprint"),
+    'duration': String(required=True, enum=['1', '2', '3', '4'], description="The duration of sprint in weeks"),
+    'end_date': DateTime(required=True, description="The deadline date"),
+    'goal': String(required=True, description="The accomplishment of this sprint"),
+    'created_at': DateTime(required=True, description="The date when this sprint was created"),
+    'issues_ids': List(Integer, required=True, description="A list with the ids of issues to be added to this sprint"),
+    'user_creator_id': Integer(required=True, description="The id of the user that creates this sprint"),
+    'project_id': Integer(required=True, description="The id of the project that will contain this sprint")
+})
+
+sprint_output = api.inherit('Sprint output', sprint_input, {
+    'id': Integer(required=True, description="The id of sprint"),
+    'issues': List(Nested(issue_output), required=True, description="A list of issue objects")
+})

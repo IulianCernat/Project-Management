@@ -40,6 +40,7 @@ class Project(db.Model):
         self.created_at = zulu.parse(input_obj['created_at']).datetime
         self.product_owner_id = input_obj['product_owner_id']
 
+
 class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
@@ -56,7 +57,8 @@ class Team(db.Model):
         self.description = input_obj['description']
         self.avatar_url = input_obj.get('avatar_url')
         self.created_at = zulu.parse(input_obj['created_at']).datetime
-        self. project_id = input_obj['project_id']
+        self.project_id = input_obj['project_id']
+
 
 class TeamMember(db.Model):
     __tablename__ = 'team_members'
@@ -76,3 +78,52 @@ class TeamMember(db.Model):
         self.team_id = input_obj['team_id']
         self.user_type = input_obj['user_type']
         self.created_at = zulu.parse(input_obj['created_at']).datetime
+
+
+class Issue(db.Model):
+    __tablename__ = 'issues'
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Enum('story', 'bug', 'task'), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(500))
+    priority = db.Column(db.Enum('1', '2', '3', '4', '5'), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
+    creator_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id'))
+
+    def __init__(self, input_obj):
+        self.type = input_obj['type']
+        self.title = input_obj['title']
+        self.description = input_obj['description']
+        self.priority = input_obj['priority']
+        self.created_at = zulu.parse(input_obj['created_at']).datetime
+        self.project_id = input_obj['project_id']
+        self.creator_user_id = input_obj['creator_user_id']
+
+
+class Sprint(db.Model):
+    __tablename__ = 'sprints'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False)
+    duration = db.Column(db.Enum('1', '2', '3', '4'), nullable=False)
+    end_date = db.Column(db.DateTime, nullable=False)
+    goal = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+
+    user_creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
+
+    issues = db.relationship('Issue', backref='issues', lazy=True)
+
+    def __init__(self, input_obj):
+        self.name = input_obj['name']
+        self.start_date = zulu.parse(input_obj['start_date']).datetime
+        self.duration = input_obj['duration']
+        self.end_date = zulu.parse(input_obj['end_date']).datetime
+        self.goal = input_obj['goal']
+        self.created_at = zulu.parse(input_obj['created_at']).datetime
+        self.user_creator_id = input_obj['user_creator_id']
+        self.project_id = input_obj['project_id']

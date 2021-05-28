@@ -9,6 +9,8 @@ from endpoints.users_endpoint import users_namespace
 from endpoints.projects_endpoint import projects_namespace
 from endpoints.teams_endpoint import teams_namespace
 from endpoints.teams_members_endpoint import teams_members_namespace
+from endpoints.issues_endpoint import issues_namespace
+from endpoints.sprints_endpoint import sprints_namespace
 from utils.cors import *
 from flask_cors import CORS
 
@@ -16,7 +18,6 @@ app = Flask(__name__)
 # logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'logging.conf'))
 # logging.config.fileConfig(logging_conf_path)
 log = logging.getLogger(__name__)
-
 
 
 def configure_app(flask_app):
@@ -27,9 +28,9 @@ def configure_app(flask_app):
     flask_app.config['RESTX_VALIDATE'] = settings.RESTX_VALIDATE
     flask_app.config['RESTX_MASK_SWAGGER'] = settings.RESTX_MASK_SWAGGER
     flask_app.config['ERROR_404_HELP'] = settings.RESTX_ERROR_404_HELP
+
     # flask_app.config['PROPAGATE_EXCEPTIONS'] = True
     # CORS(app, resources={r'/*': {'origins': '*'}})
-
 
 
 def initialize_app(flask_app):
@@ -42,7 +43,8 @@ def initialize_app(flask_app):
     api.add_namespace(projects_namespace)
     api.add_namespace(teams_namespace)
     api.add_namespace(teams_members_namespace)
-
+    api.add_namespace(issues_namespace)
+    api.add_namespace(sprints_namespace)
     flask_app.register_blueprint(blueprint)
 
     db.init_app(flask_app)
@@ -53,10 +55,11 @@ def initialize_app(flask_app):
 
     CORS(flask_app)
 
+
 def main():
     initialize_app(app)
     log.info('>>>>> Starting development server at http://{}/api/ <<<<<'.format(app.config['SERVER_NAME']))
-    app.run(debug=settings.FLASK_DEBUG)
+    app.run(host='0.0.0.0', debug=settings.FLASK_DEBUG)
 
 
 if __name__ == "__main__":

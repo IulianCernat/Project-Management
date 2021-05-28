@@ -69,6 +69,9 @@ export default function UserProfileCard(props) {
 	const [openBackdrop, setOpenBackdrop] = useState(false);
 	return (
 		<Card
+			onClick={() => {
+				setOpenBackdrop(true);
+			}}
 			onMouseEnter={() => {
 				setOpenBackdrop(true);
 			}}
