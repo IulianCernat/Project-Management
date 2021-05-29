@@ -14,7 +14,8 @@ def get_issues(project_id):
 
 
 def get_issue(issue_id):
-    return Issue.query.filter(Issue.id == issue_id).one()
+    issue = Issue.query.filter(Issue.id == issue_id).one()
+    return issue
 
 
 def update_issue(issue_id, input_obj):

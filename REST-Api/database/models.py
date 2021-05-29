@@ -12,6 +12,8 @@ class User(db.Model):
     contact = db.Column(db.String(255))
 
     created_projects = db.relationship('Project', backref='users', lazy=True)
+    created_issues = db.relationship('Issue', lazy='select',
+                                backref=db.backref('creator_user_profile', lazy='joined'))
 
     def __init__(self, uid, fullName, avatar_url=None, contact=None):
         self.uid = uid

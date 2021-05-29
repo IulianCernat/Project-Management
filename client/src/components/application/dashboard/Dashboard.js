@@ -12,7 +12,8 @@ import { Switch, Route, useRouteMatch } from "react-router-dom";
 import { Menu } from "@material-ui/icons";
 import CustomDrawer from "components/subComponents/CustomDrawer";
 import Teams from "./teams/Teams";
-import SearchField from "components/forms/SearchField";
+import Sprints from "./sprints/Sprints";
+import Backlog from "./backlog/Backlog";
 const drawerWidth = "18rem";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,7 +25,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 	content: {
 		width: "100%",
-		padding: theme.spacing(6),
+		[theme.breakpoints.up("md")]: {
+			padding: theme.spacing(6),
+		},
+		[theme.breakpoints.down("md")]: {
+			paddingTop: theme.spacing(2),
+		},
 	},
 	toolbar: theme.mixins.toolbar,
 }));
@@ -64,6 +70,10 @@ export default function Dashboard() {
 					<Route path={`${match.path}/teams`}>
 						<Teams />
 					</Route>
+					<Route path={`${match.path}/sprints`}>
+						<Sprints />
+					</Route>
+					<Route path={`${match.path}/backlog`} component={Backlog} />
 				</Switch>
 			</Box>
 		</Box>

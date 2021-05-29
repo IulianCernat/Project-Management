@@ -95,7 +95,8 @@ issue_input = api.model('Issue input', {
 
 issue_output = api.inherit('Issue output', issue_input, {
     'id': Integer(required=True, description="The issue database id"),
-    'sprint_id': Integer(required=True, description="The sprint id when this issue is added to a sprint")
+    'sprint_id': Integer(required=True, description="The sprint id when this issue is added to a sprint"),
+    'creator_user_profile': Nested(user_output, required=True, description="The profile of the user that created this issue")
 })
 
 sprint_input = api.model('Sprint input', {
