@@ -16,6 +16,8 @@ import {
 	Avatar,
 	Checkbox,
 	Toolbar,
+	lighten,
+	Button,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import {
@@ -25,9 +27,10 @@ import {
 	KeyboardArrowDown,
 } from "@material-ui/icons";
 import { useEffect, useRef, useState } from "react";
-import { useGetFetch } from "customHooks/useFetch";
+import { useGetFetch, usePostFetch } from "customHooks/useFetch";
 import { green, pink, blue, purple } from "@material-ui/core/colors";
-import clsx from "clsx";
+import IssueCreationForm from "components/forms/IssueCreationForm";
+import DialogForm from "components/subComponents/DialogForm";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,18 +48,21 @@ const useStyles = makeStyles((theme) => ({
 	},
 
 	rowTop: {
-		border: `2px solid ${purple[200]}`,
-		borderBottom: "unset",
+		borderTop: "none",
+		borderBottom: "none",
 	},
 	rowBottom: {
-		border: `2px solid ${purple[200]}`,
-		borderBottom: "unset",
-		borderTop: "unset",
+		borderTop: "none",
+		borderBottom: "none",
 	},
 	tableRow: {
 		"& > *": {
 			borderBottom: "unset",
 		},
+	},
+	toolbarHighlight: {
+		color: theme.palette.secondary.main,
+		backgroundColor: lighten(theme.palette.secondary.light, 0.85),
 	},
 }));
 
@@ -95,10 +101,7 @@ function Row(props) {
 
 	return (
 		<>
-			<TableRow
-				selected={isSelected}
-				className={clsx(classes.tableRow, classes.rowTop)}
-			>
+			<TableRow classes={{ root: classes.rowTop }} selected={isSelected}>
 				<TableCell padding="checkbox">
 					<Checkbox
 						checked={isSelected}
@@ -157,7 +160,7 @@ function Row(props) {
 				</TableCell>
 			</TableRow>
 
-			<TableRow className={classes.rowBottom}>
+			<TableRow classes={{ root: classes.rowTop }}>
 				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
 					<Collapse in={openMoreInfo} timeout="auto" unmountOnExit>
 						<Box>
@@ -201,24 +204,64 @@ function Row(props) {
 function TableToolbar(props) {
 	const { numSelected } = props;
 	const classes = useStyles();
+	const [openIssueCreationForm, setOpenIssueCreationForm] = useState(false);
 
+	function openIssueCreationDialog() {
+		setOpenIssueCreationForm(true);
+	}
+	function handleCancelIssueCreation() {
+		setOpenIssueCreationForm(false);
+	}
 	return (
-		<Toolbar>
-			{numSelected ? (
-				<Typography>{numSelected} selected</Typography>
-			) : (
-				<Typography>Issues</Typography>
-			)}
-		</Toolbar>
+		<>
+			<DialogForm
+				title="Create new issue"
+				open={openIssueCreationForm}
+				onClose={handleCancelIssueCreation}
+			>
+				<IssueCreationForm />
+			</DialogForm>
+			<Toolbar className={numSelected ? classes.toolbarHighlight : ""}>
+				<Box display="flex" style={{ gap: "1rem" }} alignItems="center">
+					{numSelected ? (
+						<>
+							<Typography>{numSelected} selected</Typography>
+							<Button variant="contained" color="primary">
+								<Typography>Create sprint</Typography>
+							</Button>
+						</>
+					) : (
+						<>
+							<Typography>Issues</Typography>
+							<Button
+								onClick={(event) => {
+									openIssueCreationDialog();
+								}}
+								variant="contained"
+								color="primary"
+							>
+								<Typography>Create issue</Typography>
+							</Button>
+						</>
+					)}
+				</Box>
+			</Toolbar>
+		</>
 	);
 }
 export default function Backlog() {
 	const classes = useStyles();
 	const getParams = useRef({ project_id: 71 });
 	const [selectedIssues, setSelectedIssues] = useState([]);
-
-	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch(`api/issues/`, getParams.current);
+	const [postRequestBody, setPostRequestBody] = useState(null);
+	const {
+		status: getIssuesStatus,
+		receivedData: getIssuesReceivedData,
+		error: getIssuesError,
+		isLoading: isLoadingGetIssues,
+		isResolved: isResolvedGetIssues,
+		isRejected: isRejectedGetIssues,
+	} = useGetFetch(`api/issues/`, getParams.current);
 
 	const handleSelectionClick = (issueId) => {
 		const selectedIndex = selectedIssues.indexOf(issueId);
@@ -241,9 +284,11 @@ export default function Backlog() {
 	};
 	return (
 		<Box>
-			{isLoading ? <LinearProgress style={{ width: "100%" }} /> : null}
-			{isRejected ? <Alert severity="error">{error} </Alert> : null}
-			{isResolved && (
+			{isLoadingGetIssues ? <LinearProgress style={{ width: "100%" }} /> : null}
+			{isRejectedGetIssues ? (
+				<Alert severity="error">{getIssuesError} </Alert>
+			) : null}
+			{isResolvedGetIssues && (
 				<>
 					<TableContainer component={Paper}>
 						<TableToolbar numSelected={selectedIssues.length} />
@@ -264,7 +309,7 @@ export default function Backlog() {
 								</TableRow>
 							</TableHead>
 							<TableBody>
-								{receivedData.map((item) => (
+								{getIssuesReceivedData.map((item) => (
 									<Row
 										handleSelectionClick={handleSelectionClick}
 										selectedRows={selectedIssues}

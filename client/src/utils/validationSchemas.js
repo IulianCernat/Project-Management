@@ -13,6 +13,9 @@ const maxTeamNameLen = 255;
 const minTeamDescriptionLen = 50;
 const maxTeamDescriptionLen = 500;
 
+const maxIssueTitleLen = 255;
+const maxIssueDescriptionLen = 500;
+
 export const generalInputString = Yup.string().required();
 
 export const emailValidationSchema = Yup.string("Enter your email")
@@ -82,3 +85,25 @@ export const teamDescriptionValidSchema = Yup.string("Enter team description")
 export const searchTermValidSchema = Yup.string("Search")
 	.required("Search term is required")
 	.max(40, `Search term be of maximum ${5} characters length`);
+
+export const issueTitleValidSchema = Yup.string("Enter issue title")
+	.required("Issue title is required")
+	.max(
+		maxIssueTitleLen,
+		`Issue title must be of maximum ${maxIssueTitleLen} characters length`
+	);
+
+export const issueDescriptionValidSchema = Yup.string(
+	"Enter issue description"
+).max(
+	maxIssueDescriptionLen,
+	`Issue description must be of maximum ${maxIssueDescriptionLen}`
+);
+
+export const issueTypeValidSchema = Yup.mixed("Select issue type")
+	.oneOf(["bug", "story", "task"])
+	.required("Issue type is required");
+
+export const issuePriorityValidSchema = Yup.mixed("Select issue priority")
+	.oneOf(["1", "2", "3", "4", "5"])
+	.required("Issue priority is required");

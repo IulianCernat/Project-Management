@@ -8,7 +8,13 @@ TextFieldWrapper.propTypes = {
 	label: PropTypes.string.isRequired,
 	maxTextWidth: PropTypes.number,
 };
-export function TextFieldWrapper({ label, maxTextWidth, ...props }) {
+export function TextFieldWrapper({
+	label,
+	maxTextWidth,
+	children,
+	value,
+	...props
+}) {
 	const [field, meta] = useField(props);
 	const currentText = useRef(null);
 	return (
@@ -17,7 +23,9 @@ export function TextFieldWrapper({ label, maxTextWidth, ...props }) {
 			{...field}
 			{...props}
 			inputRef={currentText}
-			value={currentText.current ? currentText.current.value : ""}
+			value={
+				value ? value : currentText.current ? currentText.current.value : ""
+			}
 			error={meta.touched && Boolean(meta.error)}
 			helperText={
 				<Box component="span" display="flex" justifyContent="space-between">
@@ -30,6 +38,8 @@ export function TextFieldWrapper({ label, maxTextWidth, ...props }) {
 					) : null}
 				</Box>
 			}
-		/>
+		>
+			{children}
+		</TextField>
 	);
 }
