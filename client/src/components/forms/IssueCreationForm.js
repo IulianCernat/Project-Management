@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -10,14 +10,18 @@ import {
 } from "@material-ui/core";
 
 import Alert from "@material-ui/lab/Alert";
-import { TextFieldWrapper } from "./InputFieldsWrappers";
+import {
+	TextFieldWrapper,
+	TextFieldSelectWrapper,
+} from "./InputFieldsWrappers";
 import {
 	issueDescriptionValidSchema,
 	issuePriorityValidSchema,
 	issueTitleValidSchema,
 	issueTypeValidSchema,
 } from "../../utils/validationSchemas";
-import { usePostFetch } from "../../customHooks/useFetch.js";
+import { usePostFetch, useGetFetch } from "../../customHooks/useFetch.js";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
 	backdrop: {
@@ -33,28 +37,75 @@ const validationSchema = Yup.object({
 	priority: issuePriorityValidSchema,
 });
 
-const issueTypeOptions = [
-	{
-		value: "task",
-		label: "task",
-	},
-	{
-		value: "story",
-		label: "story",
-	},
-	{
-		value: "bug",
-		label: "bug",
-	},
-];
+const issueTypeOptions = (function () {
+	let options = [];
+	const priorities = ["story", "task", "bug"];
+	priorities.forEach((item) => {
+		options.push({
+			value: item,
+			label: item,
+		});
+	});
+	return options;
+})();
 
-export default function TeamCreationForm() {
+const issuePriorityOptions = (function () {
+	let options = [];
+	const priorities = ["1", "2", "3", "4", "5"];
+	priorities.forEach((item) => {
+		options.push({
+			value: item,
+			label: item,
+		});
+	});
+	return options;
+})();
+
+IssueCreationForm.propTypes = {
+	onClose: PropTypes.func,
+	insertCreation: PropTypes.func,
+};
+export default function IssueCreationForm({ onClose, insertCreation }) {
 	const [requestBody, setRequestBody] = useState(null);
 	const [priorityOption, setPriorityOption] = useState("1");
 	const [issueTypeOption, setIssueTypeOption] = useState("story");
+	const [newIssueId, setNewIssueId] = useState(null);
+	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] =
+		useState(false);
+	const {
+		status: postFetchStatus,
+		receivedData: postFetchReceivedData,
+		error: postFetchError,
+		isLoading: postFetchIsLoading,
+		isRejected: postFetchIsRejected,
+		isResolved: postFetchIsResolved,
+	} = usePostFetch("api/issues/", requestBody);
 
-	const { status, receivedData, error, isLoading, isRejected, isResolved } =
-		usePostFetch("api/issues/", requestBody);
+	const {
+		status: fetchedNewCreatedResourceStatus,
+		receivedData: fetchedNewCreatedResource,
+		error: fetchedNewCreatedResourceError,
+		isLoading: fetchedNewCreatedResourceIsLoading,
+		isRejected: fetchedNewCreatedResourceIsRejected,
+		isResolved: fetchedNewCreatedResourceIsResolved,
+	} = useGetFetch(
+		`api/issues/${newIssueId}`,
+		null,
+		startFetchingNewCreatedResource
+	);
+
+	useEffect(() => {
+		if (postFetchIsResolved) {
+			setNewIssueId(postFetchReceivedData.split("/").pop());
+			setStartFetchingNewCreatedResource(true);
+		}
+	}, [postFetchReceivedData, postFetchIsResolved]);
+
+	useEffect(() => {
+		if (fetchedNewCreatedResourceIsResolved) {
+			insertCreation(fetchedNewCreatedResource);
+		}
+	}, [fetchedNewCreatedResource, fetchedNewCreatedResourceIsResolved]);
 
 	return (
 		<>
@@ -67,7 +118,6 @@ export default function TeamCreationForm() {
 					priority: "1",
 				}}
 				onSubmit={async (values) => {
-					console.log(values.scrum_master);
 					let requestObj = {};
 					requestObj["title"] = values.title;
 					requestObj["description"] = values.description;
@@ -78,7 +128,6 @@ export default function TeamCreationForm() {
 					requestObj["creator_user_id"] = 3;
 
 					const stringifiedData = JSON.stringify(requestObj);
-					console.log(stringifiedData);
 
 					setRequestBody(stringifiedData);
 				}}
@@ -93,21 +142,7 @@ export default function TeamCreationForm() {
 							id="title"
 							label="Title"
 							name="title"
-							disabled={isLoading}
-						/>
-
-						<TextFieldWrapper
-							multiline
-							variant="outlined"
-							required
-							fullWidth
-							rows={8}
-							maxTextWidth={500}
-							margin="normal"
-							id="description"
-							label="Description"
-							name="description"
-							disabled={isLoading}
+							disabled={postFetchIsLoading}
 						/>
 						<Box
 							display="flex"
@@ -117,71 +152,69 @@ export default function TeamCreationForm() {
 							style={{ gap: "1rem" }}
 						>
 							<Box flex="1 1 auto">
-								<TextFieldWrapper
-									onChange={(event) => {
-										setIssueTypeOption(event.target.value);
-									}}
+								<TextFieldSelectWrapper
 									fullWidth
 									variant="outlined"
 									required
-									select
 									margin="normal"
 									id="type"
 									label="Select type"
 									name="type"
-									value={issueTypeOption}
-									disabled={isLoading}
-								>
-									{issueTypeOptions.map((option) => (
-										<MenuItem key={option.value} value={option.value}>
-											{option.label}
-										</MenuItem>
-									))}
-								</TextFieldWrapper>
+									disabled={postFetchIsLoading}
+									menuOptions={issueTypeOptions}
+									runChangeEffect={(newValue) => {
+										setFieldValue("type", newValue);
+									}}
+								/>
 							</Box>
 							<Box flex="1 0 auto">
-								<TextFieldWrapper
-									onChange={(event) => {
-										setPriorityOption(event.target.value);
-									}}
+								<TextFieldSelectWrapper
 									fullWidth
 									variant="outlined"
 									required
-									select
 									margin="normal"
 									id="priority"
 									label="Select priority"
 									name="priority"
-									value={priorityOption}
-									disabled={isLoading}
-								>
-									{["1", "2", "3", "4", "5"].map((option) => (
-										<MenuItem key={option} value={option}>
-											{option}
-										</MenuItem>
-									))}
-								</TextFieldWrapper>
+									disabled={postFetchIsLoading}
+									menuOptions={issuePriorityOptions}
+									runChangeEffect={(newValue) => {
+										setFieldValue("priority", newValue);
+									}}
+								/>
 							</Box>
 						</Box>
+						<TextFieldWrapper
+							multiline
+							variant="outlined"
+							fullWidth
+							rows={8}
+							maxTextWidth={500}
+							margin="normal"
+							id="description"
+							label="Description"
+							name="description"
+							disabled={postFetchIsLoading}
+						/>
 
 						<Button
 							type="submit"
 							fullWidth
 							variant="contained"
 							color="primary"
-							disabled={isLoading}
+							disabled={postFetchIsLoading}
 						>
-							<Typography>Create team</Typography>
+							<Typography>Create sprint</Typography>
 						</Button>
 
-						{isResolved && (
+						{postFetchIsResolved && (
 							<Alert severity="success">
-								<Typography>{receivedData}</Typography>
+								<Typography>{postFetchReceivedData}</Typography>
 							</Alert>
 						)}
-						{isRejected && (
+						{postFetchIsRejected && (
 							<Alert severity="error">
-								<Typography>{error}</Typography>
+								<Typography>{postFetchError}</Typography>
 							</Alert>
 						)}
 					</Form>

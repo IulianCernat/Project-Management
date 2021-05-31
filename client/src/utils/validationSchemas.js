@@ -16,6 +16,9 @@ const maxTeamDescriptionLen = 500;
 const maxIssueTitleLen = 255;
 const maxIssueDescriptionLen = 500;
 
+const maxSprintGoalLen = 500;
+const maxSprintNameLen = 255;
+
 export const generalInputString = Yup.string().required();
 
 export const emailValidationSchema = Yup.string("Enter your email")
@@ -107,3 +110,22 @@ export const issueTypeValidSchema = Yup.mixed("Select issue type")
 export const issuePriorityValidSchema = Yup.mixed("Select issue priority")
 	.oneOf(["1", "2", "3", "4", "5"])
 	.required("Issue priority is required");
+
+export const sprintNameValidSchema = Yup.string("Type sprint name")
+	.required("Sprint name is required")
+	.max(
+		maxSprintNameLen,
+		`Sprint name must be of maximum ${maxSprintNameLen} characters length`
+	);
+export const sprintGoalValidSchema = Yup.string("Enter goal")
+	.required("Sprint goal is required")
+	.max(
+		maxSprintGoalLen,
+		`Sprint goal must be of maximum ${maxSprintGoalLen} characters length`
+	);
+
+export const sprintDurationValidSchema = Yup.mixed(
+	"Choose sprint duration in weeks"
+)
+	.oneOf(["1", "2", "3", "4"])
+	.required("Sprint duration is required");

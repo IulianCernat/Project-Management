@@ -1,6 +1,6 @@
 from database import db
 from database.models import Issue
-
+from sqlalchemy import desc
 
 def add_issue(input_obj):
     new_issue = Issue(input_obj)
@@ -10,7 +10,7 @@ def add_issue(input_obj):
 
 
 def get_issues(project_id):
-    return Issue.query.filter(Issue.project_id == project_id, Issue.sprint_id == None).all()
+    return Issue.query.filter(Issue.project_id == project_id, Issue.sprint_id == None).order_by(desc(Issue.created_at)).all()
 
 
 def get_issue(issue_id):

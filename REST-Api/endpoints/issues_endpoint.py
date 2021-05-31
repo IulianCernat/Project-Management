@@ -27,3 +27,12 @@ class IssuesCollection(Resource):
         args = issues_filtering_args.parse_args(request)
         project_id = args.get('project_id', None)
         return get_issues(project_id), 200
+
+
+@api.response(404, 'Issue not found', message)
+@issues_namespace.route('/<id>')
+class TeamItem(Resource):
+    @api.response(200, 'teams successfully queried', issue_output)
+    @api.marshal_with(issue_output)
+    def get(self, id):
+        return get_issue(id), 200
