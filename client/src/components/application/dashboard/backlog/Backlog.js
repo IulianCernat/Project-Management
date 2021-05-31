@@ -176,20 +176,19 @@ export default function Backlog() {
 	useEffect(() => {
 		if (!isResolvedDeleteIssue) return;
 
-		const deletedIssueId = issueUrlToBeDeleted.split("/").pop();
-
-		const deletedIssueIdIndex = issuesList.findIndex((item) =>
-			item.id === Number(deletedIssueId) ? true : false
+		const deletedIssueId = Number(issueUrlToBeDeleted.split("/").pop());
+		setIssuesList((issuesList) =>
+			issuesList.filter((item) => item.id !== deletedIssueId)
 		);
-
-		issuesList.splice(deletedIssueIdIndex, 1);
 	}, [isResolvedDeleteIssue]);
 
 	useEffect(() => {
 		if (!isResolvedGetIssues) return;
 		setIssuesList(getIssuesReceivedData);
 	}, [isResolvedGetIssues, getIssuesReceivedData]);
-
+	useEffect(() => {
+		console.log("Issues list changed");
+	}, [issuesList]);
 	return (
 		<>
 			<DialogForm
@@ -244,11 +243,11 @@ export default function Backlog() {
 							<TableBody>
 								{issuesList.map((item) => (
 									<IssueRow
+										key={item.id}
 										handleSelectionClick={handleSelectionClick}
 										handleDeleteIssueClick={handleDeleteIssueClick}
 										selectedRows={selectedIssues}
 										row={item}
-										key={item.id}
 									/>
 								))}
 							</TableBody>

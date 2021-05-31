@@ -83,10 +83,11 @@ export default function IssueRow(props) {
 
 	const generatePriorityStars = (priorityNumber) => {
 		let starsArray = [];
-		for (let i = 0; i < priorityNumber; i++) starsArray.push(<Star />);
+		for (let i = 0; i < priorityNumber; i++)
+			starsArray.push(<Star key={`star${i}`} />);
 
 		for (let i = 0; i < 5 - priorityNumber; i++)
-			starsArray.push(<StarOutline />);
+			starsArray.push(<StarOutline key={`emptyStar${i}`} />);
 
 		return starsArray;
 	};
