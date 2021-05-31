@@ -9,15 +9,11 @@ import {
 	Table,
 	makeStyles,
 	Box,
-	LinearProgress,
 	Chip,
 	Collapse,
 	IconButton,
 	Avatar,
 	Checkbox,
-	Toolbar,
-	lighten,
-	Button,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import {
@@ -25,12 +21,11 @@ import {
 	StarOutline,
 	KeyboardArrowUp,
 	KeyboardArrowDown,
+	DeleteForever,
 } from "@material-ui/icons";
-import { useEffect, useRef, useState } from "react";
-import { useGetFetch, usePostFetch } from "customHooks/useFetch";
-import { green, pink, blue, purple } from "@material-ui/core/colors";
-import IssueCreationForm from "components/forms/IssueCreationForm";
-import DialogForm from "components/subComponents/DialogForm";
+import { useState } from "react";
+import {} from "customHooks/useFetch";
+import { green, pink, blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -76,6 +71,7 @@ IssueRow.propTypes = {
 	 * the id of issue as paramater
 	 */
 	handleSelectionClick: PropTypes.func.isRequired,
+	handleDeleteIssueClick: PropTypes.func.isRequired,
 };
 export default function IssueRow(props) {
 	const { row, selectedRows, handleSelectionClick } = props;
@@ -153,6 +149,11 @@ export default function IssueRow(props) {
 				</TableCell>
 				<TableCell align="center">
 					{generatePriorityStars(row.priority)}
+				</TableCell>
+				<TableCell>
+					<IconButton onClick={(event) => props.handleDeleteIssueClick(row.id)}>
+						<DeleteForever />
+					</IconButton>
 				</TableCell>
 			</TableRow>
 

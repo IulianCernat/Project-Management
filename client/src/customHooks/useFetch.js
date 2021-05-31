@@ -131,6 +131,7 @@ export function useDeleteFetch(url) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 	useEffect(() => {
 		if (!url) return;
+
 		async function doFetch() {
 			dispatch({ type: "started" });
 			let fetchResponse = await doDelete(url);

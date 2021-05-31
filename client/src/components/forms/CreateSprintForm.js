@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import {
-	Button,
-	Typography,
-	Box,
-	MenuItem,
-	makeStyles,
-} from "@material-ui/core";
+import { Button, Typography, makeStyles } from "@material-ui/core";
 
 import Alert from "@material-ui/lab/Alert";
 import {
@@ -20,16 +14,8 @@ import {
 	sprintNameValidSchema,
 	sprintDurationValidSchema,
 } from "../../utils/validationSchemas";
-import { usePostFetch, useGetFetch } from "../../customHooks/useFetch.js";
-import PropTypes from "prop-types";
-import { Redirect, useRouteMatch, useHistory } from "react-router-dom";
-
-const useStyles = makeStyles((theme) => ({
-	backdrop: {
-		zIndex: theme.zIndex.drawer + 1,
-		color: "#fff",
-	},
-}));
+import { usePostFetch } from "../../customHooks/useFetch.js";
+import { useRouteMatch, useHistory } from "react-router-dom";
 
 const validationSchema = Yup.object({
 	goal: sprintGoalValidSchema,
@@ -79,7 +65,6 @@ export default function CreateSprintForm(props) {
 	useEffect(() => {
 		if (postFetchIsResolved)
 			history.push(`${match.url.replace("backlog", "sprints")}`);
-		console.log(history);
 	}, [postFetchIsResolved]);
 
 	return (

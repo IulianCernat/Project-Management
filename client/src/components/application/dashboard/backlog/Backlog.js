@@ -12,11 +12,12 @@ import {
 	LinearProgress,
 	Toolbar,
 	Button,
+	lighten,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import IssueRow from "./IssueRow";
-import { useRef, useState } from "react";
-import { useGetFetch } from "customHooks/useFetch";
+import { useRef, useState, useEffect } from "react";
+import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import { green, pink, blue } from "@material-ui/core/colors";
 import IssueCreationForm from "components/forms/IssueCreationForm";
 import CreateSprintForm from "components/forms/CreateSprintForm";
@@ -49,6 +50,10 @@ const useStyles = makeStyles((theme) => ({
 		"& > *": {
 			borderBottom: "unset",
 		},
+	},
+	toolbarHighlight: {
+		color: theme.palette.secondary.main,
+		backgroundColor: lighten(theme.palette.secondary.light, 0.85),
 	},
 }));
 
@@ -97,12 +102,32 @@ function TableToolbar(props) {
 		</>
 	);
 }
+
 export default function Backlog() {
 	const classes = useStyles();
 	const getParams = useRef({ project_id: 71 });
+	const [issueUrlToBeDeleted, setIssueUrlToBeDeleted] = useState(null);
 	const [selectedIssues, setSelectedIssues] = useState([]);
 	const [openIssueCreationForm, setOpenIssueCreationForm] = useState(false);
 	const [openSprintCreationForm, setOpenSprintCreationForm] = useState(false);
+	const [issuesList, setIssuesList] = useState([]);
+	let {
+		status: getIssuesStatus,
+		receivedData: getIssuesReceivedData,
+		error: getIssuesError,
+		isLoading: isLoadingGetIssues,
+		isResolved: isResolvedGetIssues,
+		isRejected: isRejectedGetIssues,
+	} = useGetFetch("api/issues/", getParams.current);
+
+	let {
+		status: deleteIssueStatus,
+		receivedData: deleteIssueReceivedData,
+		error: deleteIssueError,
+		isLoading: isLoadingDeleteIssue,
+		isResolved: isResolvedDeleteIssue,
+		isRejected: isRejectedDeleteIssue,
+	} = useDeleteFetch(issueUrlToBeDeleted);
 
 	function openIssueCreationDialog() {
 		setOpenIssueCreationForm(true);
@@ -117,15 +142,6 @@ export default function Backlog() {
 	function handleCancelSprintCreation() {
 		setOpenSprintCreationForm(false);
 	}
-
-	let {
-		status: getIssuesStatus,
-		receivedData: getIssuesReceivedData,
-		error: getIssuesError,
-		isLoading: isLoadingGetIssues,
-		isResolved: isResolvedGetIssues,
-		isRejected: isRejectedGetIssues,
-	} = useGetFetch(`api/issues/`, getParams.current);
 
 	const handleSelectionClick = (issueId) => {
 		const selectedIndex = selectedIssues.indexOf(issueId);
@@ -148,9 +164,31 @@ export default function Backlog() {
 	};
 
 	const insertNewIssues = (newIssueObj) => {
-		getIssuesReceivedData.unshift(newIssueObj);
+		issuesList.unshift(newIssueObj);
+		setIssuesList(issuesList);
 		handleCancelIssueCreation();
 	};
+
+	const handleDeleteIssueClick = (issueId) => {
+		setIssueUrlToBeDeleted(`api/issues/${issueId}`);
+	};
+
+	useEffect(() => {
+		if (!isResolvedDeleteIssue) return;
+
+		const deletedIssueId = issueUrlToBeDeleted.split("/").pop();
+
+		const deletedIssueIdIndex = issuesList.findIndex((item) =>
+			item.id === Number(deletedIssueId) ? true : false
+		);
+
+		issuesList.splice(deletedIssueIdIndex, 1);
+	}, [isResolvedDeleteIssue]);
+
+	useEffect(() => {
+		if (!isResolvedGetIssues) return;
+		setIssuesList(getIssuesReceivedData);
+	}, [isResolvedGetIssues, getIssuesReceivedData]);
 
 	return (
 		<>
@@ -179,46 +217,44 @@ export default function Backlog() {
 				{isRejectedGetIssues ? (
 					<Alert severity="error">{getIssuesError} </Alert>
 				) : null}
-				{isResolvedGetIssues && (
-					<>
-						<TableContainer component={Paper}>
-							<TableToolbar
-								openIssueCreationDialog={openIssueCreationDialog}
-								openSprintCreationDialog={openSprintCreationDialog}
-								numIssuesSelected={selectedIssues.length}
-							/>
-							{getIssuesReceivedData.length ? (
-								<Table className={classes.table}>
-									<TableHead>
-										<TableRow>
-											<TableCell />
-											<TableCell />
-											<TableCell>
-												<Typography align="center">Type</Typography>
-											</TableCell>
-											<TableCell align="left">
-												<Typography>Title</Typography>
-											</TableCell>
-											<TableCell align="center">
-												<Typography>Priority</Typography>
-											</TableCell>
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										{getIssuesReceivedData.map((item) => (
-											<IssueRow
-												handleSelectionClick={handleSelectionClick}
-												selectedRows={selectedIssues}
-												row={item}
-												key={item.id}
-											/>
-										))}
-									</TableBody>
-								</Table>
-							) : null}
-						</TableContainer>
-					</>
-				)}
+
+				<TableContainer component={Paper}>
+					<TableToolbar
+						openIssueCreationDialog={openIssueCreationDialog}
+						openSprintCreationDialog={openSprintCreationDialog}
+						numIssuesSelected={selectedIssues.length}
+					/>
+					{getIssuesReceivedData?.length ? (
+						<Table className={classes.table}>
+							<TableHead>
+								<TableRow>
+									<TableCell />
+									<TableCell />
+									<TableCell>
+										<Typography align="center">Type</Typography>
+									</TableCell>
+									<TableCell align="left">
+										<Typography>Title</Typography>
+									</TableCell>
+									<TableCell align="center">
+										<Typography>Priority</Typography>
+									</TableCell>
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{issuesList.map((item) => (
+									<IssueRow
+										handleSelectionClick={handleSelectionClick}
+										handleDeleteIssueClick={handleDeleteIssueClick}
+										selectedRows={selectedIssues}
+										row={item}
+										key={item.id}
+									/>
+								))}
+							</TableBody>
+						</Table>
+					) : null}
+				</TableContainer>
 			</Box>
 		</>
 	);

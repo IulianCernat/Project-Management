@@ -2,6 +2,7 @@ from database import db
 from database.models import Issue
 from sqlalchemy import desc
 
+
 def add_issue(input_obj):
     new_issue = Issue(input_obj)
     db.session.add(new_issue)
@@ -10,7 +11,8 @@ def add_issue(input_obj):
 
 
 def get_issues(project_id):
-    return Issue.query.filter(Issue.project_id == project_id, Issue.sprint_id == None).order_by(desc(Issue.created_at)).all()
+    return Issue.query.filter(Issue.project_id == project_id, Issue.sprint_id == None).order_by(
+        desc(Issue.created_at)).all()
 
 
 def get_issue(issue_id):
@@ -24,4 +26,10 @@ def update_issue(issue_id, input_obj):
     for field, value in input_obj.items():
         setattr(issue, field, value)
 
+    db.session.commit()
+
+
+def delete_issue(issue_id):
+    issue = get_issue(issue_id)
+    db.session.delete(issue)
     db.session.commit()

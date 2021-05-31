@@ -1,7 +1,7 @@
 from flask_restx import Resource
 from flask import request
 from utils.restx import api
-from utils.serializers import issue_input, message, bad_request, issue_output, location
+from utils.serializers import issue_input, message, bad_request, issue_output, ids_list_input, location
 from utils.parsers import issues_filtering_args
 from controllers.issues_controller import *
 
@@ -29,6 +29,8 @@ class IssuesCollection(Resource):
         return get_issues(project_id), 200
 
 
+
+
 @api.response(404, 'Issue not found', message)
 @issues_namespace.route('/<id>')
 class TeamItem(Resource):
@@ -36,3 +38,9 @@ class TeamItem(Resource):
     @api.marshal_with(issue_output)
     def get(self, id):
         return get_issue(id), 200
+
+    @api.response(200, 'Issue successfully queried', [issue_output])
+    @api.response(404, 'Issue was not found', message)
+    def delete(self, id):
+        delete_issue(id)
+        return {"message": "Issue successfully deleted"}, 200

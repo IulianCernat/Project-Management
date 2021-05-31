@@ -4,7 +4,7 @@ import { TextField, Box, MenuItem } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import PropTypes from "prop-types";
 import DateFnsUtils from "@date-io/date-fns";
-import { format } from "date-fns";
+
 TextFieldWrapper.propTypes = {
 	label: PropTypes.string.isRequired,
 	maxTextWidth: PropTypes.number,

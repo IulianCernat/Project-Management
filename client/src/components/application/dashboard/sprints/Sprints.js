@@ -21,6 +21,8 @@ import IssueCreationForm from "components/forms/IssueCreationForm";
 import DialogForm from "components/subComponents/DialogForm";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
+import { format } from "date-fns";
+
 const useStyles = makeStyles({
 	table: {
 		width: "100%",
@@ -28,9 +30,9 @@ const useStyles = makeStyles({
 });
 
 SprintTable.propTypes = {
-	sprintIssues: PropTypes.array.isRequired,
+	sprint: PropTypes.object.isRequired,
 };
-function SprintTable(props) {
+function SprintTable({ sprint }) {
 	const classes = useStyles();
 	const [selectedIssues, setSelectedIssues] = useState([]);
 
@@ -55,6 +57,14 @@ function SprintTable(props) {
 	};
 	return (
 		<TableContainer component={Paper}>
+			<SprintHeader
+				name={sprint.name}
+				startDate={sprint.start_date}
+				duration={sprint.duration}
+				endDate={sprint.end_date}
+				goal={sprint.goal}
+			/>
+
 			<Table className={classes.table}>
 				<TableHead>
 					<TableRow>
@@ -72,7 +82,7 @@ function SprintTable(props) {
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{props.sprintIssues.map((item) => (
+					{sprint.issues.map((item) => (
 						<IssueRow
 							handleSelectionClick={handleSelectionClick}
 							selectedRows={selectedIssues}
@@ -83,6 +93,39 @@ function SprintTable(props) {
 				</TableBody>
 			</Table>
 		</TableContainer>
+	);
+}
+
+function SprintHeader({ name, startDate, duration, endDate, goal }) {
+	startDate = new Date(startDate);
+	endDate = new Date(endDate);
+
+	startDate = format(startDate, "dd/MM/yyyy HH:mm");
+	endDate = format(endDate, "dd/MM/yyyy HH:mm");
+	return (
+		<Box p={2}>
+			<Box display="flex" flexWrap="wrap" style={{ gap: "2rem" }}>
+				<Typography variant="h5">{name}</Typography>
+				<Typography>
+					<Typography variant="h6">Start date: </Typography>
+					{startDate}
+				</Typography>
+				<Typography>
+					<Typography variant="h6">Duration: </Typography>
+					{duration} weeks
+				</Typography>
+				<Typography>
+					<Typography variant="h6">End date: </Typography>
+					{endDate}
+				</Typography>
+			</Box>
+			<Box>
+				<Typography>
+					<Typography variant="h6">Sprint Goal</Typography>
+					{goal}
+				</Typography>
+			</Box>
+		</Box>
 	);
 }
 export default function Sprints() {
@@ -112,7 +155,7 @@ export default function Sprints() {
 						style={{ gap: "2rem" }}
 					>
 						{getSprintsReceivedData.map((item) => (
-							<SprintTable key={item.id} sprintIssues={item.issues} />
+							<SprintTable key={item.id} sprint={item} />
 						))}
 					</Box>
 				</>

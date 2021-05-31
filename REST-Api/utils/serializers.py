@@ -115,3 +115,7 @@ sprint_output = api.inherit('Sprint output', sprint_input, {
     'id': Integer(required=True, description="The id of sprint"),
     'issues': List(Nested(issue_output), required=True, description="A list of issue objects")
 })
+
+ids_list_input = api.model("General ids list", {
+    'ids': List(Integer, required=True, description="A general ids list that will be will have operations done on")
+})
