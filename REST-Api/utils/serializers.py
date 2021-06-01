@@ -92,11 +92,19 @@ issue_input = api.model('Issue input', {
     'creator_user_id': Integer(required=True, description="The id of the user who created this issue"),
 
 })
+issue_update_input = api.model('Issue input for updating', {
+    'status': String(enum=['pending', 'inProgress', 'done'],
+                     description="The current situation of issue"),
+    'sprint_id': Integer(description="The id of new sprint, 0 if you want issues to go back to backlog")
+})
 
 issue_output = api.inherit('Issue output', issue_input, {
     'id': Integer(required=True, description="The issue database id"),
+    'status': String(required=True, enum=['pending', 'inProgress', 'done'],
+                     description="The current situation of issue"),
     'sprint_id': Integer(required=True, description="The sprint id when this issue is added to a sprint"),
-    'creator_user_profile': Nested(user_output, required=True, description="The profile of the user that created this issue")
+    'creator_user_profile': Nested(user_output, required=True,
+                                   description="The profile of the user that created this issue")
 })
 
 sprint_input = api.model('Sprint input', {
@@ -113,7 +121,14 @@ sprint_input = api.model('Sprint input', {
 
 sprint_output = api.inherit('Sprint output', sprint_input, {
     'id': Integer(required=True, description="The id of sprint"),
+    'start': Boolean(required=True, description="If the sprint is started or not"),
+    'completed': Boolean(required=True, description="If the sprint is completed or not"),
     'issues': List(Nested(issue_output), required=True, description="A list of issue objects")
+})
+
+sprint_update_input = api.model('Sprint fields to be updated', {
+    'start': Boolean(description="Starts this sprint"),
+    'completed': Boolean(description="Completes this sprint")
 })
 
 ids_list_input = api.model("General ids list", {

@@ -51,7 +51,7 @@ class Team(db.Model):
     avatar_url = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False)
 
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
     team_members = db.relationship('TeamMember', backref="teams", order_by="desc(TeamMember.user_type)", lazy=True)
 
     def __init__(self, input_obj):
@@ -69,7 +69,7 @@ class TeamMember(db.Model):
     )
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    team_id = db.Column(db.Integer, db.ForeignKey('teams.id'), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('teams.id', ondelete='cascade'), nullable=False)
     user_type = db.Column(db.Enum('developer', 'scrumMaster'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
@@ -91,9 +91,10 @@ class Issue(db.Model):
     priority = db.Column(db.Enum('1', '2', '3', '4', '5'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
     creator_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id'))
+    sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id', ondelete='cascade'), nullable=True)
+    status = db.Column(db.Enum("pending", "done", "inProgress"), default="pending", nullable=False)
 
     def __init__(self, input_obj):
         self.type = input_obj['type']
@@ -114,9 +115,10 @@ class Sprint(db.Model):
     end_date = db.Column(db.DateTime, nullable=False)
     goal = db.Column(db.String(500), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
-
+    start = db.Column(db.Boolean, default=False, nullable=False)
+    completed = db.Column(db.Boolean, default=False, nullable=False)
     user_creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    project_id = db.Column(db.Integer, db.ForeignKey('projects.id'), nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
 
     issues = db.relationship('Issue', backref='issues', lazy=True)
 

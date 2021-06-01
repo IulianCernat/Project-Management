@@ -186,9 +186,7 @@ export default function Backlog() {
 		if (!isResolvedGetIssues) return;
 		setIssuesList(getIssuesReceivedData);
 	}, [isResolvedGetIssues, getIssuesReceivedData]);
-	useEffect(() => {
-		console.log("Issues list changed");
-	}, [issuesList]);
+	useEffect(() => {}, [issuesList]);
 	return (
 		<>
 			<DialogForm
@@ -238,12 +236,14 @@ export default function Backlog() {
 									<TableCell align="center">
 										<Typography>Priority</Typography>
 									</TableCell>
+									<TableCell />
 								</TableRow>
 							</TableHead>
 							<TableBody>
 								{issuesList.map((item) => (
 									<IssueRow
 										key={item.id}
+										isBacklogIssue
 										handleSelectionClick={handleSelectionClick}
 										handleDeleteIssueClick={handleDeleteIssueClick}
 										selectedRows={selectedIssues}

@@ -76,9 +76,26 @@ async function doPost(url, stringifiedData) {
 	}
 }
 
-async function doGet(url, parameters = null) {
+async function doPatch(url, stringifiedData) {
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
+		let response = await fetch(url, {
+			method: "PATCH",
+			headers: {
+				"Content-Type": "application/json;charset=utf-8",
+			},
+			body: stringifiedData,
+		});
+
+		return await processResponse(response);
+	} catch (err) {
+		return { error: err, location: null };
+	}
+}
+
+async function doGet(url, parameters = null, foreignUrl = false) {
+	try {
+		if (!foreignUrl) url = process.env.REACT_APP_API_URI + "/" + url;
 		if (parameters) url += "?" + new URLSearchParams(parameters).toString();
 
 		let response = await fetch(url, {
@@ -104,7 +121,12 @@ async function doDelete(url) {
 	}
 }
 
-export function useGetFetch(url, parameters = null, start = true) {
+export function useGetFetch(
+	url,
+	parameters = null,
+	start = true,
+	foreignUrl = false
+) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	useEffect(() => {
@@ -112,7 +134,7 @@ export function useGetFetch(url, parameters = null, start = true) {
 
 		async function doFetch() {
 			dispatch({ type: "started" });
-			let fetchResponse = await doGet(url, parameters);
+			let fetchResponse = await doGet(url, parameters, foreignUrl);
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				console.log(fetchResponse.error);
@@ -123,7 +145,7 @@ export function useGetFetch(url, parameters = null, start = true) {
 		}
 
 		doFetch();
-	}, [url, parameters, start]);
+	}, [url, parameters, start, foreignUrl]);
 
 	return transformState(state);
 }
@@ -161,6 +183,30 @@ export function usePostFetch(url, bodyContent) {
 			}
 			dispatch({ type: "started" });
 			let fetchResponse = await doPost(url, bodyContent);
+			if (fetchResponse.error) {
+				dispatch({ type: "error", error: fetchResponse.error.toString() });
+				return;
+			}
+			dispatch({ type: "success", receivedData: fetchResponse.location });
+		}
+
+		doFetch(url, bodyContent);
+	}, [url, bodyContent]);
+
+	return transformState(state);
+}
+
+export function usePatchFetch(url, bodyContent) {
+	const [state, dispatch] = useReducer(reducer, initialState);
+
+	useEffect(() => {
+		async function doFetch() {
+			if (!bodyContent) {
+				dispatch({ type: "idle" });
+				return;
+			}
+			dispatch({ type: "started" });
+			let fetchResponse = await doPatch(url, bodyContent);
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;

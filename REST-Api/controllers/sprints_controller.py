@@ -18,6 +18,21 @@ def add_sprint(input_obj):
 
     return new_sprint.id
 
+def get_sprint(sprint_id):
+    return Sprint.query.filter(Sprint.id == sprint_id).one()
 
 def get_sprints(project_id):
     return Sprint.query.filter(Sprint.project_id == project_id).all()
+
+def update_sprint(sprint_id, input_obj):
+    sprint = get_sprint(sprint_id)
+    for field, value in input_obj.items():
+        setattr(sprint, field, value)
+
+    db.session.commit()
+
+def delete_sprint(sprint_id):
+    sprint = get_sprint(sprint_id)
+    db.session.delete(sprint)
+
+    db.session.commit()

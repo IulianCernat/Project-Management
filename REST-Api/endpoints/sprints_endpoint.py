@@ -1,7 +1,7 @@
 from flask_restx import Resource
 from flask import request
 from utils.restx import api
-from utils.serializers import sprint_input, message, bad_request, sprint_output, location
+from utils.serializers import sprint_input, message, bad_request, sprint_output, sprint_update_input, location
 from utils.parsers import sprints_filtering_args
 from controllers.sprints_controller import *
 
@@ -27,3 +27,27 @@ class SprintsCollection(Resource):
         args = sprints_filtering_args.parse_args(request)
         project_id = args.get('project_id', None)
         return get_sprints(project_id), 200
+
+
+@api.response(404, 'Sprint not found', message)
+@sprints_namespace.route('/<id>')
+class TeamItem(Resource):
+    @api.response(200, 'Sprints successfully queried', sprint_output)
+    @api.marshal_with(sprint_output)
+    def get(self, id):
+        return get_sprint(id), 200
+
+    @api.response(200, 'Sprint successfully queried', [sprint_output])
+    @api.response(404, 'Sprint was not found', message)
+    def delete(self, id):
+        delete_sprint(id)
+        return {"message": "Sprint successfully deleted"}, 200
+
+    @api.response(200, 'Sprint successfully updated', message)
+    @api.response(400, 'Bad request', bad_request)
+    @api.response(404, 'Sprint was not found')
+    @api.expect(sprint_update_input)
+    def patch(self, id):
+        input_data = request.json
+        update_sprint(id, input_data)
+        return {'message': f"Sprint with id {id} successfully updated"}, 200

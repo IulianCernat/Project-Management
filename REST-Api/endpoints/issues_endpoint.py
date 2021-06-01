@@ -1,7 +1,7 @@
 from flask_restx import Resource
 from flask import request
 from utils.restx import api
-from utils.serializers import issue_input, message, bad_request, issue_output, ids_list_input, location
+from utils.serializers import issue_input, message, bad_request, issue_output, issue_update_input, location
 from utils.parsers import issues_filtering_args
 from controllers.issues_controller import *
 
@@ -44,3 +44,12 @@ class TeamItem(Resource):
     def delete(self, id):
         delete_issue(id)
         return {"message": "Issue successfully deleted"}, 200
+
+    @api.response(200, 'Issue successfully updated', message)
+    @api.response(400, 'Bad request', bad_request)
+    @api.response(404, 'Issue was not found')
+    @api.expect(issue_update_input)
+    def patch(self, id):
+        input_data = request.json
+        update_issue(id, input_data)
+        return {'message': f"Issue with id {id} successfully updated"}, 200

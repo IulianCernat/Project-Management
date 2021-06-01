@@ -1,10 +1,8 @@
 import {
-	TableContainer,
 	TableRow,
 	TableHead,
 	TableBody,
 	TableCell,
-	Paper,
 	Typography,
 	Table,
 	makeStyles,
@@ -14,6 +12,10 @@ import {
 	IconButton,
 	Avatar,
 	Checkbox,
+	TextField,
+	MenuItem,
+	Button,
+	Tooltip,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import {
@@ -22,11 +24,12 @@ import {
 	KeyboardArrowUp,
 	KeyboardArrowDown,
 	DeleteForever,
+	OpenWith,
 } from "@material-ui/icons";
-import { useState } from "react";
-import {} from "customHooks/useFetch";
+import { useState, useRef, useEffect } from "react";
 import { green, pink, blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
+import { usePatchFetch } from "customHooks/useFetch";
 
 const useStyles = makeStyles((theme) => ({
 	table: {
@@ -55,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
 			borderBottom: "unset",
 		},
 	},
+	statusField: {
+		width: "25ch",
+	},
 }));
 
 IssueRow.propTypes = {
@@ -65,44 +71,67 @@ IssueRow.propTypes = {
 	/**
 	 * Array of ids of issues that were selected
 	 */
-	selectedRows: PropTypes.arrayOf(PropTypes.number).isRequired,
+	selectedRows: PropTypes.arrayOf(PropTypes.number),
 	/**
 	 * Function called when a row is selected or deselected, requires
 	 * the id of issue as paramater
 	 */
-	handleSelectionClick: PropTypes.func.isRequired,
-	handleDeleteIssueClick: PropTypes.func.isRequired,
+	handleSelectionClick: PropTypes.func,
+	handleDeleteIssueClick: PropTypes.func,
+	isBacklogIssue: PropTypes.bool.isRequired,
 };
+const generatePriorityStars = (priorityNumber) => {
+	let starsArray = [];
+	for (let i = 0; i < priorityNumber; i++)
+		starsArray.push(<Star key={`star${i}`} />);
+
+	for (let i = 0; i < 5 - priorityNumber; i++)
+		starsArray.push(<StarOutline key={`emptyStar${i}`} />);
+
+	return starsArray;
+};
+
 export default function IssueRow(props) {
-	const { row, selectedRows, handleSelectionClick } = props;
+	const { row, selectedRows, handleSelectionClick, isBacklogIssue } = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
-
-	const isSelected = selectedRows.indexOf(row.id) !== -1;
-
+	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
+	const isSelected = selectedRows ? selectedRows.indexOf(row.id) !== -1 : false;
 	const classes = useStyles();
+	const futureIssueState = useRef(null);
+	const [issueStatus, setNewIssueStatus] = useState(row.status);
 
-	const generatePriorityStars = (priorityNumber) => {
-		let starsArray = [];
-		for (let i = 0; i < priorityNumber; i++)
-			starsArray.push(<Star key={`star${i}`} />);
+	const {
+		status: updateStatus,
+		receivedData: updatedReveivedData,
+		error: updateError,
+		isLoading: isLoadingUpdate,
+		isResolved: isResolvedUpdate,
+		isRejected: isRejectedUpdate,
+	} = usePatchFetch(`api/issues/${row.id}`, requestBodyForUpdate);
 
-		for (let i = 0; i < 5 - priorityNumber; i++)
-			starsArray.push(<StarOutline key={`emptyStar${i}`} />);
-
-		return starsArray;
+	const handleChangeStatusClick = (event) => {
+		setRequestBodyForUpdate(JSON.stringify({ status: event.target.value }));
+		futureIssueState.current = { futureState: event.target.value };
 	};
 
+	useEffect(() => {
+		if (!isResolvedUpdate) return;
+
+		setNewIssueStatus(futureIssueState.current.futureState);
+	}, [isResolvedUpdate]);
 	return (
 		<>
 			<TableRow classes={{ root: classes.rowTop }} selected={isSelected}>
-				<TableCell padding="checkbox">
-					<Checkbox
-						checked={isSelected}
-						onChange={(event) => {
-							handleSelectionClick(row.id);
-						}}
-					/>
-				</TableCell>
+				{isBacklogIssue ? (
+					<TableCell padding="checkbox">
+						<Checkbox
+							checked={isSelected}
+							onChange={(event) => {
+								handleSelectionClick(row.id);
+							}}
+						/>
+					</TableCell>
+				) : null}
 				<TableCell align="center" padding="none">
 					<IconButton
 						align="center"
@@ -148,12 +177,46 @@ export default function IssueRow(props) {
 				<TableCell style={{ width: "100ch" }} align="left">
 					{row.title}
 				</TableCell>
+				{!isBacklogIssue ? (
+					<TableCell>
+						<TextField
+							InputProps={{ disableUnderline: true }}
+							select
+							value={issueStatus}
+							onChange={handleChangeStatusClick}
+						>
+							<MenuItem value="done">
+								<Button variant="outlined" color="primary">
+									done
+								</Button>
+							</MenuItem>
+							<MenuItem value="pending">
+								<Button variant="outlined" color="primary">
+									pending
+								</Button>
+							</MenuItem>
+							<MenuItem value="inProgress">
+								<Button variant="outlined" color="primary">
+									In Progress
+								</Button>
+							</MenuItem>
+						</TextField>
+					</TableCell>
+				) : null}
 				<TableCell align="center">
 					{generatePriorityStars(row.priority)}
 				</TableCell>
 				<TableCell>
 					<IconButton onClick={(event) => props.handleDeleteIssueClick(row.id)}>
-						<DeleteForever />
+						{isBacklogIssue ? (
+							<Tooltip title="Delete issue" arrow>
+								<DeleteForever />
+							</Tooltip>
+						) : (
+							<Tooltip title="Move to backlog" arrow>
+								<OpenWith />
+							</Tooltip>
+						)}
 					</IconButton>
 				</TableCell>
 			</TableRow>

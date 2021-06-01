@@ -22,7 +22,9 @@ def get_issue(issue_id):
 
 def update_issue(issue_id, input_obj):
     issue = get_issue(issue_id)
-
+    if input_obj['sprint_id'] == 0:
+        setattr(issue, 'sprint_id', None)
+        del input_obj['sprint_id']
     for field, value in input_obj.items():
         setattr(issue, field, value)
 

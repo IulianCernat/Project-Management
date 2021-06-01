@@ -14,8 +14,8 @@ import {
 	Button,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { useRef, useState } from "react";
-import { useGetFetch } from "customHooks/useFetch";
+import { useRef, useState, useEffect } from "react";
+import { useGetFetch, usePatchFetch } from "customHooks/useFetch";
 import { green, pink, blue } from "@material-ui/core/colors";
 import IssueCreationForm from "components/forms/IssueCreationForm";
 import DialogForm from "components/subComponents/DialogForm";
@@ -33,28 +33,33 @@ SprintTable.propTypes = {
 	sprint: PropTypes.object.isRequired,
 };
 function SprintTable({ sprint }) {
-	const classes = useStyles();
-	const [selectedIssues, setSelectedIssues] = useState([]);
+	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
+	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
+	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
 
-	const handleSelectionClick = (issueId) => {
-		const selectedIndex = selectedIssues.indexOf(issueId);
-		let newSelectedIssues = [];
+	const {
+		status: updateIssueStatus,
+		receivedData: updatedIssueReveivedData,
+		error: updateIssueError,
+		isLoading: isLoadingIssueUpdate,
+		isResolved: isResolvedIssueUpdate,
+		isRejected: isRejectedIssueUpdate,
+	} = usePatchFetch(
+		`api/issues/${issueIdToBeUpdated}`,
+		requestBodyForIssueUpdate
+	);
 
-		if (selectedIndex === -1) {
-			newSelectedIssues = newSelectedIssues.concat(selectedIssues, issueId);
-		} else if (selectedIndex === 0) {
-			newSelectedIssues = newSelectedIssues.concat(selectedIssues.slice(1));
-		} else if (selectedIndex === selectedIssues.length - 1) {
-			newSelectedIssues = newSelectedIssues.concat(selectedIssues.slice(0, -1));
-		} else if (selectedIndex > 0) {
-			newSelectedIssues = newSelectedIssues.concat(
-				selectedIssues.slice(0, selectedIndex),
-				selectedIssues.slice(selectedIndex + 1)
-			);
-		}
-
-		setSelectedIssues(newSelectedIssues);
+	const handleDeleteIssueClick = (issueId) => {
+		setIssueIdToBeUpdated(issueId);
+		setRequestBodyForIssueUpdate(JSON.stringify({ sprint_id: 0 }));
 	};
+	useEffect(() => {
+		if (!isResolvedIssueUpdate) return;
+		setSprintIssues(
+			sprintIssues.filter((item) => item.id !== issueIdToBeUpdated)
+		);
+	}, [isResolvedIssueUpdate]);
+	const classes = useStyles();
 	return (
 		<TableContainer component={Paper}>
 			<SprintHeader
@@ -63,12 +68,14 @@ function SprintTable({ sprint }) {
 				duration={sprint.duration}
 				endDate={sprint.end_date}
 				goal={sprint.goal}
+				isStarted={sprint.start}
+				isCompleted={sprint.completed}
+				id={sprint.id}
 			/>
 
 			<Table className={classes.table}>
 				<TableHead>
 					<TableRow>
-						<TableCell />
 						<TableCell />
 						<TableCell>
 							<Typography align="center">Type</Typography>
@@ -76,16 +83,20 @@ function SprintTable({ sprint }) {
 						<TableCell align="left">
 							<Typography>Title</Typography>
 						</TableCell>
+						<TableCell align="left">
+							<Typography>Status</Typography>
+						</TableCell>
 						<TableCell align="center">
 							<Typography>Priority</Typography>
 						</TableCell>
+						<TableCell />
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{sprint.issues.map((item) => (
+					{sprintIssues.map((item) => (
 						<IssueRow
-							handleSelectionClick={handleSelectionClick}
-							selectedRows={selectedIssues}
+							handleDeleteIssueClick={handleDeleteIssueClick}
+							isBacklogIssue={false}
 							row={item}
 							key={item.id}
 						/>
@@ -96,34 +107,93 @@ function SprintTable({ sprint }) {
 	);
 }
 
-function SprintHeader({ name, startDate, duration, endDate, goal }) {
+function SprintHeader({
+	id,
+	name,
+	startDate,
+	duration,
+	endDate,
+	goal,
+	isCompleted,
+	isStarted,
+}) {
+	const [requestBodyForUpdate, setRequesBodyForUpdate] = useState(null);
+	const [isStartedState, setIsStartedState] = useState(isCompleted);
+	const [isCompletedState, setIsCompletedState] = useState(isCompleted);
+	const {
+		status: updateStatus,
+		receivedData: updatedReveivedData,
+		error: updateError,
+		isLoading: isLoadingUpdate,
+		isResolved: isResolvedUpdate,
+		isRejected: isRejectedUpdate,
+	} = usePatchFetch(`api/sprints/${id}`, requestBodyForUpdate);
+
 	startDate = new Date(startDate);
 	endDate = new Date(endDate);
-
 	startDate = format(startDate, "dd/MM/yyyy HH:mm");
 	endDate = format(endDate, "dd/MM/yyyy HH:mm");
+
+	const handleStartSprintClick = () => {
+		setRequesBodyForUpdate(JSON.stringify({ start: true }));
+	};
+	const handleCompleteSprintClick = () => {
+		setRequesBodyForUpdate(JSON.stringify({ completed: true }));
+	};
+	useEffect(() => {
+		if (!isResolvedUpdate) return;
+		if (requestBodyForUpdate.includes("start")) setIsStartedState(true);
+		if (requestBodyForUpdate.includes("completed")) setIsCompletedState(true);
+	}, [isResolvedUpdate]);
+
 	return (
 		<Box p={2}>
 			<Box display="flex" flexWrap="wrap" style={{ gap: "2rem" }}>
-				<Typography variant="h5">{name}</Typography>
-				<Typography>
-					<Typography variant="h6">Start date: </Typography>
-					{startDate}
-				</Typography>
-				<Typography>
-					<Typography variant="h6">Duration: </Typography>
-					{duration} weeks
-				</Typography>
-				<Typography>
-					<Typography variant="h6">End date: </Typography>
-					{endDate}
-				</Typography>
+				<Box>
+					<Typography variant="h5">{name}</Typography>
+				</Box>
+				<Box>
+					<Typography variant="h6">Start date </Typography>
+					<Typography>{startDate}</Typography>
+				</Box>
+				<Box>
+					<Typography variant="h6">Duration </Typography>
+					<Typography>{duration} weeks</Typography>
+				</Box>
+				<Box>
+					<Typography variant="h6">End date </Typography>
+					<Typography>{endDate}</Typography>
+				</Box>
+
+				<Box>
+					{!isStartedState ? (
+						<Button
+							onClick={() => {
+								handleStartSprintClick();
+							}}
+							variant="contained"
+							color="primary"
+						>
+							Start sprint
+						</Button>
+					) : !isCompletedState ? (
+						<Button
+							onClick={() => {
+								handleCompleteSprintClick();
+							}}
+							variant="contained"
+							color="Secondary"
+						>
+							Complete sprint
+						</Button>
+					) : (
+						<Typography color="primary">Sprint completed</Typography>
+					)}
+				</Box>
 			</Box>
 			<Box>
-				<Typography>
-					<Typography variant="h6">Sprint Goal</Typography>
-					{goal}
-				</Typography>
+				<Typography variant="h6">Sprint Goal</Typography>
+				<Typography> {goal}</Typography>
 			</Box>
 		</Box>
 	);

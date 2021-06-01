@@ -9,9 +9,12 @@ import {
 	Paper,
 	makeStyles,
 } from "@material-ui/core";
+
 import { useParams } from "react-router-dom";
 import { useGetFetch } from "customHooks/useFetch";
 import TeamMembers from "./TeamMembers";
+import Board from "./Board";
+import { FaBox } from "react-icons/fa";
 
 const useStyles = makeStyles((theme) => ({
 	toolbar: theme.mixins.toolbar,
@@ -70,7 +73,9 @@ export default function TeamPage() {
 					</Box>
 				</Paper>
 			</TabPanel>
-			<TabPanel value={currentTab} index={1} />
+			<TabPanel value={currentTab} index={1}>
+				<Board />
+			</TabPanel>
 			<TabPanel value={currentTab} index={2}>
 				<TeamMembers />
 			</TabPanel>

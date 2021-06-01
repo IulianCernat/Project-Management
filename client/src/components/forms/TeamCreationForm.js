@@ -54,7 +54,7 @@ export default function TeamCreationForm() {
 					requestObj["name"] = values.name;
 					requestObj["description"] = values.description;
 					requestObj["created_at"] = new Date().toISOString();
-					requestObj["project_id"] = 73;
+					requestObj["project_id"] = 71;
 					requestObj["scrum_master_id"] = JSON.parse(values.scrum_master).id;
 
 					const stringifiedData = JSON.stringify(requestObj);

@@ -50,7 +50,7 @@ export default function Teams() {
 	let match = useRouteMatch();
 	const classes = useStyles();
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
-	const getParams = useRef({ project_id: 73 });
+	const getParams = useRef({ project_id: 71 });
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch("api/teams/", getParams.current);
 
