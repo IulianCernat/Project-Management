@@ -4,7 +4,6 @@ import {
 	Tabs,
 	Tab,
 	Typography,
-	Button,
 	Box,
 	Paper,
 	makeStyles,
@@ -14,7 +13,7 @@ import { useParams } from "react-router-dom";
 import { useGetFetch } from "customHooks/useFetch";
 import TeamMembers from "./TeamMembers";
 import Board from "./Board";
-import { FaBox } from "react-icons/fa";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
 	toolbar: theme.mixins.toolbar,
@@ -48,37 +47,46 @@ export default function TeamPage() {
 	};
 	return (
 		<>
-			<AppBar position="static" color="default">
-				<Tabs
-					indicatorColor="primary"
-					textColor="primary"
-					variant="scrollable"
-					value={currentTab}
-					onChange={handleTabChange}
-				>
-					<Tab label="Info" />
-					<Tab label="Board" />
-					<Tab label="Members" />
-				</Tabs>
-			</AppBar>
-			<TabPanel value={currentTab} index={0}>
-				<Paper>
-					<Box p={2}>
-						<Typography gutterBottom variant="h4">
-							Description
-						</Typography>
-						<Typography variant="h6">
-							{isResolved ? receivedData.description : null}
-						</Typography>
-					</Box>
-				</Paper>
-			</TabPanel>
-			<TabPanel value={currentTab} index={1}>
-				<Board />
-			</TabPanel>
-			<TabPanel value={currentTab} index={2}>
-				<TeamMembers />
-			</TabPanel>
+			{isRejected ? <Alert severity="error">{error} </Alert> : null}
+			{isResolved ? (
+				<>
+					<AppBar position="static" color="default">
+						<Tabs
+							indicatorColor="primary"
+							textColor="primary"
+							variant="scrollable"
+							value={currentTab}
+							onChange={handleTabChange}
+						>
+							<Tab label="Info" />
+							<Tab label="Board" />
+							<Tab label="Members" />
+						</Tabs>
+					</AppBar>
+
+					<TabPanel value={currentTab} index={0}>
+						<Paper>
+							<Box p={2}>
+								<Typography gutterBottom variant="h4">
+									Description
+								</Typography>
+								<Typography variant="h6">
+									{isResolved ? receivedData.description : null}
+								</Typography>
+							</Box>
+						</Paper>
+					</TabPanel>
+					<TabPanel value={currentTab} index={1}>
+						<Board
+							teamId={receivedData.id}
+							boardId={receivedData.trello_board_id}
+						/>
+					</TabPanel>
+					<TabPanel value={currentTab} index={2}>
+						<TeamMembers />
+					</TabPanel>
+				</>
+			) : null}
 		</>
 	);
 }

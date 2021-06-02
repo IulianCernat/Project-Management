@@ -24,3 +24,10 @@ def get_team(team_id):
 
 def get_teams(project_id):
     return Team.query.filter(Team.project_id == project_id).all()
+
+def update_team(team_id, input_obj):
+    issue = get_team(team_id)
+    for field, value in input_obj.items():
+        setattr(issue, field, value)
+
+    db.session.commit()

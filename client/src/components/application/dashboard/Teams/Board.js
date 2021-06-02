@@ -8,9 +8,13 @@ import {
 	Typography,
 	Chip,
 	Divider,
+	Button,
+	Hidden,
 } from "@material-ui/core";
 import { useGetFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
+import TrelloBoardAdditionForm from "components/forms/TrelloBoardAdditionForm";
+import { useState } from "react";
 
 function BoardCard(props) {
 	return (
@@ -59,57 +63,56 @@ function BoardList(props) {
 		</Paper>
 	);
 }
-// const getCardsReceivedData = [
-// 	{
-// 		id: "60ae7811428bbf16155f8358",
-// 		name: "as a use I want to waash dishes",
-// 		idList: "606b13f7979d078b2a46d433",
-// 		members: [
-// 			{
-// 				username: "iuliancernat",
-// 				id: "6055ecde5e0cc219b27d4ec9",
-// 				activityBlocked: false,
-// 				avatarHash: "a1f2b0273db56b4aff065b107cccbd8e",
-// 				avatarUrl:
-// 					"https://trello-members.s3.amazonaws.com/6055ecde5e0cc219b27d4ec9/a1f2b0273db56b4aff065b107cccbd8e",
-// 				fullName: "Iulian Cernat",
-// 				initials: "IC",
-// 				nonPublic: {},
-// 				nonPublicAvailable: true,
-// 			},
-// 		],
-// 	},
-// 	{
-// 		id: "60b658b16d8e2c1b8be2ef05",
-// 		name: "another card",
-// 		idList: "606b13f7979d078b2a46d433",
-// 		members: [],
-// 	},
-// ];
+const getCardsReceivedData = [
+	{
+		id: "60ae7811428bbf16155f8358",
+		name: "as a use I want to waash dishes",
+		idList: "606b13f7979d078b2a46d433",
+		members: [
+			{
+				username: "iuliancernat",
+				id: "6055ecde5e0cc219b27d4ec9",
+				activityBlocked: false,
+				avatarHash: "a1f2b0273db56b4aff065b107cccbd8e",
+				avatarUrl:
+					"https://trello-members.s3.amazonaws.com/6055ecde5e0cc219b27d4ec9/a1f2b0273db56b4aff065b107cccbd8e",
+				fullName: "Iulian Cernat",
+				initials: "IC",
+				nonPublic: {},
+				nonPublicAvailable: true,
+			},
+		],
+	},
+	{
+		id: "60b658b16d8e2c1b8be2ef05",
+		name: "another card",
+		idList: "606b13f7979d078b2a46d433",
+		members: [],
+	},
+];
 
-// const getListsReceivedData = [
-// 	{
-// 		id: "606b13f7979d078b2a46d433",
-// 		name: "To Do",
-// 	},
-// 	{
-// 		id: "606b13f7979d078b2a46d434",
-// 		name: "Doing",
-// 	},
-// 	{
-// 		id: "606b13f7979d078b2a46d435",
-// 		name: "Done",
-// 	},
-// ];
+const getListsReceivedData = [
+	{
+		id: "606b13f7979d078b2a46d433",
+		name: "To Do",
+	},
+	{
+		id: "606b13f7979d078b2a46d434",
+		name: "Doing",
+	},
+	{
+		id: "606b13f7979d078b2a46d435",
+		name: "Done",
+	},
+];
 
-export default function Board() {
+export default function Board(props) {
 	const getCardsparameters = useRef({
 		cards: "all",
 		members: true,
 		member_field: "fullName,initials,avatarUrl",
 		fields: "name,members,idList",
 		key: process.env.REACT_APP_TRELLO_KEY,
-		token: process.env.REACT_APP_TRELLO_TOKEN,
 	});
 	const {
 		status: getCardsStatus,
@@ -119,7 +122,7 @@ export default function Board() {
 		isResolved: isResolvedGetCards,
 		isRejected: isRejectedGetCards,
 	} = useGetFetch(
-		"https://api.trello.com/1/boards/bk1ki8um/cards",
+		`https://api.trello.com/1/boards/${props.boardId}/cards`,
 		getCardsparameters.current,
 		true,
 		true
@@ -130,7 +133,6 @@ export default function Board() {
 		member_field: "fullName,initials,avatarUrl",
 		fields: "name,members",
 		key: process.env.REACT_APP_TRELLO_KEY,
-		token: process.env.REACT_APP_TRELLO_TOKEN,
 	});
 	const {
 		status: getListssStatus,
@@ -140,21 +142,46 @@ export default function Board() {
 		isResolved: isResolvedGetLists,
 		isRejected: isRejectedGetLists,
 	} = useGetFetch(
-		"https://api.trello.com/1/boards/bk1ki8um/lists",
+		`https://api.trello.com/1/boards/${props.boardId}/lists`,
 		getBoardListparameters.current,
 		true,
 		true
 	);
+	const [hideBoardAdditionform, setHideBoardAdditionform] = useState(true);
+
+	const handleFormAdditionClick = () => {
+		setHideBoardAdditionform((prev) => !prev);
+	};
 	return (
 		<>
+			{hideBoardAdditionform ? (
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={handleFormAdditionClick}
+				>
+					Link your public trello board
+				</Button>
+			) : (
+				<Box width="50ch">
+					<TrelloBoardAdditionForm
+						teamId={props.teamId}
+						hideForm={handleFormAdditionClick}
+					/>
+				</Box>
+			)}
+
 			{isRejectedGetCards ? (
-				<Alert severity="error">{getCardsError} </Alert>
+				<Alert severity="error">
+					<Typography>Couldnt't load trello board</Typography>
+				</Alert>
 			) : null}
 			{isLoadingGetCards || isLoadingGetLists ? (
 				<LinearProgress style={{ width: "100%" }} />
 			) : null}
 			{isResolvedGetCards && isResolvedGetLists ? (
 				<Box
+					mt={4}
 					pb={"6rem"}
 					display="flex"
 					flexWrap="nowrap"

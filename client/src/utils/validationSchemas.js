@@ -129,3 +129,9 @@ export const sprintDurationValidSchema = Yup.mixed(
 )
 	.oneOf(["1", "2", "3", "4"])
 	.required("Sprint duration is required");
+
+export const trelloBoardUrlValidSchema = Yup.string(
+	"Paste the public trello board link"
+)
+	.url("Enter a valid url")
+	.max(255, "Url must be of maximum 255 characters length");

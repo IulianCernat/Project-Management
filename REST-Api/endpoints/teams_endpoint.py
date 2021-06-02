@@ -1,7 +1,7 @@
 from flask_restx import Resource
 from flask import request
 from utils.restx import api
-from utils.serializers import team_input, message, bad_request, team_output, location
+from utils.serializers import team_input, message, bad_request, team_output, team_update_input, location
 from controllers.teams_controller import *
 from utils.parsers import team_filtering_args
 from utils.cors import *
@@ -41,3 +41,12 @@ class TeamItem(Resource):
     @api.marshal_with(team_output)
     def get(self, id):
         return get_team(id), 200
+
+    @api.response(200, 'Team successfully updated', message)
+    @api.response(400, 'Bad request', bad_request)
+    @api.response(404, 'Team was not found')
+    @api.expect(team_update_input)
+    def patch(self, id):
+        input_data = request.json
+        update_team(id, input_data)
+        return {'message': f"Team with id {id} successfully updated"}, 200

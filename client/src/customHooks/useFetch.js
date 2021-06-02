@@ -37,18 +37,23 @@ function reducer(state, action) {
 
 function transformState(state) {
 	return {
+		...state,
 		isLoading: state.status === "pending",
 		isResolved: state.status === "resolved",
 		isRejected: state.status === "rejected",
-		...state,
 	};
 }
 
 async function processResponse(response) {
-	if (!response.ok) return { error: response.statusText, receivedData: null };
+	if (!response.ok)
+		return {
+			error: response.statusText ? response.statusText : "unknown error",
+			receivedData: null,
+		};
 
 	let status = response.status;
 	let result = await response.json();
+
 	switch (status) {
 		case 200:
 			return { error: null, receivedData: result };
@@ -135,6 +140,7 @@ export function useGetFetch(
 		async function doFetch() {
 			dispatch({ type: "started" });
 			let fetchResponse = await doGet(url, parameters, foreignUrl);
+
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				console.log(fetchResponse.error);
@@ -159,7 +165,6 @@ export function useDeleteFetch(url) {
 			let fetchResponse = await doDelete(url);
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString });
-				console.log(fetchResponse.error);
 				return;
 			}
 			dispatch({
@@ -183,6 +188,7 @@ export function usePostFetch(url, bodyContent) {
 			}
 			dispatch({ type: "started" });
 			let fetchResponse = await doPost(url, bodyContent);
+
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;

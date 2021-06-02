@@ -71,14 +71,18 @@ team_input = api.model('Team input', {
                            description="Date and time when the product owner submitted the team creation form",
                            ),
     'project_id': Integer(required=True, description="The id of the project which will have this team"),
-    'scrum_master_id': Integer(required=True, description="The id of the user who will be the scrum master of the team")
-
+    'scrum_master_id': Integer(required=True, description="The id of the user who will be the scrum master of the team"),
+    'trello_board_id': String(required=False, description="The public trello board id")
 })
 
 team_output = api.inherit('Team output', team_input, {
     'team_members': List(Nested(team_member_output), description="All the people that are part of the team"),
     'id': Integer(required=True, description="Team's database id"),
 
+})
+
+team_update_input = api.model('Team input for update', {
+    'trello_board_id': String(required=False, description="The public trello board id")
 })
 
 issue_input = api.model('Issue input', {

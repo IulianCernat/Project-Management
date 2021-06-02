@@ -54,9 +54,9 @@ export default function TeamMembers() {
 	return (
 		<Box className={classes.membersTab}>
 			{isLoading ? <LinearProgress style={{ width: "100%" }} /> : null}
-			<Typography>
-				{isRejected ? <Alert severity="error">{error} </Alert> : null}
-			</Typography>
+
+			{isRejected ? <Alert severity="error">{error} </Alert> : null}
+
 			{isResolved && (
 				<>
 					<Box flex="0 0 auto">
