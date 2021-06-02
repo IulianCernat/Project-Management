@@ -3,6 +3,7 @@ import { Box, Grid, makeStyles, Container } from "@material-ui/core";
 import ProfileAside from "./ProfileAside";
 import ProfileMain from "./ProfileMain";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -13,17 +14,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Profile() {
 	const classes = useStyles();
-	// const { currentUser, logout, addiditionalUserInfo} = useAuth();
-	// const history = useHistory();
-	// async function handleLogout() {
-	//     try {
-	//         await logout()
-	//         history.push("/login")
-	//     } catch (e) {
-	//         console.log(e)
-	//     }
-
-	// }
 
 	return (
 		<Container

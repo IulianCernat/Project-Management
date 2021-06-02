@@ -64,13 +64,15 @@ async function processResponse(response) {
 	}
 }
 
-async function doPost(url, stringifiedData) {
+async function doPost(url, stringifiedData, headers = null) {
+	console.log(headers);
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
 		let response = await fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json;charset=utf-8",
+				...headers,
 			},
 			body: stringifiedData,
 		});
@@ -98,13 +100,21 @@ async function doPatch(url, stringifiedData) {
 	}
 }
 
-async function doGet(url, parameters = null, foreignUrl = false) {
+async function doGet(
+	url,
+	parameters = null,
+	foreignUrl = false,
+	headers = null
+) {
 	try {
 		if (!foreignUrl) url = process.env.REACT_APP_API_URI + "/" + url;
 		if (parameters) url += "?" + new URLSearchParams(parameters).toString();
 
 		let response = await fetch(url, {
 			method: "GET",
+			headers: {
+				...headers,
+			},
 		});
 		return await processResponse(response);
 	} catch (err) {
@@ -130,7 +140,8 @@ export function useGetFetch(
 	url,
 	parameters = null,
 	start = true,
-	foreignUrl = false
+	foreignUrl = false,
+	headers = null
 ) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -139,7 +150,7 @@ export function useGetFetch(
 
 		async function doFetch() {
 			dispatch({ type: "started" });
-			let fetchResponse = await doGet(url, parameters, foreignUrl);
+			let fetchResponse = await doGet(url, parameters, foreignUrl, headers);
 
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
@@ -177,7 +188,7 @@ export function useDeleteFetch(url) {
 
 	return transformState(state);
 }
-export function usePostFetch(url, bodyContent) {
+export function usePostFetch(url, bodyContent, headers) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	useEffect(() => {
@@ -187,7 +198,7 @@ export function usePostFetch(url, bodyContent) {
 				return;
 			}
 			dispatch({ type: "started" });
-			let fetchResponse = await doPost(url, bodyContent);
+			let fetchResponse = await doPost(url, bodyContent, headers);
 
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });

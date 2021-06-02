@@ -12,27 +12,30 @@ function App() {
 	return (
 		<>
 			<CssBaseline />
-			{/* <BrowserRouter>
-      <AuthProvider>
-        <Switch>
-          <PrivateRoute exact path="/" component={Profile} />
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/signUp">
-            <SignUp />
-          </Route>
-          <Route path="/forgotPassword">
-            <ForgotPassword />
-          </Route>
-        </Switch>
-      </AuthProvider>
-    </BrowserRouter> */}
 			<BrowserRouter>
+				<AuthProvider>
+					<Switch>
+						<PrivateRoute exact path="/" component={Profile} />
+						<Route path="/login">
+							<Login />
+						</Route>
+						<Route path="/signUp">
+							<SignUp />
+						</Route>
+						<Route path="/forgotPassword">
+							<ForgotPassword />
+						</Route>
+					</Switch>
+				</AuthProvider>
+			</BrowserRouter>
+			{/* <BrowserRouter>
 				<Route path="/dashboard">
 					<Dashboard />
 				</Route>
-			</BrowserRouter>
+				<Route path="/profile">
+					<Profile />
+				</Route>
+			</BrowserRouter> */}
 		</>
 	);
 }

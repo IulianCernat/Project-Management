@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Box, Typography, Button, Grid, Paper, Link } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { Link as RouterLink, useHistory } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { usePostFetch } from "customHooks/useFetch";
+import { Alert } from "@material-ui/lab";
+
 import {
 	emailValidationSchema,
 	passwordValidationSchema,
@@ -19,8 +22,14 @@ const validationSchema = Yup.object().shape({
 
 export default function SignUpForm() {
 	const { signUp } = useAuth();
-	const [error, setError] = useState("");
 	const history = useHistory();
+	const [firebaseError, setFirebaseError] = useState("");
+	const [requestBody, setRequestBody] = useState(null);
+	const headers = useRef({
+		Authorization: "",
+	});
+	const { status, receivedData, error, isLoading, isRejected, isResolved } =
+		usePostFetch("api/users/", requestBody, headers.current);
 
 	return (
 		<Paper elevation={3}>
@@ -35,23 +44,15 @@ export default function SignUpForm() {
 					validationSchema={validationSchema}
 					onSubmit={async (values, { setSubmitting }) => {
 						try {
-							setError("");
 							let userCredential = await signUp(values.email, values.password);
 							let userIdToken = await userCredential.user.getIdToken();
-							let response = await fetch("api/users/", {
-								headers: {
-									Authorization: userIdToken,
-									"Content-Type": "application/json",
-								},
-								method: "POST",
-								body: JSON.stringify({ fullName: values.fullName }),
-							});
-
-							history.push("/");
+							headers.current.Authorization = userIdToken;
+							let requestObj = {};
+							requestObj["fullName"] = values.fullName;
+							setRequestBody(JSON.stringify(requestObj));
 							setSubmitting(false);
 						} catch (err) {
-							console.log(err);
-							setError("Failed to create an account");
+							setFirebaseError(err.toString());
 						}
 					}}
 				>
@@ -118,7 +119,16 @@ export default function SignUpForm() {
 											Already have an account? Login
 										</Typography>
 									</Link>
-									{error && <Button color="secondary">{error}</Button>}
+									{isRejected && (
+										<Alert severity="error">
+											<Typography>{error}</Typography>
+										</Alert>
+									)}
+									{firebaseError && (
+										<Alert severity="error">
+											<Typography>{firebaseError}</Typography>
+										</Alert>
+									)}
 								</Grid>
 							</Grid>
 						</Form>

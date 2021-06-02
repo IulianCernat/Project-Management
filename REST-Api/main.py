@@ -11,7 +11,7 @@ from endpoints.teams_endpoint import teams_namespace
 from endpoints.teams_members_endpoint import teams_members_namespace
 from endpoints.issues_endpoint import issues_namespace
 from endpoints.sprints_endpoint import sprints_namespace
-from utils.cors import *
+
 from flask_cors import CORS
 
 app = Flask(__name__)

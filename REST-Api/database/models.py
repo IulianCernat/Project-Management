@@ -13,7 +13,7 @@ class User(db.Model):
 
     created_projects = db.relationship('Project', backref='users', lazy=True)
     created_issues = db.relationship('Issue', lazy='select',
-                                backref=db.backref('creator_user_profile', lazy='joined'))
+                                     backref=db.backref('creator_user_profile', lazy='joined'))
 
     def __init__(self, uid, fullName, avatar_url=None, contact=None):
         self.uid = uid
@@ -33,7 +33,7 @@ class Project(db.Model):
     progress = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, nullable=False)
 
-    product_owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    product_owner_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
 
     def __init__(self, input_obj):
         self.name = input_obj['name']
@@ -68,7 +68,7 @@ class TeamMember(db.Model):
         db.UniqueConstraint('user_id', 'team_id'),
     )
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id', ondelete='cascade'), nullable=False)
     user_type = db.Column(db.Enum('developer', 'scrumMaster'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
@@ -92,7 +92,7 @@ class Issue(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
 
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
-    creator_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    creator_user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
     sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id', ondelete='cascade'), nullable=True)
     status = db.Column(db.Enum("pending", "done", "inProgress"), default="pending", nullable=False)
 
@@ -117,7 +117,7 @@ class Sprint(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
     start = db.Column(db.Boolean, default=False, nullable=False)
     completed = db.Column(db.Boolean, default=False, nullable=False)
-    user_creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_creator_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
 
     issues = db.relationship('Issue', backref='issues', lazy=True)

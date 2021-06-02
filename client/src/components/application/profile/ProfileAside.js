@@ -8,9 +8,10 @@ import {
 	makeStyles,
 	Divider,
 } from "@material-ui/core";
-
+import { useAuth } from "contexts/AuthContext";
 import Avatar from "../../subComponents/Avatar";
 import TextDisplayWrapper from "../../subComponents/TextDisplayWrapper";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
 	identity: {
@@ -24,6 +25,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ProfileAside() {
+	const { additionalUserInfo, logout, currentUser } = useAuth();
+
+	const history = useHistory();
+	async function handleLogout() {
+		try {
+			await logout();
+			history.push("/login");
+		} catch (e) {
+			console.log(e);
+		}
+	}
 	const classes = useStyles();
 	return (
 		<Paper elevation={5}>
@@ -32,10 +44,10 @@ export default function ProfileAside() {
 					<Grid item xs md={12}>
 						<Box className={classes.identity}>
 							<Box style={{ width: "10em", height: "10em" }}>
-								<Avatar url="https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/close-up-of-cat-wearing-sunglasses-while-sitting-royalty-free-image-1571755145.jpg?crop=0.670xw:1.00xh;0.147xw,0&resize=768:*" />
+								<Avatar url={additionalUserInfo.avatar_url} />
 							</Box>
 							<TextDisplayWrapper>
-								CernatIulianConstantingCernovskiIvanjjjjjjjjjjjjjjjjjjjjjjjjj
+								{additionalUserInfo.fullName}
 							</TextDisplayWrapper>
 						</Box>
 						<Divider />
@@ -52,12 +64,21 @@ export default function ProfileAside() {
 					>
 						<Grid item>
 							<Typography variant="h6">Contact</Typography>
-							<Typography>iulian.cernat@gmail.com</Typography>
+							<Typography>
+								{additionalUserInfo.contact || currentUser?.email}
+							</Typography>
 						</Grid>
 
 						<Grid item>
-							<Button fullWidth variant="contained" color="primary">
-								<Typography>Account settings</Typography>
+							<Button
+								fullWidth
+								variant="contained"
+								color="primary"
+								onClick={() => {
+									handleLogout();
+								}}
+							>
+								<Typography>Logout</Typography>
 							</Button>
 						</Grid>
 					</Grid>

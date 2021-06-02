@@ -4,7 +4,6 @@ from utils.restx import api
 from utils.serializers import team_input, message, bad_request, team_output, team_update_input, location
 from controllers.teams_controller import *
 from utils.parsers import team_filtering_args
-from utils.cors import *
 
 teams_namespace = api.namespace('teams', description='Operations related to managing teams')
 

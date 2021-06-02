@@ -17,6 +17,7 @@ import ProjectCard from "../../subComponents/ProjectCard";
 import DialogForm from "../../subComponents/DialogForm";
 import ProjectCreationForm from "../../forms/ProjectCreationForm";
 import { useGetFetch } from "../../../customHooks/useFetch";
+import { useAuth } from "contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -59,8 +60,11 @@ TabPanel.propTypes = {
 function TabPanel(props) {
 	const classes = useStyles();
 	const { children, value, index, ...other } = props;
-
-	const getParams = useRef({ user_id: 3, user_type: tabs[index] });
+	const { additionalUserInfo } = useAuth();
+	const getParams = useRef({
+		user_id: additionalUserInfo,
+		user_type: tabs[index],
+	});
 
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch("api/projects/", getParams.current);
@@ -95,6 +99,7 @@ function TabPanel(props) {
 export default function ProfileMain() {
 	const [currentTab, setCurrentTab] = useState(0);
 	const [openProjectCreation, setOpenProjectCreation] = useState(false);
+
 	const classes = useStyles();
 
 	function handleTabChange(event, newTab) {
