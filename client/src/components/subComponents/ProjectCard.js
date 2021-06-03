@@ -42,7 +42,13 @@ export default function ProjectCard(props) {
 	const classes = useStyles();
 	return (
 		<Paper elevation={3} className={classes.paper}>
-			<CardActionArea to={`project/${props.id}`} component={RouterLink}>
+			<CardActionArea
+				to={{
+					pathname: `project/${props.id}`,
+					state: { projectName: props.name },
+				}}
+				component={RouterLink}
+			>
 				<Box
 					maxWidth="100%"
 					flex={1}

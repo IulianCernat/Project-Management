@@ -77,22 +77,7 @@ export default function Teams(props) {
 					>
 						<TeamCreationForm projectId={props.projectId} />
 					</DialogForm>
-					<Box
-						display="flex"
-						flexWrap="wrap"
-						mb={2}
-						justifyContent="space-between"
-						alignItems="baseline"
-					>
-						<Breadcrumbs aria-label="breadcrumb">
-							<Link color="inherit" href="/">
-								Material-UI
-							</Link>
-							<Link color="inherit" href="/getting-started/installation/">
-								Core
-							</Link>
-							<Typography color="textPrimary">Breadcrumb</Typography>
-						</Breadcrumbs>
+					<Box>
 						<Button
 							variant="contained"
 							color="primary"

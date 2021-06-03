@@ -1,4 +1,4 @@
-import { useState, createContext } from "react";
+import { useState, useEffect } from "react";
 import {
 	Typography,
 	AppBar,
@@ -8,7 +8,13 @@ import {
 	Box,
 	makeStyles,
 } from "@material-ui/core";
-import { Switch, Route, useRouteMatch, useParams } from "react-router-dom";
+import {
+	Switch,
+	Route,
+	useRouteMatch,
+	useParams,
+	useLocation,
+} from "react-router-dom";
 import { Menu } from "@material-ui/icons";
 import CustomDrawer from "components/subComponents/CustomDrawer";
 import Teams from "./teams/Teams";
@@ -38,16 +44,21 @@ const useStyles = makeStyles((theme) => ({
 	toolbar: theme.mixins.toolbar,
 }));
 
-export default function Dashboard() {
+export default function Dashboard(props) {
+	const currentUrlLocation = useLocation();
 	let match = useRouteMatch();
 	const classes = useStyles();
 	let { projectId } = useParams();
+	const [projectName, setProjectName] = useState();
 	const [mobileOpen, setmobileOpen] = useState(false);
 
 	function handleDrawerToggle() {
 		setmobileOpen(!mobileOpen);
 	}
-	console.log(match.path);
+
+	useEffect(() => {
+		setProjectName(currentUrlLocation.state?.projectName);
+	}, []);
 
 	return (
 		<Box display="flex">
@@ -66,7 +77,7 @@ export default function Dashboard() {
 								</IconButton>
 							</Hidden>
 							<Typography variant="h6" noWrap>
-								Responsive drawer
+								{projectName}
 							</Typography>
 						</Box>
 						<Box>
@@ -82,7 +93,11 @@ export default function Dashboard() {
 			/>
 			<Box className={classes.content}>
 				<div className={classes.toolbar} />
-				<ProjectContext.Provider value={{ projectId: Number(projectId) }}>
+				<ProjectContext.Provider
+					value={{
+						projectId: Number(projectId),
+					}}
+				>
 					<Switch>
 						<Route path={`${match.url}/teams`}>
 							<Teams />
