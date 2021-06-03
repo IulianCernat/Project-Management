@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, Avatar, Box } from "@material-ui/core";
@@ -9,6 +9,8 @@ import { usePostFetch } from "../../customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
 import CustomStepper from "../subComponents/CustomStepper";
 import PropTypes from "prop-types";
+import ProjectContext from "contexts/ProjectContext";
+
 const validationSchema = Yup.object({
 	devs: generalInputString,
 });
@@ -18,6 +20,7 @@ AddingDevsForm.props = {
 	setReRenderTopComponent: PropTypes.func.isRequired,
 };
 export default function AddingDevsForm(props) {
+	const currentProject = useContext(ProjectContext);
 	const [requestBody, setRequestBody] = useState(null);
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/teams_members/", requestBody);
@@ -54,6 +57,7 @@ export default function AddingDevsForm(props) {
 						<SearchField
 							multiple
 							fetchUrl="api/users/"
+							partOfProjectId={currentProject.projectId}
 							setSelecteResource={(id) => {
 								setFieldValue("devs", id);
 							}}

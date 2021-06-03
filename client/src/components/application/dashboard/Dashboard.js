@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, createContext } from "react";
 import {
 	Typography,
 	AppBar,
@@ -8,12 +8,15 @@ import {
 	Box,
 	makeStyles,
 } from "@material-ui/core";
-import { Switch, Route, useRouteMatch } from "react-router-dom";
+import { Switch, Route, useRouteMatch, useParams } from "react-router-dom";
 import { Menu } from "@material-ui/icons";
 import CustomDrawer from "components/subComponents/CustomDrawer";
 import Teams from "./teams/Teams";
 import Sprints from "./sprints/Sprints";
 import Backlog from "./backlog/Backlog";
+import ProjectContext from "contexts/ProjectContext";
+import AppMenuNav from "components/subComponents/AppMenuNav";
+
 const drawerWidth = "18rem";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard() {
 	let match = useRouteMatch();
 	const classes = useStyles();
+	let { projectId } = useParams();
 	const [mobileOpen, setmobileOpen] = useState(false);
 
 	function handleDrawerToggle() {
@@ -49,14 +53,26 @@ export default function Dashboard() {
 		<Box display="flex">
 			<AppBar className={classes.appBar} position="fixed">
 				<Toolbar>
-					<Hidden mdUp>
-						<IconButton color="inherit" onClick={handleDrawerToggle}>
-							<Menu />
-						</IconButton>
-					</Hidden>
-					<Typography variant="h6" noWrap>
-						Responsive drawer
-					</Typography>
+					<Box
+						width="100%"
+						display="flex"
+						alignItems="center"
+						justifyContent="space-between"
+					>
+						<Box>
+							<Hidden mdUp>
+								<IconButton color="inherit" onClick={handleDrawerToggle}>
+									<Menu />
+								</IconButton>
+							</Hidden>
+							<Typography variant="h6" noWrap>
+								Responsive drawer
+							</Typography>
+						</Box>
+						<Box>
+							<AppMenuNav />
+						</Box>
+					</Box>
 				</Toolbar>
 			</AppBar>
 			<CustomDrawer
@@ -66,16 +82,17 @@ export default function Dashboard() {
 			/>
 			<Box className={classes.content}>
 				<div className={classes.toolbar} />
-
-				<Switch>
-					<Route path={`${match.url}/teams`}>
-						<Teams />
-					</Route>
-					<Route path={`${match.url}/sprints`}>
-						<Sprints />
-					</Route>
-					<Route path={`${match.url}/backlog`} component={Backlog} />
-				</Switch>
+				<ProjectContext.Provider value={{ projectId: Number(projectId) }}>
+					<Switch>
+						<Route path={`${match.url}/teams`}>
+							<Teams />
+						</Route>
+						<Route path={`${match.url}/sprints`}>
+							<Sprints />
+						</Route>
+						<Route path={`${match.url}/backlog`} component={Backlog} />
+					</Switch>
+				</ProjectContext.Provider>
 			</Box>
 		</Box>
 	);

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useContext } from "react";
 import {
 	Box,
 	Breadcrumbs,
@@ -12,7 +12,7 @@ import TeamCard from "components/subComponents/TeamCard";
 import DialogForm from "components/subComponents/DialogForm";
 import { useGetFetch } from "customHooks/useFetch";
 import TeamCreationForm from "components/forms/TeamCreationForm";
-
+import PropTypes from "prop-types";
 import {
 	Link as RouterLink,
 	Switch,
@@ -20,6 +20,7 @@ import {
 	useRouteMatch,
 } from "react-router-dom";
 import TeamPage from "./TeamPage";
+import ProjectContext from "contexts/ProjectContext";
 const useStyles = makeStyles((theme) => ({
 	root: {
 		minWidth: "15rem",
@@ -46,11 +47,13 @@ function TeamComponentList(teamList) {
 		</>
 	);
 }
-export default function Teams() {
+
+export default function Teams(props) {
+	const currentProject = useContext(ProjectContext);
 	let match = useRouteMatch();
 	const classes = useStyles();
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
-	const getParams = useRef({ project_id: 71 });
+	const getParams = useRef({ project_id: currentProject.projectId });
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch("api/teams/", getParams.current);
 
@@ -67,6 +70,13 @@ export default function Teams() {
 					<TeamPage />
 				</Route>
 				<Route path={`${match.path}`}>
+					<DialogForm
+						title="Add new team"
+						open={openTeamCreation}
+						onClose={handleCancel}
+					>
+						<TeamCreationForm projectId={props.projectId} />
+					</DialogForm>
 					<Box
 						display="flex"
 						flexWrap="wrap"
@@ -102,13 +112,6 @@ export default function Teams() {
 						{isLoading ? "loading" : null}
 						{isRejected ? <Alert severity="error">{error} </Alert> : null}
 					</Box>
-					<DialogForm
-						title="Add new team"
-						open={openTeamCreation}
-						onClose={handleCancel}
-					>
-						<TeamCreationForm />
-					</DialogForm>
 				</Route>
 			</Switch>
 		</>

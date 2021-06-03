@@ -38,6 +38,7 @@ SearchField.propTypes = {
 	 * The url which which will be called with user's search input
 	 */
 	fetchUrl: PropTypes.string.isRequired,
+	partOfProjectId: PropTypes.number.isRequired,
 };
 export function SearchField({
 	optionLabel,
@@ -46,13 +47,14 @@ export function SearchField({
 	inputNode,
 	setSelecteResource,
 	fetchUrl,
+	partOfProjectId,
 	...other
 }) {
 	const [open, setOpen] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [options, setOptions] = useState([]);
 	const [startFetching, setStartFetching] = useState(false);
-	const getParams = useRef({ search: "", part_of_project_id: 73 });
+	const getParams = useRef({ search: "", part_of_project_id: partOfProjectId });
 
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch(fetchUrl, getParams.current, startFetching);

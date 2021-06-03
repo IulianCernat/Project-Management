@@ -16,13 +16,14 @@ import {
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import IssueRow from "./IssueRow";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import { green, pink, blue } from "@material-ui/core/colors";
 import IssueCreationForm from "components/forms/IssueCreationForm";
 import CreateSprintForm from "components/forms/CreateSprintForm";
 import DialogForm from "components/subComponents/DialogForm";
 import PropTypes from "prop-types";
+import ProjectContext from "contexts/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
 	table: {
@@ -105,7 +106,8 @@ function TableToolbar(props) {
 
 export default function Backlog() {
 	const classes = useStyles();
-	const getParams = useRef({ project_id: 71 });
+	const currentProject = useContext(ProjectContext);
+	const getParams = useRef({ project_id: currentProject.projectId });
 	const [issueUrlToBeDeleted, setIssueUrlToBeDeleted] = useState(null);
 	const [selectedIssues, setSelectedIssues] = useState([]);
 	const [openIssueCreationForm, setOpenIssueCreationForm] = useState(false);

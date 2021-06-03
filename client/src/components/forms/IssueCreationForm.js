@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -22,6 +22,8 @@ import {
 } from "../../utils/validationSchemas";
 import { usePostFetch, useGetFetch } from "../../customHooks/useFetch.js";
 import PropTypes from "prop-types";
+import ProjectContext from "contexts/ProjectContext";
+import { useAuth } from "contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
 	backdrop: {
@@ -66,9 +68,10 @@ IssueCreationForm.propTypes = {
 	insertCreation: PropTypes.func,
 };
 export default function IssueCreationForm({ onClose, insertCreation }) {
+	const currentProject = useContext(ProjectContext);
+	const { additionalUserInfo } = useAuth();
+
 	const [requestBody, setRequestBody] = useState(null);
-	const [priorityOption, setPriorityOption] = useState("1");
-	const [issueTypeOption, setIssueTypeOption] = useState("story");
 	const [newIssueId, setNewIssueId] = useState(null);
 	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] =
 		useState(false);
@@ -124,8 +127,8 @@ export default function IssueCreationForm({ onClose, insertCreation }) {
 					requestObj["created_at"] = new Date().toISOString();
 					requestObj["type"] = values.type;
 					requestObj["priority"] = values.priority;
-					requestObj["project_id"] = 71;
-					requestObj["creator_user_id"] = 3;
+					requestObj["project_id"] = currentProject.projectId;
+					requestObj["creator_user_id"] = additionalUserInfo.id;
 
 					const stringifiedData = JSON.stringify(requestObj);
 

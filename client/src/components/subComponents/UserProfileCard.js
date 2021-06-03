@@ -28,14 +28,14 @@ const useStyles = makeStyles((theme) => ({
 	},
 	avatar: {
 		backgroundColor: deepPurple[700],
-		width: "10rem",
-		height: "10rem",
+		width: "8rem",
+		height: "8rem",
 	},
 	paper: {
 		border: "5px dashed red",
 	},
 	avatarText: {
-		fontSize: "6rem",
+		fontSize: "4rem",
 	},
 
 	name: {
@@ -114,7 +114,7 @@ export default function UserProfileCard(props) {
 						flexDirection="column"
 						alignItems="center"
 					>
-						<Typography variant="h4" className={classes.name}>
+						<Typography variant="h7" className={classes.name}>
 							{props.user_profile.fullName}
 						</Typography>
 						<Typography variant="h6" className={classes.role}>

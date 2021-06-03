@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Box, Typography, Button, Grid, Paper, Link } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
@@ -30,7 +30,9 @@ export default function SignUpForm() {
 	});
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/users/", requestBody, headers.current);
-
+	useEffect(() => {
+		if (isResolved) history.push("/");
+	}, [isResolved]);
 	return (
 		<Paper elevation={3}>
 			<Box p={2}>

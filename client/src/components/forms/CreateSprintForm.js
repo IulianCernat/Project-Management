@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, makeStyles } from "@material-ui/core";
@@ -16,6 +16,9 @@ import {
 } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
 import { useRouteMatch, useHistory } from "react-router-dom";
+import { useAuth } from "contexts/AuthContext";
+import ProjectContext from "contexts/ProjectContext";
+import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
 	goal: sprintGoalValidSchema,
@@ -34,7 +37,10 @@ const sprintDurationOptions = (function () {
 	});
 	return options;
 })();
+
 export default function CreateSprintForm(props) {
+	const currentProject = useContext(ProjectContext);
+	const { additionalUserInfo } = useAuth();
 	let match = useRouteMatch();
 	let history = useHistory();
 	const [requestBody, setRequestBody] = useState(null);
@@ -86,8 +92,8 @@ export default function CreateSprintForm(props) {
 					requestObj["end_date"] = values.end_date.toISOString();
 					requestObj["goal"] = values.goal;
 					requestObj["created_at"] = new Date().toISOString();
-					requestObj["project_id"] = 71;
-					requestObj["user_creator_id"] = 3;
+					requestObj["project_id"] = currentProject.projectId;
+					requestObj["user_creator_id"] = additionalUserInfo.id;
 					requestObj["issues_ids"] = props.issuesIds;
 					console.log(values);
 					const stringifiedData = JSON.stringify(requestObj);

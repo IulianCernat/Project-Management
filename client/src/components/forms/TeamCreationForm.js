@@ -19,7 +19,8 @@ import {
 } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
-import CustomStepper from "../subComponents/CustomStepper";
+import PropTypes from "prop-types";
+import ProjectContext from "contexts/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
 	backdrop: {
@@ -35,6 +36,7 @@ const validationSchema = Yup.object({
 });
 
 export default function TeamCreationForm() {
+	const currentProject = useContext(ProjectContext);
 	const [requestBody, setRequestBody] = useState(null);
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/teams/", requestBody);
@@ -49,12 +51,11 @@ export default function TeamCreationForm() {
 				}}
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
-					console.log(values.scrum_master);
 					let requestObj = {};
 					requestObj["name"] = values.name;
 					requestObj["description"] = values.description;
 					requestObj["created_at"] = new Date().toISOString();
-					requestObj["project_id"] = 71;
+					requestObj["project_id"] = currentProject.projectId;
 					requestObj["scrum_master_id"] = JSON.parse(values.scrum_master).id;
 
 					const stringifiedData = JSON.stringify(requestObj);
@@ -76,6 +77,7 @@ export default function TeamCreationForm() {
 						/>
 						<SearchField
 							fetchUrl="api/users/"
+							partOfProjectId={currentProject.projectId}
 							setSelecteResource={(resource) => {
 								setFieldValue("scrum_master", resource);
 							}}

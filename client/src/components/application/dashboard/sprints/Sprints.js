@@ -14,15 +14,12 @@ import {
 	Button,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 import { useGetFetch, usePatchFetch } from "customHooks/useFetch";
-import { green, pink, blue } from "@material-ui/core/colors";
-import IssueCreationForm from "components/forms/IssueCreationForm";
-import DialogForm from "components/subComponents/DialogForm";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
 import { format } from "date-fns";
-
+import ProjectContext from "contexts/ProjectContext";
 const useStyles = makeStyles({
 	table: {
 		width: "100%",
@@ -199,7 +196,8 @@ function SprintHeader({
 	);
 }
 export default function Sprints() {
-	const getParams = useRef({ project_id: 71 });
+	const currentProject = useContext(ProjectContext);
+	const getParams = useRef({ project_id: currentProject.projectId });
 	const {
 		status: getSprintsStatus,
 		receivedData: getSprintsReceivedData,

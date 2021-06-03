@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import Iframe from "react-iframe";
 import {
 	Box,
@@ -65,6 +65,8 @@ function BoardList(props) {
 }
 
 export default function Board(props) {
+	const [startTrelloFetching, setStartTrelloFetching] = useState(false);
+	const [hideBoardAdditionform, setHideBoardAdditionform] = useState(true);
 	const getCardsparameters = useRef({
 		cards: "all",
 		members: true,
@@ -82,7 +84,7 @@ export default function Board(props) {
 	} = useGetFetch(
 		`https://api.trello.com/1/boards/${props.boardId}/cards`,
 		getCardsparameters.current,
-		true,
+		startTrelloFetching,
 		true
 	);
 	const getBoardListparameters = useRef({
@@ -102,10 +104,12 @@ export default function Board(props) {
 	} = useGetFetch(
 		`https://api.trello.com/1/boards/${props.boardId}/lists`,
 		getBoardListparameters.current,
-		true,
+		startTrelloFetching,
 		true
 	);
-	const [hideBoardAdditionform, setHideBoardAdditionform] = useState(true);
+	useEffect(() => {
+		if (props.boardId) setStartTrelloFetching(true);
+	}, [props.boardId]);
 
 	const handleFormAdditionClick = () => {
 		setHideBoardAdditionform((prev) => !prev);
@@ -129,10 +133,12 @@ export default function Board(props) {
 				</Box>
 			)}
 
-			{isRejectedGetCards ? (
-				<Alert severity="error">
-					<Typography>Couldnt't load trello board</Typography>
-				</Alert>
+			{isRejectedGetCards && !props.boardId ? (
+				<Box my={2}>
+					<Alert severity="error">
+						<Typography>Couldnt't load trello board</Typography>
+					</Alert>
+				</Box>
 			) : null}
 			{isLoadingGetCards || isLoadingGetLists ? (
 				<LinearProgress style={{ width: "100%" }} />
