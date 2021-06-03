@@ -26,30 +26,32 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TeamMembers() {
 	const { teamId } = useParams();
-	const [reRender, setReRender] = useState(false);
-	const [startFetching, setStartFetching] = useState(true);
+	const [devAdditionSuccess, setDevAdditionSuccess] = useState(false);
+	const [startFetchingDevs, setStartFetchingDevs] = useState(true);
 	const classes = useStyles();
 	const [openDevAddition, setOpenDevAddition] = useState(false);
 	const getParams = useRef({ team_id: teamId });
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch(`api/teams_members/`, getParams.current, startFetching);
+		useGetFetch(`api/teams_members/`, getParams.current, startFetchingDevs);
 
 	function openDevsAdditionForm() {
-		setStartFetching(false);
 		setOpenDevAddition(true);
 	}
 	function handleCancel() {
-		setStartFetching(false);
 		setOpenDevAddition(false);
 	}
 
 	useEffect(() => {
-		setStartFetching(false);
-	}, []);
+		if (devAdditionSuccess) {
+			setStartFetchingDevs(true);
+			handleCancel();
+			setDevAdditionSuccess(false);
+		}
+	}, [devAdditionSuccess]);
 
 	useEffect(() => {
-		setStartFetching(true);
-	}, [reRender]);
+		if (startFetchingDevs) setStartFetchingDevs(false);
+	}, [startFetchingDevs]);
 
 	return (
 		<Box className={classes.membersTab}>
@@ -59,6 +61,16 @@ export default function TeamMembers() {
 
 			{isResolved && (
 				<>
+					<DialogForm
+						title="Add new team member"
+						open={openDevAddition}
+						onClose={handleCancel}
+					>
+						<AddingDevsForm
+							teamId={teamId}
+							setDevAdditionSuccess={setDevAdditionSuccess}
+						/>
+					</DialogForm>
 					<Box flex="0 0 auto">
 						<Paper elevation={2}>
 							<Box
@@ -114,16 +126,6 @@ export default function TeamMembers() {
 							) : null}
 						</Box>
 					</Box>
-					<DialogForm
-						title="Add new team member"
-						open={openDevAddition}
-						onClose={handleCancel}
-					>
-						<AddingDevsForm
-							teamId={teamId}
-							setReRenderTopComponent={setReRender}
-						/>
-					</DialogForm>
 				</>
 			)}
 		</Box>

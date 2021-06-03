@@ -78,6 +78,7 @@ export default function Teams(props) {
 	useEffect(() => {
 		if (startFetchingTeams) setStartFetchingTeams(false);
 	}, [startFetchingTeams]);
+
 	return (
 		<>
 			<Switch>

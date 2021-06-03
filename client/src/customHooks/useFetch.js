@@ -122,7 +122,7 @@ export async function doGet(
 	}
 }
 
-export async function doDelete(url) {
+async function doDelete(url) {
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
 

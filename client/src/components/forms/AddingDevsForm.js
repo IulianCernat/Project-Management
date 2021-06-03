@@ -17,7 +17,7 @@ const validationSchema = Yup.object({
 
 AddingDevsForm.props = {
 	teamId: PropTypes.number.isRequired,
-	setReRenderTopComponent: PropTypes.func.isRequired,
+	setDevAdditionSuccess: PropTypes.func.isRequired,
 };
 export default function AddingDevsForm(props) {
 	const currentProject = useContext(ProjectContext);
@@ -26,7 +26,7 @@ export default function AddingDevsForm(props) {
 		usePostFetch("api/teams_members/", requestBody);
 
 	useEffect(() => {
-		if (isResolved) props.setReRenderTopComponent(true);
+		if (isResolved) props.setDevAdditionSuccess(true);
 	}, [isResolved]);
 
 	return (

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -20,14 +20,22 @@ const validationSchema = Yup.object({
 });
 
 TrelloBoardAdditionForm.propTypes = {
-	hideForm: PropTypes.func.isRequired,
 	teamId: PropTypes.number.isRequired,
+	setTrelloBoardAdditionSuccess: PropTypes.func.isRequired,
+	hideForm: PropTypes.func.isRequired,
+	setAddedBoardId: PropTypes.func.isRequired,
 };
 export default function TrelloBoardAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePatchFetch(`api/teams/${props.teamId}`, requestBody);
-
+	useEffect(() => {
+		if (isResolved) {
+			let addedBoardId = requestBody.split(":").pop();
+			addedBoardId = addedBoardId.slice(1, -2).trim();
+			props.setAddedBoardId(addedBoardId);
+		}
+	}, [isResolved]);
 	return (
 		<>
 			<Formik
@@ -90,7 +98,6 @@ export default function TrelloBoardAdditionForm(props) {
 					)}
 				</Form>
 			</Formik>
-			{isResolved && props.hideForm()}
 		</>
 	);
 }

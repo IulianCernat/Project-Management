@@ -15,6 +15,7 @@ import { useGetFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
 import TrelloBoardAdditionForm from "components/forms/TrelloBoardAdditionForm";
 import { useState } from "react";
+import { set } from "lodash";
 
 function BoardCard(props) {
 	return (
@@ -66,6 +67,7 @@ function BoardList(props) {
 
 export default function Board(props) {
 	const [startTrelloFetching, setStartTrelloFetching] = useState(false);
+	const [boardId, setBoardId] = useState(props.boardId);
 	const [hideBoardAdditionform, setHideBoardAdditionform] = useState(true);
 	const getCardsparameters = useRef({
 		cards: "all",
@@ -82,7 +84,7 @@ export default function Board(props) {
 		isResolved: isResolvedGetCards,
 		isRejected: isRejectedGetCards,
 	} = useGetFetch(
-		`https://api.trello.com/1/boards/${props.boardId}/cards`,
+		`https://api.trello.com/1/boards/${boardId}/cards`,
 		getCardsparameters.current,
 		startTrelloFetching,
 		true
@@ -102,7 +104,7 @@ export default function Board(props) {
 		isResolved: isResolvedGetLists,
 		isRejected: isRejectedGetLists,
 	} = useGetFetch(
-		`https://api.trello.com/1/boards/${props.boardId}/lists`,
+		`https://api.trello.com/1/boards/${boardId}/lists`,
 		getBoardListparameters.current,
 		startTrelloFetching,
 		true
@@ -111,9 +113,21 @@ export default function Board(props) {
 		if (props.boardId) setStartTrelloFetching(true);
 	}, [props.boardId]);
 
+	useEffect(() => {
+		if (Boolean(boardId)) {
+			setHideBoardAdditionform(true);
+			setStartTrelloFetching(true);
+		}
+	}, [boardId]);
+
+	useEffect(() => {
+		if (startTrelloFetching) setStartTrelloFetching(false);
+	}, [startTrelloFetching]);
+
 	const handleFormAdditionClick = () => {
 		setHideBoardAdditionform((prev) => !prev);
 	};
+	console.log(hideBoardAdditionform);
 	return (
 		<>
 			{hideBoardAdditionform ? (
@@ -128,6 +142,7 @@ export default function Board(props) {
 				<Box width="50ch">
 					<TrelloBoardAdditionForm
 						teamId={props.teamId}
+						setAddedBoardId={setBoardId}
 						hideForm={handleFormAdditionClick}
 					/>
 				</Box>

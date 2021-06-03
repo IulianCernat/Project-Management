@@ -35,6 +35,9 @@ const validationSchema = Yup.object({
 	scrum_master: generalInputString,
 });
 
+TeamCreationForm.propTypes = {
+	setTeamCreationSuccess: PropTypes.func.isRequired,
+};
 export default function TeamCreationForm(props) {
 	const currentProject = useContext(ProjectContext);
 	const [requestBody, setRequestBody] = useState(null);
@@ -42,10 +45,9 @@ export default function TeamCreationForm(props) {
 		usePostFetch("api/teams/", requestBody);
 
 	useEffect(() => {
-		if (isResolved) {
-			props.setTeamCreationSuccess(true);
-		}
+		if (isResolved) props.setTeamCreationSuccess(true);
 	}, [isResolved]);
+
 	return (
 		<>
 			<Formik
