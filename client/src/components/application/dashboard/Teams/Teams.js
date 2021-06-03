@@ -1,4 +1,4 @@
-import { useRef, useState, useContext } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import {
 	Box,
 	Breadcrumbs,
@@ -53,9 +53,12 @@ export default function Teams(props) {
 	let match = useRouteMatch();
 	const classes = useStyles();
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
+	const [startFetchingTeams, setStartFetchingTeams] = useState(true);
+	const [teamCreationSuccess, setTeamCreationSuccess] = useState(false);
+
 	const getParams = useRef({ project_id: currentProject.projectId });
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch("api/teams/", getParams.current);
+		useGetFetch("api/teams/", getParams.current, startFetchingTeams);
 
 	function openTeamCreationForm() {
 		setOpenTeamCreation(true);
@@ -63,6 +66,18 @@ export default function Teams(props) {
 	function handleCancel() {
 		setOpenTeamCreation(false);
 	}
+
+	useEffect(() => {
+		if (teamCreationSuccess) {
+			setStartFetchingTeams(true);
+			handleCancel();
+			setTeamCreationSuccess(false);
+		}
+	}, [teamCreationSuccess]);
+
+	useEffect(() => {
+		if (startFetchingTeams) setStartFetchingTeams(false);
+	}, [startFetchingTeams]);
 	return (
 		<>
 			<Switch>
@@ -75,7 +90,10 @@ export default function Teams(props) {
 						open={openTeamCreation}
 						onClose={handleCancel}
 					>
-						<TeamCreationForm projectId={props.projectId} />
+						<TeamCreationForm
+							setTeamCreationSuccess={setTeamCreationSuccess}
+							projectId={props.projectId}
+						/>
 					</DialogForm>
 					<Box>
 						<Button

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -35,12 +35,17 @@ const validationSchema = Yup.object({
 	scrum_master: generalInputString,
 });
 
-export default function TeamCreationForm() {
+export default function TeamCreationForm(props) {
 	const currentProject = useContext(ProjectContext);
 	const [requestBody, setRequestBody] = useState(null);
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/teams/", requestBody);
 
+	useEffect(() => {
+		if (isResolved) {
+			props.setTeamCreationSuccess(true);
+		}
+	}, [isResolved]);
 	return (
 		<>
 			<Formik

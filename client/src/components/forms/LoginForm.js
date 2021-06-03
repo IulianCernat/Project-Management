@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, Grid, Paper, Link } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
@@ -19,6 +19,11 @@ export default function LoginForm() {
 	const { login } = useAuth();
 	const [error, setError] = useState("");
 	const history = useHistory();
+	const [loginSuccessful, setLoginSuccesful] = useState(false);
+
+	useEffect(() => {
+		if (loginSuccessful) history.push("/");
+	}, [loginSuccessful]);
 
 	return (
 		<Paper elevation={3}>
@@ -33,10 +38,10 @@ export default function LoginForm() {
 					onSubmit={async (values, { setSubmitting }) => {
 						try {
 							await login(values.email, values.password);
-							history.push("/");
 							setSubmitting(false);
+							setLoginSuccesful(true);
 						} catch (err) {
-							console.log(err);
+							setError(err.toString());
 						}
 					}}
 				>
