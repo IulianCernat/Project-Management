@@ -64,7 +64,7 @@ async function processResponse(response) {
 	}
 }
 
-async function doPost(url, stringifiedData, headers = null) {
+export async function doPost(url, stringifiedData, headers = null) {
 	console.log(headers);
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
@@ -83,7 +83,7 @@ async function doPost(url, stringifiedData, headers = null) {
 	}
 }
 
-async function doPatch(url, stringifiedData) {
+export async function doPatch(url, stringifiedData) {
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
 		let response = await fetch(url, {
@@ -100,7 +100,7 @@ async function doPatch(url, stringifiedData) {
 	}
 }
 
-async function doGet(
+export async function doGet(
 	url,
 	parameters = null,
 	foreignUrl = false,
@@ -122,7 +122,7 @@ async function doGet(
 	}
 }
 
-async function doDelete(url) {
+export async function doDelete(url) {
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
 

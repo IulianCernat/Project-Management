@@ -6,6 +6,7 @@ from controllers.users_controller import *
 from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, user_filtering_args
 from utils.custom_exceptions import AuthorizationFailed
+
 users_namespace = api.namespace('users', description='Operations related to user profiles')
 
 
@@ -18,7 +19,6 @@ class ProfilesCollection(Resource):
     @api.expect(user_input, authorization_header)
     def post(self):
         try:
-
             token_id = request.headers.get('Authorization')
             decoded_token = verify_id_token(token_id)
         except AuthorizationFailed as e:
@@ -44,7 +44,7 @@ class ProfilesCollection(Resource):
 @users_namespace.route('/<id>')
 class ProfileItem(Resource):
 
-    @api.response(200, 'Users successfully queried',  user_output)
+    @api.response(200, 'Users successfully queried', user_output)
     @api.response(400, 'Bad request', bad_request)
     @api.marshal_with(user_output)
     def get(self, id):
@@ -54,7 +54,7 @@ class ProfileItem(Resource):
 
 @api.response(404, 'User not found', message)
 @users_namespace.route('/loggedUser')
-class LogedUser(Resource):
+class LogdedUser(Resource):
 
     @api.response(200, 'Users successfully queried', user_output)
     @api.response(400, 'Bad request', bad_request)
@@ -62,6 +62,10 @@ class LogedUser(Resource):
     @api.expect(authorization_header)
     @api.marshal_with(user_output)
     def get(self):
-        decoded_token = verify_id_token(request.headers)
+        try:
+            token_id = request.headers.get('Authorization')
+            decoded_token = verify_id_token(token_id)
+        except AuthorizationFailed as e:
+            raise e
 
         return get_self(decoded_token['uid'])

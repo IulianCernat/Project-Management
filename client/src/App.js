@@ -16,6 +16,7 @@ function App() {
 				<AuthProvider>
 					<Switch>
 						<PrivateRoute exact path="/" component={Profile} />
+						<PrivateRoute path="/project/:projectId" component={Dashboard} />
 						<Route path="/login">
 							<Login />
 						</Route>
@@ -28,14 +29,6 @@ function App() {
 					</Switch>
 				</AuthProvider>
 			</BrowserRouter>
-			{/* <BrowserRouter>
-				<Route path="/dashboard">
-					<Dashboard />
-				</Route>
-				<Route path="/profile">
-					<Profile />
-				</Route>
-			</BrowserRouter> */}
 		</>
 	);
 }

@@ -9,6 +9,7 @@ import {
 	projectDescriptionValidSchema,
 } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
 	backdrop: {
@@ -22,7 +23,10 @@ const validationSchema = Yup.object({
 	description: projectDescriptionValidSchema,
 });
 
-export default function ProjectCreationForm() {
+projectDescriptionValidSchema.propTypes = {
+	productOwnerid: PropTypes.number.isRequired,
+};
+export default function ProjectCreationForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/projects/", requestBody);
@@ -37,7 +41,7 @@ export default function ProjectCreationForm() {
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
 					values["created_at"] = new Date().toISOString();
-					values["product_owner_id"] = 3;
+					values["product_owner_id"] = props.productOwnerId;
 					const stringifiedData = JSON.stringify(values);
 					setRequestBody(stringifiedData);
 				}}

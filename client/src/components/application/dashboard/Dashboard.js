@@ -43,6 +43,7 @@ export default function Dashboard() {
 	function handleDrawerToggle() {
 		setmobileOpen(!mobileOpen);
 	}
+	console.log(match.path);
 
 	return (
 		<Box display="flex">
@@ -67,13 +68,13 @@ export default function Dashboard() {
 				<div className={classes.toolbar} />
 
 				<Switch>
-					<Route path={`${match.path}/teams`}>
+					<Route path={`${match.url}/teams`}>
 						<Teams />
 					</Route>
-					<Route path={`${match.path}/sprints`}>
+					<Route path={`${match.url}/sprints`}>
 						<Sprints />
 					</Route>
-					<Route path={`${match.path}/backlog`} component={Backlog} />
+					<Route path={`${match.url}/backlog`} component={Backlog} />
 				</Switch>
 			</Box>
 		</Box>

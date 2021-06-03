@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
-import { auth } from "../utils/firebase";
+import { auth } from "utils/firebase";
+import { doGet } from "customHooks/useFetch";
 
 const AuthContext = React.createContext();
 
@@ -10,7 +11,6 @@ export function useAuth() {
 export function AuthProvider({ children }) {
 	const [currentUser, setCurrentUser] = useState();
 	const [additionalUserInfo, setAdditionalUserInfo] = useState();
-	const [tokenId, setTokenId] = useState();
 	const [loading, setLoading] = useState(true);
 
 	function signUp(email, password) {
@@ -35,14 +35,12 @@ export function AuthProvider({ children }) {
 			if (user)
 				try {
 					let userIdToken = await user.getIdToken();
-					let response = await fetch("api/users/loggedUser", {
-						headers: {
-							Authorization: userIdToken,
-						},
-						method: "GET",
-					});
-					setTokenId(userIdToken);
-					let profile = await response.json();
+					let { error, receivedData: profile } = await doGet(
+						"api/users/loggedUser",
+						null,
+						false,
+						{ Authorization: userIdToken }
+					);
 					setAdditionalUserInfo(profile);
 				} catch (err) {
 					console.log(err);

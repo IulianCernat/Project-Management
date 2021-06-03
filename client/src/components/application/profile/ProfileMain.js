@@ -61,13 +61,22 @@ function TabPanel(props) {
 	const classes = useStyles();
 	const { children, value, index, ...other } = props;
 	const { additionalUserInfo } = useAuth();
+	const [startGetFecth, setStartGetFetch] = useState(true);
 	const getParams = useRef({
-		user_id: additionalUserInfo,
+		user_id: additionalUserInfo.id,
 		user_type: tabs[index],
 	});
 
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch("api/projects/", getParams.current);
+		useGetFetch("api/projects/", getParams.current, startGetFecth);
+
+	useEffect(() => {
+		setStartGetFetch(true);
+	}, [value]);
+
+	useEffect(() => {
+		setStartGetFetch(false);
+	}, [isResolved]);
 
 	return (
 		<Box
@@ -99,12 +108,11 @@ function TabPanel(props) {
 export default function ProfileMain() {
 	const [currentTab, setCurrentTab] = useState(0);
 	const [openProjectCreation, setOpenProjectCreation] = useState(false);
-
+	const { additionalUserInfo } = useAuth();
 	const classes = useStyles();
 
 	function handleTabChange(event, newTab) {
 		setCurrentTab(newTab);
-		console.log(newTab);
 	}
 
 	function openProjectCreationForm() {
@@ -140,7 +148,7 @@ export default function ProfileMain() {
 						open={openProjectCreation}
 						onClose={handleCancel}
 					>
-						<ProjectCreationForm />
+						<ProjectCreationForm productOwnerId={additionalUserInfo.id} />
 					</DialogForm>
 				</Box>
 			</TabPanel>
