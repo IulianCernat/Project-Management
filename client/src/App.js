@@ -5,6 +5,7 @@ import Login from "./components/authentication/Login";
 import SignUp from "./components/authentication/SignUp";
 import ForgotPassword from "./components/authentication/ForgotPassword";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ProjectProvider } from "contexts/ProjectContext";
 import PrivateRoute from "./utils/PrivateRoute";
 import Profile from "./components/application/profile/Profile";
 import Dashboard from "./components/application/dashboard/Dashboard";
@@ -15,8 +16,17 @@ function App() {
 			<BrowserRouter>
 				<AuthProvider>
 					<Switch>
-						<PrivateRoute exact path="/" component={Profile} />
-						<PrivateRoute path="/project/:projectId" component={Dashboard} />
+						<PrivateRoute exact path="/">
+							<ProjectProvider>
+								<Profile />
+							</ProjectProvider>
+						</PrivateRoute>
+						<PrivateRoute path="/project/:projectId">
+							<ProjectProvider>
+								<Dashboard />
+							</ProjectProvider>
+						</PrivateRoute>
+
 						<Route path="/login">
 							<Login />
 						</Route>

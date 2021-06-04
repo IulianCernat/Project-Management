@@ -20,7 +20,8 @@ import {
 	useRouteMatch,
 } from "react-router-dom";
 import TeamPage from "./TeamPage";
-import ProjectContext from "contexts/ProjectContext";
+import { useProjectContext } from "contexts/ProjectContext";
+
 const useStyles = makeStyles((theme) => ({
 	root: {
 		minWidth: "15rem",
@@ -49,14 +50,14 @@ function TeamComponentList(teamList) {
 }
 
 export default function Teams(props) {
-	const currentProject = useContext(ProjectContext);
+	const { currentUserRole, projectId } = useProjectContext();
 	let match = useRouteMatch();
 	const classes = useStyles();
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
 	const [startFetchingTeams, setStartFetchingTeams] = useState(true);
 	const [teamCreationSuccess, setTeamCreationSuccess] = useState(false);
 
-	const getParams = useRef({ project_id: currentProject.projectId });
+	const getParams = useRef({ project_id: projectId });
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch("api/teams/", getParams.current, startFetchingTeams);
 
@@ -85,27 +86,31 @@ export default function Teams(props) {
 				<Route path={`${match.path}/:teamId`}>
 					<TeamPage />
 				</Route>
-				<Route path={`${match.path}`}>
-					<DialogForm
-						title="Add new team"
-						open={openTeamCreation}
-						onClose={handleCancel}
-					>
-						<TeamCreationForm
-							setTeamCreationSuccess={setTeamCreationSuccess}
-							projectId={props.projectId}
-						/>
-					</DialogForm>
-					<Box>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={() => openTeamCreationForm()}
-						>
-							<Typography>Add new team</Typography>
-						</Button>
-					</Box>
 
+				<Route path={`${match.path}`}>
+					{currentUserRole === "productOwner" ? (
+						<>
+							<DialogForm
+								title="Add new team"
+								open={openTeamCreation}
+								onClose={handleCancel}
+							>
+								<TeamCreationForm
+									setTeamCreationSuccess={setTeamCreationSuccess}
+									projectId={projectId}
+								/>
+							</DialogForm>
+							<Box>
+								<Button
+									variant="contained"
+									color="primary"
+									onClick={() => openTeamCreationForm()}
+								>
+									<Typography>Add new team</Typography>
+								</Button>
+							</Box>
+						</>
+					) : null}
 					<Box
 						display="flex"
 						justifyContent="center"

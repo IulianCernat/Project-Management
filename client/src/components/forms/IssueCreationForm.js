@@ -66,9 +66,13 @@ const issuePriorityOptions = (function () {
 IssueCreationForm.propTypes = {
 	onClose: PropTypes.func,
 	insertCreation: PropTypes.func,
+	projectId: PropTypes.number.isRequired,
 };
-export default function IssueCreationForm({ onClose, insertCreation }) {
-	const currentProject = useContext(ProjectContext);
+export default function IssueCreationForm({
+	onClose,
+	insertCreation,
+	projectId,
+}) {
 	const { additionalUserInfo } = useAuth();
 
 	const [requestBody, setRequestBody] = useState(null);
@@ -127,7 +131,7 @@ export default function IssueCreationForm({ onClose, insertCreation }) {
 					requestObj["created_at"] = new Date().toISOString();
 					requestObj["type"] = values.type;
 					requestObj["priority"] = values.priority;
-					requestObj["project_id"] = currentProject.projectId;
+					requestObj["project_id"] = projectId;
 					requestObj["creator_user_id"] = additionalUserInfo.id;
 
 					const stringifiedData = JSON.stringify(requestObj);

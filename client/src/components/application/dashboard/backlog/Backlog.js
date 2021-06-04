@@ -23,7 +23,7 @@ import IssueCreationForm from "components/forms/IssueCreationForm";
 import CreateSprintForm from "components/forms/CreateSprintForm";
 import DialogForm from "components/subComponents/DialogForm";
 import PropTypes from "prop-types";
-import ProjectContext from "contexts/ProjectContext";
+import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
 	table: {
@@ -106,8 +106,8 @@ function TableToolbar(props) {
 
 export default function Backlog() {
 	const classes = useStyles();
-	const currentProject = useContext(ProjectContext);
-	const getParams = useRef({ project_id: currentProject.projectId });
+	const { projectId } = useProjectContext();
+	const getParams = useRef({ project_id: projectId });
 	const [issueUrlToBeDeleted, setIssueUrlToBeDeleted] = useState(null);
 	const [selectedIssues, setSelectedIssues] = useState([]);
 	const [openIssueCreationForm, setOpenIssueCreationForm] = useState(false);
@@ -197,6 +197,7 @@ export default function Backlog() {
 				onClose={handleCancelIssueCreation}
 			>
 				<IssueCreationForm
+					projectId={projectId}
 					onClose={handleCancelIssueCreation}
 					insertCreation={insertNewIssues}
 				/>
@@ -206,7 +207,7 @@ export default function Backlog() {
 				open={openSprintCreationForm}
 				onClose={handleCancelSprintCreation}
 			>
-				<CreateSprintForm issuesIds={selectedIssues} />
+				<CreateSprintForm projectId={projectId} issuesIds={selectedIssues} />
 			</DialogForm>
 
 			<Box>

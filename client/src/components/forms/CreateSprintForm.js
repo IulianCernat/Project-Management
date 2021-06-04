@@ -17,7 +17,7 @@ import {
 import { usePostFetch } from "../../customHooks/useFetch.js";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { useAuth } from "contexts/AuthContext";
-import ProjectContext from "contexts/ProjectContext";
+
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
@@ -38,8 +38,10 @@ const sprintDurationOptions = (function () {
 	return options;
 })();
 
+CreateSprintForm.propTypes = {
+	projectId: PropTypes.number.isRequired,
+};
 export default function CreateSprintForm(props) {
-	const currentProject = useContext(ProjectContext);
 	const { additionalUserInfo } = useAuth();
 	let match = useRouteMatch();
 	let history = useHistory();
@@ -92,10 +94,9 @@ export default function CreateSprintForm(props) {
 					requestObj["end_date"] = values.end_date.toISOString();
 					requestObj["goal"] = values.goal;
 					requestObj["created_at"] = new Date().toISOString();
-					requestObj["project_id"] = currentProject.projectId;
+					requestObj["project_id"] = props.projectId;
 					requestObj["user_creator_id"] = additionalUserInfo.id;
 					requestObj["issues_ids"] = props.issuesIds;
-					console.log(values);
 					const stringifiedData = JSON.stringify(requestObj);
 
 					setRequestBody(stringifiedData);

@@ -9,7 +9,6 @@ import { usePostFetch } from "../../customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
 import CustomStepper from "../subComponents/CustomStepper";
 import PropTypes from "prop-types";
-import ProjectContext from "contexts/ProjectContext";
 
 const validationSchema = Yup.object({
 	devs: generalInputString,
@@ -18,9 +17,9 @@ const validationSchema = Yup.object({
 AddingDevsForm.props = {
 	teamId: PropTypes.number.isRequired,
 	setDevAdditionSuccess: PropTypes.func.isRequired,
+	projectId: PropTypes.number.isRequired,
 };
 export default function AddingDevsForm(props) {
-	const currentProject = useContext(ProjectContext);
 	const [requestBody, setRequestBody] = useState(null);
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/teams_members/", requestBody);
@@ -57,7 +56,7 @@ export default function AddingDevsForm(props) {
 						<SearchField
 							multiple
 							fetchUrl="api/users/"
-							partOfProjectId={currentProject.projectId}
+							partOfProjectId={props.projectId}
 							setSelecteResource={(id) => {
 								setFieldValue("devs", id);
 							}}

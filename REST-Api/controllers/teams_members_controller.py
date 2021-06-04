@@ -1,6 +1,7 @@
 from database import db
 from database.models import TeamMember
 import zulu
+from sqlalchemy import desc
 
 def add_team_members(input_data):
     ids = []
@@ -13,7 +14,7 @@ def add_team_members(input_data):
     return ids
 
 def get_team_members(team_id):
-    return TeamMember.query.filter(TeamMember.team_id == team_id).all()
+    return TeamMember.query.filter(TeamMember.team_id == team_id).order_by(desc(TeamMember.user_type)).all()
 
 def get_team_member(team_member_id):
     return TeamMember.query.filter(TeamMember.id == team_member_id).one()

@@ -42,11 +42,17 @@ const tabs = {
 	1: "scrumMaster",
 	2: "developer",
 };
-function ProjectComponentList(projectList) {
+function ProjectComponentList(projectList, currentUserRole) {
 	return (
 		<>
 			{projectList.length
-				? projectList.map((item) => <ProjectCard key={item.id} {...item} />)
+				? projectList.map((item) => (
+						<ProjectCard
+							currentUserRole={currentUserRole}
+							key={item.id}
+							{...item}
+						/>
+				  ))
 				: null}
 		</>
 	);
@@ -95,7 +101,7 @@ function TabPanel(props) {
 					display="flex"
 					flexDirection="column"
 				>
-					{isResolved ? ProjectComponentList(receivedData) : null}
+					{isResolved ? ProjectComponentList(receivedData, tabs[index]) : null}
 					{isLoading ? "loading" : null}
 					{isRejected ? <Alert severity="error">{error} </Alert> : null}
 					{children}

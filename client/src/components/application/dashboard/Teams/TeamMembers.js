@@ -14,7 +14,9 @@ import UserProfile from "components/subComponents/UserProfileCard";
 import { indigo } from "@material-ui/core/colors";
 import DialogForm from "components/subComponents/DialogForm";
 import AddingDevsForm from "components/forms/AddingDevsForm";
+import ChangingScrumMasterForm from "components/forms/ChangingScrumMasterForm";
 import DevelopersList from "./DevelopersList";
+import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
 	membersTab: {
@@ -25,11 +27,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function TeamMembers() {
+	const { projectId } = useProjectContext();
 	const { teamId } = useParams();
+	const [scrumMasterChangingSuccess, setScrumMasterChangingSuccess] =
+		useState(false);
 	const [devAdditionSuccess, setDevAdditionSuccess] = useState(false);
 	const [startFetchingDevs, setStartFetchingDevs] = useState(true);
 	const classes = useStyles();
 	const [openDevAddition, setOpenDevAddition] = useState(false);
+	const [openScrumMasterChangingFrom, setOpenScrumMasterChangingFrom] =
+		useState(false);
 	const getParams = useRef({ team_id: teamId });
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch(`api/teams_members/`, getParams.current, startFetchingDevs);
@@ -37,17 +44,32 @@ export default function TeamMembers() {
 	function openDevsAdditionForm() {
 		setOpenDevAddition(true);
 	}
-	function handleCancel() {
+
+	function openScrumMasterChangingForm() {
+		setOpenScrumMasterChangingFrom(true);
+	}
+	function handleCancelOpenScrumMasterChanging() {
+		setOpenScrumMasterChangingFrom(false);
+	}
+	function handleCancelDevAddition() {
 		setOpenDevAddition(false);
 	}
 
 	useEffect(() => {
 		if (devAdditionSuccess) {
 			setStartFetchingDevs(true);
-			handleCancel();
+			handleCancelDevAddition();
 			setDevAdditionSuccess(false);
 		}
 	}, [devAdditionSuccess]);
+
+	useEffect(() => {
+		if (scrumMasterChangingSuccess) {
+			setStartFetchingDevs(true);
+			handleCancelOpenScrumMasterChanging();
+			setScrumMasterChangingSuccess(false);
+		}
+	}, [scrumMasterChangingSuccess]);
 
 	useEffect(() => {
 		if (startFetchingDevs) setStartFetchingDevs(false);
@@ -64,11 +86,23 @@ export default function TeamMembers() {
 					<DialogForm
 						title="Add new team member"
 						open={openDevAddition}
-						onClose={handleCancel}
+						onClose={handleCancelDevAddition}
 					>
 						<AddingDevsForm
 							teamId={teamId}
 							setDevAdditionSuccess={setDevAdditionSuccess}
+							projectId={projectId}
+						/>
+					</DialogForm>
+					<DialogForm
+						title="Change Scrum master"
+						open={openScrumMasterChangingFrom}
+						onClose={handleCancelOpenScrumMasterChanging}
+					>
+						<ChangingScrumMasterForm
+							teamId={teamId}
+							currentScrumMasterId={receivedData[0].id}
+							setScrumMasterChangingSuccess={setScrumMasterChangingSuccess}
 						/>
 					</DialogForm>
 					<Box flex="0 0 auto">
@@ -83,7 +117,13 @@ export default function TeamMembers() {
 							>
 								<Typography variant="h6">Scrum Master</Typography>
 
-								<Button variant="contained" color="primary">
+								<Button
+									variant="contained"
+									color="primary"
+									onClick={() => {
+										openScrumMasterChangingForm();
+									}}
+								>
 									<Typography>Change</Typography>
 								</Button>
 							</Box>
