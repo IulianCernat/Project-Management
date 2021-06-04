@@ -30,6 +30,7 @@ import { useState, useRef, useEffect } from "react";
 import { green, pink, blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
+import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
 	table: {
@@ -63,6 +64,8 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+const UIRestrictionForRoles = ["developer"];
+
 IssueRow.propTypes = {
 	/**
 	 * The issue object
@@ -92,6 +95,7 @@ const generatePriorityStars = (priorityNumber) => {
 };
 
 export default function IssueRow(props) {
+	const { currentUserRole } = useProjectContext();
 	const { row, selectedRows, handleSelectionClick, isBacklogIssue } = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
 	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
@@ -129,6 +133,7 @@ export default function IssueRow(props) {
 							onChange={(event) => {
 								handleSelectionClick(row.id);
 							}}
+							disabled={UIRestrictionForRoles.includes(currentUserRole)}
 						/>
 					</TableCell>
 				) : null}
@@ -184,6 +189,7 @@ export default function IssueRow(props) {
 							select
 							value={issueStatus}
 							onChange={handleChangeStatusClick}
+							disabled={UIRestrictionForRoles.includes(currentUserRole)}
 						>
 							<MenuItem value="done">
 								<Button variant="outlined" color="primary">
@@ -207,7 +213,10 @@ export default function IssueRow(props) {
 					{generatePriorityStars(row.priority)}
 				</TableCell>
 				<TableCell>
-					<IconButton onClick={(event) => props.handleDeleteIssueClick(row.id)}>
+					<IconButton
+						onClick={(event) => props.handleDeleteIssueClick(row.id)}
+						disabled={UIRestrictionForRoles.includes(currentUserRole)}
+					>
 						{isBacklogIssue ? (
 							<Tooltip title="Delete issue" arrow>
 								<DeleteForever />

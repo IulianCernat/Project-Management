@@ -105,7 +105,7 @@ export default function ProjectCard(props) {
 					}}
 					variant="contained"
 					color="primary"
-					to={`project/${props.id}`}
+					to={`dashboard`}
 					component={RouterLink}
 				>
 					View

@@ -25,11 +25,13 @@ const useStyles = makeStyles({
 		width: "100%",
 	},
 });
+const UIRestrictionForRoles = ["developer", "scrumMaster"];
 
 SprintTable.propTypes = {
 	sprint: PropTypes.object.isRequired,
+	currentUserRole: PropTypes.string.isRequired,
 };
-function SprintTable({ sprint }) {
+function SprintTable({ sprint, currentUserRole }) {
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
 	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
@@ -60,6 +62,7 @@ function SprintTable({ sprint }) {
 	return (
 		<TableContainer component={Paper}>
 			<SprintHeader
+				currentUserRole={currentUserRole}
 				name={sprint.name}
 				startDate={sprint.start_date}
 				duration={sprint.duration}
@@ -113,6 +116,7 @@ function SprintHeader({
 	goal,
 	isCompleted,
 	isStarted,
+	currentUserRole,
 }) {
 	const [requestBodyForUpdate, setRequesBodyForUpdate] = useState(null);
 	const [isStartedState, setIsStartedState] = useState(isCompleted);
@@ -170,6 +174,7 @@ function SprintHeader({
 							}}
 							variant="contained"
 							color="primary"
+							disabled={UIRestrictionForRoles.includes(currentUserRole)}
 						>
 							Start sprint
 						</Button>
@@ -180,6 +185,7 @@ function SprintHeader({
 							}}
 							variant="contained"
 							color="Secondary"
+							disabled={UIRestrictionForRoles.includes(currentUserRole)}
 						>
 							Complete sprint
 						</Button>
@@ -196,7 +202,7 @@ function SprintHeader({
 	);
 }
 export default function Sprints() {
-	const { projectId } = useProjectContext();
+	const { projectId, currentUserRole } = useProjectContext();
 	const getParams = useRef({ project_id: projectId });
 	const {
 		status: getSprintsStatus,
@@ -223,7 +229,11 @@ export default function Sprints() {
 						style={{ gap: "2rem" }}
 					>
 						{getSprintsReceivedData.map((item) => (
-							<SprintTable key={item.id} sprint={item} />
+							<SprintTable
+								currentUserRole={currentUserRole}
+								key={item.id}
+								sprint={item}
+							/>
 						))}
 					</Box>
 				</>

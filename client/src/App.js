@@ -15,28 +15,26 @@ function App() {
 			<CssBaseline />
 			<BrowserRouter>
 				<AuthProvider>
-					<Switch>
-						<PrivateRoute exact path="/">
-							<ProjectProvider>
+					<ProjectProvider>
+						<Switch>
+							<PrivateRoute exact path="/">
 								<Profile />
-							</ProjectProvider>
-						</PrivateRoute>
-						<PrivateRoute path="/project/:projectId">
-							<ProjectProvider>
+							</PrivateRoute>
+							<PrivateRoute path="/dashboard">
 								<Dashboard />
-							</ProjectProvider>
-						</PrivateRoute>
+							</PrivateRoute>
 
-						<Route path="/login">
-							<Login />
-						</Route>
-						<Route path="/signUp">
-							<SignUp />
-						</Route>
-						<Route path="/forgotPassword">
-							<ForgotPassword />
-						</Route>
-					</Switch>
+							<Route path="/login">
+								<Login />
+							</Route>
+							<Route path="/signUp">
+								<SignUp />
+							</Route>
+							<Route path="/forgotPassword">
+								<ForgotPassword />
+							</Route>
+						</Switch>
+					</ProjectProvider>
 				</AuthProvider>
 			</BrowserRouter>
 		</>

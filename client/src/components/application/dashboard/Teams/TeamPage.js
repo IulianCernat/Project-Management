@@ -14,6 +14,7 @@ import { useGetFetch } from "customHooks/useFetch";
 import TeamMembers from "./TeamMembers";
 import Board from "./Board";
 import { Alert } from "@material-ui/lab";
+import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
 	toolbar: theme.mixins.toolbar,
@@ -35,6 +36,8 @@ function TabPanel(props) {
 }
 
 export default function TeamPage() {
+	const { currentUserRole } = useProjectContext();
+
 	const classes = useStyles();
 	let { teamId } = useParams();
 	const [currentTab, setCurrentTab] = useState(0);
@@ -78,6 +81,7 @@ export default function TeamPage() {
 					</TabPanel>
 					<TabPanel value={currentTab} index={1}>
 						<Board
+							currentUserRole={currentUserRole}
 							teamId={receivedData.id}
 							boardId={receivedData.trello_board_id}
 						/>

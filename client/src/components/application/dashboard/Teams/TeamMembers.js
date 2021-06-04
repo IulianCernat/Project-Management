@@ -26,8 +26,10 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
+const UIRestrictionForRoles = ["developer", "scrumMaster"];
+
 export default function TeamMembers() {
-	const { projectId } = useProjectContext();
+	const { projectId, currentUserRole } = useProjectContext();
 	const { teamId } = useParams();
 	const [scrumMasterChangingSuccess, setScrumMasterChangingSuccess] =
 		useState(false);
@@ -101,6 +103,7 @@ export default function TeamMembers() {
 					>
 						<ChangingScrumMasterForm
 							teamId={teamId}
+							projectId={projectId}
 							currentScrumMasterId={receivedData[0].id}
 							setScrumMasterChangingSuccess={setScrumMasterChangingSuccess}
 						/>
@@ -123,6 +126,7 @@ export default function TeamMembers() {
 									onClick={() => {
 										openScrumMasterChangingForm();
 									}}
+									disabled={UIRestrictionForRoles.includes(currentUserRole)}
 								>
 									<Typography>Change</Typography>
 								</Button>
@@ -148,6 +152,7 @@ export default function TeamMembers() {
 									variant="contained"
 									color="primary"
 									onClick={() => openDevsAdditionForm()}
+									disabled={UIRestrictionForRoles.includes(currentUserRole)}
 								>
 									<Typography>Add new developers</Typography>
 								</Button>
@@ -162,7 +167,10 @@ export default function TeamMembers() {
 							flexWrap="wrap"
 						>
 							{isResolved && receivedData?.length ? (
-								<DevelopersList developers={receivedData.slice(1)} />
+								<DevelopersList
+									currentUserRole={currentUserRole}
+									developers={receivedData.slice(1)}
+								/>
 							) : null}
 						</Box>
 					</Box>

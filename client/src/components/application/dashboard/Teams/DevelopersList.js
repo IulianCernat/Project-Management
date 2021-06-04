@@ -33,9 +33,11 @@ const useStyles = makeStyles((theme) => ({
 		height: 100,
 	},
 }));
+const UIRestrictionForRoles = ["developer", "scrumMaster"];
 
 DevelopersList.propTypes = {
 	developers: PropTypes.arrayOf(PropTypes.any),
+	currentUserRole: PropTypes.string.isRequired,
 };
 
 export default function DevelopersList(props) {
@@ -74,20 +76,22 @@ export default function DevelopersList(props) {
 					width={"30ch"}
 					{...item}
 					backdrop={
-						<Backdrop className={classes.backdrop}>
-							<IconButton
-								color="secondary"
-								onClick={() => {
-									handleDeletionClick(item.id);
-								}}
-							>
-								{isLoading ? (
-									<CircularProgress />
-								) : (
-									<DeleteForever fontSize="large" />
-								)}
-							</IconButton>
-						</Backdrop>
+						UIRestrictionForRoles.includes(props.currentUserRole) ? null : (
+							<Backdrop className={classes.backdrop}>
+								<IconButton
+									color="secondary"
+									onClick={() => {
+										handleDeletionClick(item.id);
+									}}
+								>
+									{isLoading ? (
+										<CircularProgress />
+									) : (
+										<DeleteForever fontSize="large" />
+									)}
+								</IconButton>
+							</Backdrop>
+						)
 					}
 				/>
 			</Box>

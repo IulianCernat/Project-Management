@@ -15,7 +15,8 @@ import { useGetFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
 import TrelloBoardAdditionForm from "components/forms/TrelloBoardAdditionForm";
 import { useState } from "react";
-import { set } from "lodash";
+
+const UIRestrictionForRoles = ["developer"];
 
 function BoardCard(props) {
 	return (
@@ -135,6 +136,7 @@ export default function Board(props) {
 					variant="contained"
 					color="primary"
 					onClick={handleFormAdditionClick}
+					disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
 				>
 					Link your public trello board
 				</Button>

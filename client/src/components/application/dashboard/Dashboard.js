@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard(props) {
 	let match = useRouteMatch();
 	const { projectName } = useProjectContext();
-	console.log(projectName);
 	const classes = useStyles();
 
 	const [mobileOpen, setmobileOpen] = useState(false);

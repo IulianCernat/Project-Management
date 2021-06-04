@@ -29,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
 	toolbar: theme.mixins.toolbar,
 }));
 
+const UIRestrictionForRoles = ["developer"];
+
 function TeamComponentList(teamList) {
 	let match = useRouteMatch();
 	return (
@@ -88,29 +90,27 @@ export default function Teams(props) {
 				</Route>
 
 				<Route path={`${match.path}`}>
-					{currentUserRole === "productOwner" ? (
-						<>
-							<DialogForm
-								title="Add new team"
-								open={openTeamCreation}
-								onClose={handleCancel}
-							>
-								<TeamCreationForm
-									setTeamCreationSuccess={setTeamCreationSuccess}
-									projectId={projectId}
-								/>
-							</DialogForm>
-							<Box>
-								<Button
-									variant="contained"
-									color="primary"
-									onClick={() => openTeamCreationForm()}
-								>
-									<Typography>Add new team</Typography>
-								</Button>
-							</Box>
-						</>
-					) : null}
+					<DialogForm
+						title="Add new team"
+						open={openTeamCreation}
+						onClose={handleCancel}
+					>
+						<TeamCreationForm
+							setTeamCreationSuccess={setTeamCreationSuccess}
+							projectId={projectId}
+						/>
+					</DialogForm>
+					<Box>
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={() => openTeamCreationForm()}
+							disabled={UIRestrictionForRoles.includes(currentUserRole)}
+						>
+							<Typography>Add new team</Typography>
+						</Button>
+					</Box>
+
 					<Box
 						display="flex"
 						justifyContent="center"

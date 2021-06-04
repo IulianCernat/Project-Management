@@ -57,11 +57,13 @@ const useStyles = makeStyles((theme) => ({
 		backgroundColor: lighten(theme.palette.secondary.light, 0.85),
 	},
 }));
+const UIRestrictionForRoles = ["developer"];
 
 TableToolbar.propTypes = {
 	numIssuesSelected: PropTypes.number.isRequired,
 	openIssueCreationDialog: PropTypes.func.isRequired,
 	openSprintCreationDialog: PropTypes.func.isRequired,
+	currentUserRole: PropTypes.string.isRequired,
 };
 function TableToolbar(props) {
 	const { numIssuesSelected, openIssueCreationDialog } = props;
@@ -80,6 +82,7 @@ function TableToolbar(props) {
 								onClick={() => {
 									props.openSprintCreationDialog();
 								}}
+								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
 							>
 								<Typography>Create sprint</Typography>
 							</Button>
@@ -93,6 +96,7 @@ function TableToolbar(props) {
 								}}
 								variant="contained"
 								color="primary"
+								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
 							>
 								<Typography>Create issue</Typography>
 							</Button>
@@ -106,7 +110,7 @@ function TableToolbar(props) {
 
 export default function Backlog() {
 	const classes = useStyles();
-	const { projectId } = useProjectContext();
+	const { projectId, currentUserRole } = useProjectContext();
 	const getParams = useRef({ project_id: projectId });
 	const [issueUrlToBeDeleted, setIssueUrlToBeDeleted] = useState(null);
 	const [selectedIssues, setSelectedIssues] = useState([]);
@@ -223,6 +227,7 @@ export default function Backlog() {
 						openIssueCreationDialog={openIssueCreationDialog}
 						openSprintCreationDialog={openSprintCreationDialog}
 						numIssuesSelected={selectedIssues.length}
+						currentUserRole={currentUserRole}
 					/>
 					{getIssuesReceivedData?.length ? (
 						<Table className={classes.table}>
