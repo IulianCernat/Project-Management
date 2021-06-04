@@ -1,8 +1,9 @@
 from flask_restx import Resource
 from flask import request
 from utils.restx import api
-from utils.serializers import project_input, message, bad_request, project_output, location
+from utils.serializers import project_input, message, bad_request, project_output, location, user_role_output
 from controllers.projects_controller import *
+from controllers.users_controller import get_user_id
 from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, projects_sorting_arguments
 from utils.custom_exceptions import AuthorizationFailed
@@ -15,7 +16,6 @@ projects_namespace = api.namespace('projects', description='Operations related t
 @api.response(404, 'Projects not found', message)
 class ProjectsCollection(Resource):
     @api.response(201, 'Project successfully created', location)
-    @api.response(401, 'Authorization failed', message)
     @api.expect(project_input)
     def post(self):
         input_data = request.json
@@ -39,3 +39,20 @@ class ProjectItem(Resource):
     @api.marshal_with(project_output)
     def get(self, id):
         return get_project(id)
+
+@api.response(404, 'Project not found', message)
+@projects_namespace.route('/<id>/role')
+class ProjectItemRole(Resource):
+    @api.response(200, 'Projects successfully queried', project_output)
+    @api.response(401, 'Authorization failed', message)
+    @api.marshal_with(user_role_output)
+    @api.expect(authorization_header)
+    def get(self, id):
+        # try:
+        #     token_id = request.headers.get('Authorization')
+        #     decoded_token = verify_id_token(token_id)
+        # except AuthorizationFailed as e:
+        #     raise e
+        decoded_token = {'uid': "zKFhABD96pPa1WBQfwUUw04Je1Y2"}
+        user_id = get_user_id(decoded_token['uid'])
+        return get_project_role(user_id, id)

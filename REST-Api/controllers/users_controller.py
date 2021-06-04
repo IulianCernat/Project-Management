@@ -35,3 +35,8 @@ def get_self(uid):
     user = User.query.filter(User.uid == uid).one()
 
     return user
+
+
+def get_user_id(uid):
+    user = User.query.filter(User.uid == uid).one()
+    return user.id

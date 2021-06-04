@@ -71,7 +71,8 @@ team_input = api.model('Team input', {
                            description="Date and time when the product owner submitted the team creation form",
                            ),
     'project_id': Integer(required=True, description="The id of the project which will have this team"),
-    'scrum_master_id': Integer(required=True, description="The id of the user who will be the scrum master of the team"),
+    'scrum_master_id': Integer(required=True,
+                               description="The id of the user who will be the scrum master of the team"),
     'trello_board_id': String(required=False, description="The public trello board id")
 })
 
@@ -137,4 +138,9 @@ sprint_update_input = api.model('Sprint fields to be updated', {
 
 ids_list_input = api.model("General ids list", {
     'ids': List(Integer, required=True, description="A general ids list that will be will have operations done on")
+})
+
+user_role_output = api.model("Project user role", {
+    "user_role": String(required=True, enum=["developer", "scruMaster", "productOwner"],
+                        description="What role does a user had inside a project")
 })

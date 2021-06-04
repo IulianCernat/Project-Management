@@ -23,3 +23,13 @@ def get_projects(user_id, user_type):
     if user_type in ['scrumMaster', 'developer']:
         return Project.query.join(Team).join(TeamMember).filter(TeamMember.user_type == user_type,
                                                                 TeamMember.user_id == user_id).all()
+
+
+def get_project_role(user_id, project_id):
+    product_owner_flag = Project.query.filter(Project.id == project_id,
+                                              Project.product_owner_id == user_id).one_or_none()
+    if product_owner_flag:
+        return "scrumMaster"
+    team_member_role = TeamMember.query.join(Team).filter(Team.project_id == project_id,
+                                                          TeamMember.user_id == user_id).one()
+    return {'user_role': team_member_role.user_type}
