@@ -128,7 +128,7 @@ export default function Board(props) {
 	const handleFormAdditionClick = () => {
 		setHideBoardAdditionform((prev) => !prev);
 	};
-	console.log(hideBoardAdditionform);
+
 	return (
 		<>
 			{hideBoardAdditionform ? (

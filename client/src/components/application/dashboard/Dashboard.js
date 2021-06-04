@@ -20,7 +20,7 @@ import CustomDrawer from "components/subComponents/CustomDrawer";
 import Teams from "./teams/Teams";
 import Sprints from "./sprints/Sprints";
 import Backlog from "./backlog/Backlog";
-import { useProjectContext } from "contexts/ProjectContext";
+import { useProjectContext, ProjectProvider } from "contexts/ProjectContext";
 import AppMenuNav from "components/subComponents/AppMenuNav";
 
 const drawerWidth = "18rem";
@@ -46,9 +46,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard(props) {
 	let match = useRouteMatch();
-	const { projectName } = useProjectContext();
+	const { projectId } = useParams();
 	const classes = useStyles();
-
 	const [mobileOpen, setmobileOpen] = useState(false);
 
 	function handleDrawerToggle() {
@@ -71,9 +70,7 @@ export default function Dashboard(props) {
 									<Menu />
 								</IconButton>
 							</Hidden>
-							<Typography variant="h6" noWrap>
-								{projectName}
-							</Typography>
+							<Typography variant="h6" noWrap></Typography>
 						</Box>
 						<Box>
 							<AppMenuNav />
@@ -88,16 +85,17 @@ export default function Dashboard(props) {
 			/>
 			<Box className={classes.content}>
 				<div className={classes.toolbar} />
-
-				<Switch>
-					<Route path={`${match.url}/teams`}>
-						<Teams />
-					</Route>
-					<Route path={`${match.url}/sprints`}>
-						<Sprints />
-					</Route>
-					<Route path={`${match.url}/backlog`} component={Backlog} />
-				</Switch>
+				<ProjectProvider projectId={projectId} currentUserRole="developer">
+					<Switch>
+						<Route path={`${match.url}/teams`}>
+							<Teams />
+						</Route>
+						<Route path={`${match.url}/sprints`}>
+							<Sprints />
+						</Route>
+						<Route path={`${match.url}/backlog`} component={Backlog} />
+					</Switch>
+				</ProjectProvider>
 			</Box>
 		</Box>
 	);

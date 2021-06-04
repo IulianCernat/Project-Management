@@ -14,7 +14,7 @@ import { useHistory, Link as RouterLink } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 
 export default function AppMenuNav() {
-	const { additionalUserInfo, logout } = useAuth();
+	const { additionalUserInfo, logout, currentUser } = useAuth();
 	const [openAppbardOptions, setOpenAppbarOptions] = useState(false);
 	const history = useHistory();
 

@@ -114,7 +114,7 @@ export default function UserProfileCard(props) {
 						flexDirection="column"
 						alignItems="center"
 					>
-						<Typography variant="h7" className={classes.name}>
+						<Typography variant="h6" className={classes.name}>
 							{props.user_profile.fullName}
 						</Typography>
 						<Typography variant="h6" className={classes.role}>
