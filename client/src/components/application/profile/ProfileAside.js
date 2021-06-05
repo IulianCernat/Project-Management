@@ -12,6 +12,7 @@ import { useAuth } from "contexts/AuthContext";
 import Avatar from "../../subComponents/Avatar";
 import TextDisplayWrapper from "../../subComponents/TextDisplayWrapper";
 import { useHistory } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
 	identity: {
@@ -24,8 +25,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function ProfileAside() {
-	const { additionalUserInfo, logout, currentUser } = useAuth();
+ProfileAside.propTypes = {
+	additionalUserInfo: PropTypes.object.isRequired,
+	currentUser: PropTypes.object.isRequired,
+};
+export default function ProfileAside(props) {
+	const { logout } = useAuth();
 
 	const history = useHistory();
 	async function handleLogout() {
@@ -44,10 +49,10 @@ export default function ProfileAside() {
 					<Grid item xs md={12}>
 						<Box className={classes.identity}>
 							<Box style={{ width: "10em", height: "10em" }}>
-								<Avatar url={additionalUserInfo.avatar_url} />
+								<Avatar url={props.additionalUserInfo.avatar_url} />
 							</Box>
 							<TextDisplayWrapper>
-								{additionalUserInfo.fullName}
+								{props.additionalUserInfo.fullName}
 							</TextDisplayWrapper>
 						</Box>
 						<Divider />
@@ -65,7 +70,7 @@ export default function ProfileAside() {
 						<Grid item>
 							<Typography variant="h6">Contact</Typography>
 							<Typography>
-								{additionalUserInfo.contact || currentUser?.email}
+								{props.additionalUserInfo.contact || props.currentUser?.email}
 							</Typography>
 						</Grid>
 

@@ -1,9 +1,15 @@
 import { useState } from "react";
-import { Box, Grid, makeStyles, Container } from "@material-ui/core";
+import {
+	Box,
+	Grid,
+	makeStyles,
+	Container,
+	LinearProgress,
+} from "@material-ui/core";
 import ProfileAside from "./ProfileAside";
 import ProfileMain from "./ProfileMain";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useHistory } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -14,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Profile() {
 	const classes = useStyles();
+	const { additionalUserInfo, currentUser } = useAuth();
 
 	return (
 		<Container
@@ -21,17 +28,27 @@ export default function Profile() {
 			className={classes.container}
 			maxWidth="lg"
 		>
-			<Box>
-				<Grid container justify="space-evenly">
-					<Grid item xs={false} md={12} style={{ minHeight: "10em" }} />
-					<Grid item xs={12} md={3}>
-						<ProfileAside />
+			{additionalUserInfo && currentUser ? (
+				<Box>
+					<Grid container justify="space-evenly">
+						<Grid item xs={false} md={12} style={{ minHeight: "10em" }} />
+						<Grid item xs={12} md={3}>
+							<ProfileAside
+								additionalUserInfo={additionalUserInfo}
+								currentUser={currentUser}
+							/>
+						</Grid>
+						<Grid item xs={12} md={8}>
+							<ProfileMain
+								additionalUserInfo={additionalUserInfo}
+								currentUser={currentUser}
+							/>
+						</Grid>
 					</Grid>
-					<Grid item xs={12} md={8}>
-						<ProfileMain />
-					</Grid>
-				</Grid>
-			</Box>
+				</Box>
+			) : (
+				<LinearProgress />
+			)}
 		</Container>
 	);
 }

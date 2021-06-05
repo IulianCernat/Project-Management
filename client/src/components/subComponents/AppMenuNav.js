@@ -60,7 +60,7 @@ export default function AppMenuNav() {
 					>
 						<Button variant="contained">
 							<Link
-								color="text-primary"
+								color="textPrimary"
 								underline="none"
 								to="/"
 								component={RouterLink}

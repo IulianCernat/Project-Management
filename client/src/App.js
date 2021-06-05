@@ -15,12 +15,13 @@ function App() {
 			<BrowserRouter>
 				<AuthProvider>
 					<Switch>
-						<PrivateRoute exact path="/">
-							<Profile />
-						</PrivateRoute>
-						<PrivateRoute path="/dashboard/project/:projectId">
-							<Dashboard />
-						</PrivateRoute>
+						<PrivateRoute exact path="/" component={Profile} />
+
+						<PrivateRoute
+							path="/dashboard/project/:projectId"
+							component={Dashboard}
+						/>
+
 						<Route path="/login">
 							<Login />
 						</Route>

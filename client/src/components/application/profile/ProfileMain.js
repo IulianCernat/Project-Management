@@ -62,14 +62,15 @@ TabPanel.propTypes = {
 	children: PropTypes.node,
 	index: PropTypes.any.isRequired,
 	value: PropTypes.any.isRequired,
+	additionalUserInfo: PropTypes.object.isRequired,
 };
 function TabPanel(props) {
 	const classes = useStyles();
 	const { children, value, index, ...other } = props;
-	const { additionalUserInfo } = useAuth();
+
 	const [startGetFecth, setStartGetFetch] = useState(true);
 	const getParams = useRef({
-		user_id: additionalUserInfo.id,
+		user_id: props.additionalUserInfo.id,
 		user_type: tabs[index],
 	});
 
@@ -111,10 +112,13 @@ function TabPanel(props) {
 	);
 }
 
-export default function ProfileMain() {
+ProfileMain.propTypes = {
+	additionalUserInfo: PropTypes.object.isRequired,
+	currentUser: PropTypes.object.isRequired,
+};
+export default function ProfileMain(props) {
 	const [currentTab, setCurrentTab] = useState(0);
 	const [openProjectCreation, setOpenProjectCreation] = useState(false);
-	const { additionalUserInfo } = useAuth();
 	const classes = useStyles();
 
 	function handleTabChange(event, newTab) {
@@ -144,7 +148,11 @@ export default function ProfileMain() {
 					<Tab label="Developer" />
 				</Tabs>
 			</AppBar>
-			<TabPanel value={currentTab} index={0}>
+			<TabPanel
+				additionalUserInfo={props.additionalUserInfo}
+				value={currentTab}
+				index={0}
+			>
 				<Box alignSelf="flex-end">
 					<Fab color="primary" onClick={openProjectCreationForm}>
 						<AddIcon />
@@ -154,12 +162,20 @@ export default function ProfileMain() {
 						open={openProjectCreation}
 						onClose={handleCancel}
 					>
-						<ProjectCreationForm productOwnerId={additionalUserInfo.id} />
+						<ProjectCreationForm productOwnerId={props.additionalUserInfo.id} />
 					</DialogForm>
 				</Box>
 			</TabPanel>
-			<TabPanel value={currentTab} index={1} />
-			<TabPanel value={currentTab} index={2} />
+			<TabPanel
+				additionalUserInfo={props.additionalUserInfo}
+				value={currentTab}
+				index={1}
+			/>
+			<TabPanel
+				additionalUserInfo={props.additionalUserInfo}
+				value={currentTab}
+				index={2}
+			/>
 		</Paper>
 	);
 }

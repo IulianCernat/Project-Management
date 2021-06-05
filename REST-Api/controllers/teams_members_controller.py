@@ -19,6 +19,8 @@ def get_team_members(team_id):
 def get_team_member(team_member_id):
     return TeamMember.query.filter(TeamMember.id == team_member_id).one()
 
+
+
 def delete_team_member(team_member_id):
     team_member = get_team_member(team_member_id)
     db.session.delete(team_member)

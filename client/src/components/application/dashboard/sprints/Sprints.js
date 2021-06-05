@@ -138,6 +138,7 @@ function SprintHeader({
 	const handleStartSprintClick = () => {
 		setRequesBodyForUpdate(JSON.stringify({ start: true }));
 	};
+
 	const handleCompleteSprintClick = () => {
 		setRequesBodyForUpdate(JSON.stringify({ completed: true }));
 	};

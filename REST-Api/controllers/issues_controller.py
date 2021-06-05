@@ -15,6 +15,15 @@ def get_issues(project_id):
         desc(Issue.created_at)).all()
 
 
+def get_nr_of_issues_for_project(project_id):
+    return Issue.query.filter(Issue.project_id == project_id).count()
+
+def get_nr_of_finished_issues_for_sprint(sprint_id):
+    return Issue.query.filter(Issue.sprint_id == sprint_id, Issue.status == 'done').count()
+
+def get_nr_of_finished_issues_for_project(project_id):
+    return Issue.query.filter(Issue.project_id == project_id, Issue.status == "done").count()
+
 def get_issue(issue_id):
     issue = Issue.query.filter(Issue.id == issue_id).one()
     return issue
@@ -22,9 +31,11 @@ def get_issue(issue_id):
 
 def update_issue(issue_id, input_obj):
     issue = get_issue(issue_id)
-    if input_obj['sprint_id'] == 0:
+
+    if 'sprint_id' in input_obj and input_obj['sprint_id'] == 0:
         setattr(issue, 'sprint_id', None)
         del input_obj['sprint_id']
+
     for field, value in input_obj.items():
         setattr(issue, field, value)
 

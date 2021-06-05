@@ -21,6 +21,12 @@ def add_team(input_data):
 def get_team(team_id):
     return Team.query.filter(Team.id == team_id).one()
 
+def get_nr_of_members_for_project(project_id):
+    members_number = 0
+    teams = Team.query.filter(Team.project_id == project_id).all()
+    for team in teams:
+        members_number += len(team.team_members)
+    return members_number
 
 def get_teams(project_id):
     return Team.query.filter(Team.project_id == project_id).all()

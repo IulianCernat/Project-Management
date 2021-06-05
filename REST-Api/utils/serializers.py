@@ -34,7 +34,11 @@ project_input = api.model('Project input', {
 
 project_output = api.inherit('Project output', project_input, {
     'id': Integer(required=True, description="Project id"),
-    'progress': String(required=True, description="The percentage of project tasks that are done")
+    'total_nr_of_issues': Integer(required=True),
+    'nr_of_finished_issues': Integer(required=True,
+                                     description="Number of total issues with status 'done' for this project"),
+    'product_owner_profile': Nested(user_output, required=True),
+    'number_of_members': Integer(required=True)
 })
 
 page_of_projects = api.model('Page of projects', {

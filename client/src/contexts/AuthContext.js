@@ -1,15 +1,15 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, createContext, useState, useEffect } from "react";
 import { auth } from "utils/firebase";
 import { doGet } from "customHooks/useFetch";
 
-const AuthContext = React.createContext();
+const AuthContext = createContext();
 
 export function useAuth() {
 	return useContext(AuthContext);
 }
 
 export function AuthProvider({ children }) {
-	const [currentUser, setCurrentUser] = useState();
+	const [currentUser, setCurrentUser] = useState(null);
 	const [additionalUserInfo, setAdditionalUserInfo] = useState();
 	const [loading, setLoading] = useState(true);
 
@@ -32,6 +32,7 @@ export function AuthProvider({ children }) {
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged(async (user) => {
 			setCurrentUser(user);
+
 			if (user)
 				try {
 					const userIdToken = await user.getIdToken();

@@ -11,10 +11,6 @@ class User(db.Model):
     avatar_url = db.Column(db.String(255))
     contact = db.Column(db.String(255))
 
-    created_projects = db.relationship('Project', backref='users', lazy=True)
-    created_issues = db.relationship('Issue', lazy='select',
-                                     backref=db.backref('creator_user_profile', lazy='joined'))
-
     def __init__(self, uid, fullName, avatar_url=None, contact=None):
         self.uid = uid
         self.fullName = fullName
@@ -30,10 +26,10 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(500), nullable=False)
-    progress = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, nullable=False)
 
     product_owner_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
+    product_owner_profile = db.relationship('User', backref="projects", lazy=True)
 
     def __init__(self, input_obj):
         self.name = input_obj['name']
@@ -73,7 +69,7 @@ class TeamMember(db.Model):
     user_type = db.Column(db.Enum('developer', 'scrumMaster'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
-    user_profile = db.relationship('User', backref="users", lazy=True)
+    user_profile = db.relationship('User', backref="team_members", lazy=True)
 
     def __init__(self, input_obj):
         self.user_id = input_obj['user_id']

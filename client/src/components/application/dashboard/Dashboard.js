@@ -118,7 +118,7 @@ export default function Dashboard(props) {
 					<Box className={classes.content}>
 						<div className={classes.toolbar} />
 						<ProjectProvider
-							projectId={projectId}
+							projectId={Number(projectId)}
 							currentUserRole={getRoleReceivedData?.user_role}
 						>
 							<Switch>
