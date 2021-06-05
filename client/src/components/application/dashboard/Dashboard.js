@@ -80,6 +80,15 @@ export default function Dashboard(props) {
 		getRoleHeaders
 	);
 
+	const {
+		status: getProjectStatus,
+		receivedData: getProjectReceivedData,
+		error: getProjectError,
+		isLoading: isLoadingGetProject,
+		isResolved: isResolvedGetProject,
+		isRejected: isRejectedGetProject,
+	} = useGetFetch(`api/projects/${projectId}`);
+
 	function handleDrawerToggle() {
 		setmobileOpen(!mobileOpen);
 	}
@@ -102,7 +111,9 @@ export default function Dashboard(props) {
 											<Menu />
 										</IconButton>
 									</Hidden>
-									<Typography variant="h6" noWrap></Typography>
+									<Typography variant="h6">
+										{getProjectReceivedData.name}
+									</Typography>
 								</Box>
 								<Box>
 									<AppMenuNav />
@@ -134,12 +145,11 @@ export default function Dashboard(props) {
 									}}
 								/>
 								<Route path={`${match.url}/overview`}>
-									<Overview />
+									<Overview project={getProjectReceivedData} />
 								</Route>
 								<Route path={`${match.url}/teams`}>
 									<Teams />
 								</Route>
-
 								<Route path={`${match.url}/sprints`}>
 									<Sprints />
 								</Route>

@@ -18,6 +18,7 @@ UserProfileCard.propTypes = {
 	width: PropTypes.string.isRequired,
 	user_profile: PropTypes.object.isRequired,
 	user_type: PropTypes.oneOf(["developer", "scrumMaster", "productOwner"]),
+	backdrop: PropTypes.node,
 };
 const useStyles = makeStyles((theme) => ({
 	root: {

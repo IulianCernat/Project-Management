@@ -79,7 +79,7 @@ function TabPanel(props) {
 
 	useEffect(() => {
 		setStartGetFetch(true);
-	}, [value]);
+	}, [value, props.additionalUserInfo]);
 
 	useEffect(() => {
 		setStartGetFetch(false);
