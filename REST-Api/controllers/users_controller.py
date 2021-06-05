@@ -1,5 +1,5 @@
 from database import db
-from database.models import User, TeamMember, Team
+from database.models import User, TeamMember, Team, Project
 from sqlalchemy import literal
 
 
@@ -25,8 +25,18 @@ def get_users_by_filters(keyword, part_of_project_id=None):
         return keyword_filtered_users
 
     for user in keyword_filtered_users:
-        q = TeamMember.query.join(Team).filter(Team.project_id == part_of_project_id, TeamMember.user_id == user.id)
-        setattr(user, 'is_part_of_project', bool(db.session.query(literal(True)).filter(q.exists()).scalar()))
+        is_team_member = TeamMember.query.join(Team).filter(Team.project_id == part_of_project_id,
+                                                            TeamMember.user_id == user.id)
+        is_team_member = bool(db.session.query(literal(True)).filter(is_team_member.exists()).scalar())
+
+        if is_team_member:
+            setattr(user, 'is_part_of_project', is_team_member)
+            break
+
+        is_product_owner = Project.query.filter(Project.id == part_of_project_id,Project.product_owner_id == user.id)
+        is_product_owner = bool(db.session.query(literal(True)).filter(is_product_owner.exists()).scalar())
+
+        setattr(user, 'is_part_of_project', is_product_owner)
 
     return keyword_filtered_users
 

@@ -43,16 +43,15 @@ class ProjectItem(Resource):
 @api.response(404, 'Project not found', message)
 @projects_namespace.route('/<id>/role')
 class ProjectItemRole(Resource):
-    @api.response(200, 'Projects successfully queried', project_output)
+    @api.response(200, 'Projects successfully queried', user_role_output)
     @api.response(401, 'Authorization failed', message)
     @api.marshal_with(user_role_output)
     @api.expect(authorization_header)
     def get(self, id):
-        # try:
-        #     token_id = request.headers.get('Authorization')
-        #     decoded_token = verify_id_token(token_id)
-        # except AuthorizationFailed as e:
-        #     raise e
-        decoded_token = {'uid': "zKFhABD96pPa1WBQfwUUw04Je1Y2"}
+        try:
+            token_id = request.headers.get('Authorization')
+            decoded_token = verify_id_token(token_id)
+        except AuthorizationFailed as e:
+            raise e
         user_id = get_user_id(decoded_token['uid'])
         return get_project_role(user_id, id)

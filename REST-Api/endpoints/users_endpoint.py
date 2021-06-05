@@ -54,7 +54,7 @@ class ProfileItem(Resource):
 
 @api.response(404, 'User not found', message)
 @users_namespace.route('/loggedUser')
-class LogdedUser(Resource):
+class LoggedUser(Resource):
 
     @api.response(200, 'Users successfully queried', user_output)
     @api.response(400, 'Bad request', bad_request)

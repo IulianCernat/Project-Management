@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
 			setCurrentUser(user);
 			if (user)
 				try {
-					let userIdToken = await user.getIdToken();
+					const userIdToken = await user.getIdToken();
 					let { error, receivedData: profile } = await doGet(
 						"api/users/loggedUser",
 						null,
