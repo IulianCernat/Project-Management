@@ -23,22 +23,18 @@ export default function Profile() {
 	const { additionalUserInfo, currentUser } = useAuth();
 
 	return (
-		<Container
-			disableGutters={true}
-			className={classes.container}
-			maxWidth="lg"
-		>
+		<Container className={classes.container} maxWidth="xl">
 			{additionalUserInfo && currentUser ? (
 				<Box>
-					<Grid container justify="space-evenly">
+					<Grid container justify="center" spacing={2}>
 						<Grid item xs={false} md={12} style={{ minHeight: "10em" }} />
-						<Grid item xs={12} md={3}>
+						<Grid item xs={12} md={3} xl={2}>
 							<ProfileAside
 								additionalUserInfo={additionalUserInfo}
 								currentUser={currentUser}
 							/>
 						</Grid>
-						<Grid item xs={12} md={8}>
+						<Grid item xs={12} md={8} xl={8}>
 							<ProfileMain
 								additionalUserInfo={additionalUserInfo}
 								currentUser={currentUser}

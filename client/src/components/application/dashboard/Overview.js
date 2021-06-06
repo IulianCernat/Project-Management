@@ -11,16 +11,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import UserProfileCard from "components/subComponents/UserProfileCard";
-import { purple, grey } from "@material-ui/core/colors";
-
+import CircularProgressWithLabel from "components/subComponents/Progress";
+import { purple } from "@material-ui/core/colors";
 const useStyles = makeStyles((theme) => ({
-	progressCirclePrimaryColor: {
-		color: purple[900],
-	},
-	progressCircleSecondaryColor: {
-		color: grey[300],
-	},
-
+	paper: { height: "100%" },
 	headlineText: {
 		marginRight: theme.spacing(1),
 	},
@@ -28,51 +22,7 @@ const useStyles = makeStyles((theme) => ({
 	headlineNumber: {
 		color: purple[900],
 	},
-	paper: { height: "100%" },
 }));
-
-function CircularProgressWithLabel(props) {
-	const classes = useStyles();
-
-	return (
-		<Box position="relative" display="inline-flex">
-			<Box position="absolute" top={0} left={0} bottom={0} right={0}>
-				<CircularProgress
-					classes={{ colorSecondary: classes.progressCircleSecondaryColor }}
-					color="secondary"
-					value={100}
-					variant="determinate"
-					size={props.size}
-				/>
-			</Box>
-			<CircularProgress
-				classes={{ colorPrimary: classes.progressCirclePrimaryColor }}
-				color="primary"
-				variant="determinate"
-				{...props}
-			/>
-
-			<Box
-				top={0}
-				left={0}
-				bottom={0}
-				right={0}
-				position="absolute"
-				display="flex"
-				alignItems="center"
-				flexDirection="column"
-				justifyContent="center"
-			>
-				<Typography variant="h6" color="textSecondary">
-					{`${Math.round(props.value)}%`}
-				</Typography>
-				<Typography variant="h6" color="textSecondary">
-					done
-				</Typography>
-			</Box>
-		</Box>
-	);
-}
 
 Overview.propTypes = {
 	project: PropTypes.object.isRequired,
@@ -80,7 +30,9 @@ Overview.propTypes = {
 export default function Overview({ project }) {
 	const classes = useStyles();
 	const progress = project.total_nr_of_issues
-		? (project.nr_of_finished_issues * 100) / project.total_nr_of_issues
+		? Math.round(
+				(project.nr_of_finished_issues * 100) / project.total_nr_of_issues
+		  )
 		: 0;
 	return (
 		<Grid container spacing={2}>
@@ -121,7 +73,20 @@ export default function Overview({ project }) {
 							<Typography gutterBottom align="center" variant="h5">
 								Progress
 							</Typography>
-							<CircularProgressWithLabel value={progress} size="10rem" />
+							<CircularProgressWithLabel
+								value={progress}
+								size="10rem"
+								label={
+									<Box>
+										<Typography variant="h6" color="textSecondary">
+											{`${progress}%`}
+										</Typography>
+										<Typography variant="h6" color="textSecondary">
+											done
+										</Typography>
+									</Box>
+								}
+							/>
 						</Box>
 						<Hidden smDown>
 							<Divider orientation="vertical" flexItem />

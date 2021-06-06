@@ -62,7 +62,7 @@ export default function AppMenuNav() {
 							<Link
 								color="textPrimary"
 								underline="none"
-								to="/"
+								to="/profile"
 								component={RouterLink}
 							>
 								Profile

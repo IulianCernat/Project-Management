@@ -1,56 +1,72 @@
+import { cloneElement } from "react";
 import {
 	CircularProgress,
 	Box,
 	Typography,
 	LinearProgress,
 } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { purple, grey } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 
-const BorderLinearProgress = withStyles((theme) => ({
-	root: {
-		height: "0.5rem",
-		borderRadius: theme.spacing(1),
-		flex: 1,
+const useStyles = makeStyles((theme) => ({
+	progressCirclePrimaryColor: {
+		color: purple[900],
 	},
-	colorPrimary: {
-		backgroundColor: theme.palette.grey[400],
+	progressCircleSecondaryColor: {
+		color: grey[300],
 	},
-	bar: {
-		borderRadius: theme.spacing(1),
-		backgroundColor: theme.palette.primary.main,
-	},
-}))(LinearProgress);
 
-export function LabelledCircularProgress(props) {
+	headlineText: {
+		marginRight: theme.spacing(1),
+	},
+
+	headlineNumber: {
+		color: purple[900],
+	},
+}));
+
+CircularProgressWithLabel.propTypes = {
+	size: PropTypes.string.isRequired,
+	value: PropTypes.number.isRequired,
+	label: PropTypes.any.isRequired,
+};
+export default function CircularProgressWithLabel({
+	label: LabelComponent,
+	...props
+}) {
+	const classes = useStyles();
+
 	return (
-		<Box display="inline-flex" position="relative">
-			<Box></Box>
-			<CircularProgress variant="determinate" {...props} />
+		<Box position="relative" display="inline-flex">
+			<Box position="absolute" top={0} left={0} bottom={0} right={0}>
+				<CircularProgress
+					classes={{ colorSecondary: classes.progressCircleSecondaryColor }}
+					color="secondary"
+					value={100}
+					variant="determinate"
+					size={props.size}
+				/>
+			</Box>
+			<CircularProgress
+				classes={{ colorPrimary: classes.progressCirclePrimaryColor }}
+				color="primary"
+				variant="determinate"
+				{...props}
+			/>
 
 			<Box
+				top={0}
+				left={0}
+				bottom={0}
+				right={0}
+				position="absolute"
 				display="flex"
 				alignItems="center"
+				flexDirection="column"
 				justifyContent="center"
-				alignContent="center"
-				position="absolute"
-				left={0}
-				right={0}
-				bottom={0}
-				top={0}
 			>
-				<Typography>{`${props.value}%`}</Typography>
-			</Box>
-		</Box>
-	);
-}
-
-export function LabelledLiniarProgress(props) {
-	return (
-		<Box display="flex" alignItems="center">
-			<BorderLinearProgress variant="determinate" {...props} />
-			<Box ml={1}>
-				<Typography>{`${props.value}% done`}</Typography>
+				{cloneElement(LabelComponent)}
 			</Box>
 		</Box>
 	);

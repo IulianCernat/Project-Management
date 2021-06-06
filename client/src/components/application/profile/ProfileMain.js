@@ -8,6 +8,7 @@ import {
 	Paper,
 	Typography,
 	Fab,
+	LinearProgress,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import AddIcon from "@material-ui/icons/Add";
@@ -28,13 +29,6 @@ const useStyles = makeStyles((theme) => ({
 		maxWidth: "100%",
 		wordWrap: "break-word",
 	},
-	tabPanel: {
-		display: "flex",
-		flexFlow: "column wrap",
-		"&>:not(:first-child)": {
-			marginTop: theme.spacing(2),
-		},
-	},
 }));
 
 const tabs = {
@@ -42,16 +36,14 @@ const tabs = {
 	1: "scrumMaster",
 	2: "developer",
 };
-function ProjectComponentList(projectList, currentUserRole) {
+function ProjectComponentList(projectList) {
 	return (
 		<>
 			{projectList.length
 				? projectList.map((item) => (
-						<ProjectCard
-							currentUserRole={currentUserRole}
-							key={item.id}
-							{...item}
-						/>
+						<Box key={item.id} flex="1 1 40ch">
+							<ProjectCard project={item} />
+						</Box>
 				  ))
 				: null}
 		</>
@@ -66,11 +58,11 @@ TabPanel.propTypes = {
 };
 function TabPanel(props) {
 	const classes = useStyles();
-	const { children, value, index, ...other } = props;
+	const { children, value, index, additionalUserInfo, ...other } = props;
 
 	const [startGetFecth, setStartGetFetch] = useState(true);
 	const getParams = useRef({
-		user_id: props.additionalUserInfo.id,
+		user_id: additionalUserInfo.id,
 		user_type: tabs[index],
 	});
 
@@ -79,7 +71,7 @@ function TabPanel(props) {
 
 	useEffect(() => {
 		setStartGetFetch(true);
-	}, [value, props.additionalUserInfo]);
+	}, [value, additionalUserInfo]);
 
 	useEffect(() => {
 		setStartGetFetch(false);
@@ -97,15 +89,21 @@ function TabPanel(props) {
 			{value === index && (
 				<Box
 					maxWidth="100%"
-					className={classes.tabPanel}
 					p={3}
 					display="flex"
-					flexDirection="column"
+					flexWrap="wrap"
+					justifyContent="center"
+					alignItems="center"
+					style={{ gap: "1rem" }}
 				>
-					{isResolved ? ProjectComponentList(receivedData, tabs[index]) : null}
-					{isLoading ? "loading" : null}
-					{isRejected ? <Alert severity="error">{error} </Alert> : null}
 					{children}
+					{isResolved ? ProjectComponentList(receivedData) : null}
+					{isLoading ? (
+						<Box width="100%">
+							<LinearProgress />
+						</Box>
+					) : null}
+					{isRejected ? <Alert severity="error">{error} </Alert> : null}
 				</Box>
 			)}
 		</Box>
@@ -153,10 +151,13 @@ export default function ProfileMain(props) {
 				value={currentTab}
 				index={0}
 			>
-				<Box alignSelf="flex-end">
-					<Fab color="primary" onClick={openProjectCreationForm}>
-						<AddIcon />
-					</Fab>
+				<Box alignSelf="center" width="100%">
+					<Box display="flex" justifyContent="center">
+						<Fab color="primary" onClick={openProjectCreationForm}>
+							<AddIcon />
+						</Fab>
+					</Box>
+
 					<DialogForm
 						title="Create project"
 						open={openProjectCreation}

@@ -1,101 +1,73 @@
 import { useEffect } from "react";
 import {
-	Paper,
 	Typography,
 	Box,
-	Divider,
-	Avatar,
-	useMediaQuery,
 	CardActionArea,
+	Card,
+	CardHeader,
+	Badge,
 } from "@material-ui/core";
-import AvatarGroup from "@material-ui/lab/AvatarGroup";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { LabelledLiniarProgress } from "../../components/subComponents/Progress";
-import TextDisplayWrapper from "../../components/subComponents/TextDisplayWrapper";
+import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
-import { useProjectContext } from "contexts/ProjectContext";
-const useStyles = makeStyles((theme) => ({
-	paper: {
-		maxWidth: "100%",
-		display: "flex",
-		flexFlow: "wrap",
-		padding: theme.spacing(2),
-		[theme.breakpoints.down("sm")]: {
-			flexDirection: "column",
-		},
-		"&:hover": {
-			backgroundColor: theme.palette.grey[200],
-			$divider: {
-				orientation: "horizontal",
-			},
-		},
-	},
-}));
+import { People } from "@material-ui/icons";
+import CircularProgressWithLabel from "components/subComponents/Progress";
 
 ProjectCard.propTypes = {
-	id: PropTypes.number.isRequired,
-	name: PropTypes.string.isRequired,
-	description: PropTypes.string.isRequired,
-	created_at: PropTypes.string.isRequired,
+	project: PropTypes.object.isRequired,
 };
-export default function ProjectCard(props) {
-	const classes = useStyles();
+export default function ProjectCard({ project }) {
+	const progressValue = project.total_nr_of_issues
+		? Math.round(
+				(project.nr_of_finished_issues * 100) / project.total_nr_of_issues
+		  )
+		: 0;
 
 	return (
-		<Paper elevation={3} className={classes.paper}>
+		<Card>
 			<CardActionArea
-				to={`dashboard/project/${props.id}`}
+				to={`dashboard/project/${project.id}`}
 				component={RouterLink}
 			>
-				<Box
-					maxWidth="100%"
-					flex={1}
-					display="flex"
-					flexDirection="column"
-					mr={1}
-				>
-					<Box flex={1}>
-						<Typography color="primary" variant="h6">
-							{props.name}
-						</Typography>
-					</Box>
-					<Box flex={1}>
-						<TextDisplayWrapper
-							variant="body1"
-							color="textSecondary"
-							align="left"
-						>
-							{props.description.substr(0, 100) + "..."}
-						</TextDisplayWrapper>
-					</Box>
+				<CardHeader
+					title={
+						<Box>
+							<Badge
+								style={{ float: "right" }}
+								showZero
+								color="primary"
+								badgeContent={project.number_of_members}
+							>
+								<People />
+							</Badge>
+							<Typography color="primary" variant="h6">
+								{project.name}
+							</Typography>
+						</Box>
+					}
+				/>
+				<Box p={2}>
+					<Typography variant="subtitle2">
+						{`${project.description.slice(0, 300)}...`}
+					</Typography>
 				</Box>
-				{/* <Divider flexItem orientation="vertical" /> */}
-
-				<Box
-					flex={1}
-					display="flex"
-					flexDirection="column"
-					justifyContent="flex-start"
-				>
-					<LabelledLiniarProgress value={50} />
-					<Box display="flex" mt={2}>
-						<Box flex={1}>
-							<AvatarGroup spacing="small" max={4}>
-								<Avatar alt="Remy Sharp" />
-								<Avatar alt="Travis Howard" />
-								<Avatar alt="Cindy Baker" />
-								<Avatar alt="Agnes Walker" />
-								<Avatar alt="Trevor Henderson" />
-							</AvatarGroup>
-						</Box>
-						<Box flex={1}>
-							<Typography align="right">Created at</Typography>
-							<Typography align="right">{props.created_at}</Typography>
-						</Box>
-					</Box>
+				<Box p={2} display="flex" justifyContent="center">
+					<CircularProgressWithLabel
+						value={progressValue}
+						size="6rem"
+						label={
+							<Box display="flex" flexDirection="column" alignItems="center">
+								<Typography variant="subtitle2" color="textSecondary">
+									{`${progressValue}%`}
+								</Typography>
+								<Typography variant="subtitle2" color="textSecondary">
+									done
+								</Typography>
+							</Box>
+						}
+					/>
 				</Box>
 			</CardActionArea>
-		</Paper>
+		</Card>
 	);
 }

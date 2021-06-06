@@ -11,23 +11,25 @@ const canvasStyling = {
 	display: "block",
 	top: 0,
 	left: 0,
+	bottom: 0,
+	right: 0,
 	zIndex: -1,
 };
 
 export default function FrontPage() {
-	// useEffect(() => {
-	// 	Particles.init({
-	// 		selector: ".background",
-	// 		connectParticles: true,
-	// 		color: "#88C8FF",
-	// 		speed: 0.2,
-	// 		minDistance: 160,
-	// 		sizeVariations: 5,
-	// 	});
-	// }, []);
+	useEffect(() => {
+		Particles.init({
+			selector: ".background",
+			connectParticles: true,
+			color: "#88C8FF",
+			speed: 0.2,
+			minDistance: 160,
+			sizeVariations: 5,
+		});
+	}, []);
 	return (
 		<>
-			{/* <canvas className="background" style={canvasStyling}></canvas> */}
+			<canvas className="background" style={canvasStyling}></canvas>
 			<Switch>
 				<Route exact path="/" component={Login} />
 				<Route path="/login" component={Login} />
