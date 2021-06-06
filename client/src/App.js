@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./utils/PrivateRoute";
 import Profile from "./components/application/profile/Profile";
 import Dashboard from "./components/application/dashboard/Dashboard";
+import FrontPage from "./components/application/frontPage/FrontPage";
 function App() {
 	return (
 		<>
@@ -15,22 +16,12 @@ function App() {
 			<BrowserRouter>
 				<AuthProvider>
 					<Switch>
-						<PrivateRoute exact path="/" component={Profile} />
-
+						<PrivateRoute exact path="/profile" component={Profile} />
 						<PrivateRoute
 							path="/dashboard/project/:projectId"
 							component={Dashboard}
 						/>
-
-						<Route path="/login">
-							<Login />
-						</Route>
-						<Route path="/signUp">
-							<SignUp />
-						</Route>
-						<Route path="/forgotPassword">
-							<ForgotPassword />
-						</Route>
+						<Route path="/" component={FrontPage} />
 					</Switch>
 				</AuthProvider>
 			</BrowserRouter>

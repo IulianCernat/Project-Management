@@ -36,7 +36,7 @@ export default function ProfileAside(props) {
 	async function handleLogout() {
 		try {
 			await logout();
-			history.push("/login");
+			history.push("/");
 		} catch (e) {
 			console.log(e);
 		}

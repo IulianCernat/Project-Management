@@ -31,112 +31,90 @@ export default function SignUpForm() {
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/users/", requestBody, headers.current);
 	useEffect(() => {
-		if (isResolved) history.push("/");
+		if (isResolved) history.push("/profile");
 	}, [isResolved]);
 	return (
-		<Paper elevation={3}>
-			<Box p={2}>
-				<Typography>Sign up for your account</Typography>
-				<Formik
-					initialValues={{
-						email: "",
-						fullName: "",
-						password: "",
-					}}
-					validationSchema={validationSchema}
-					onSubmit={async (values, { setSubmitting }) => {
-						try {
-							let userCredential = await signUp(values.email, values.password);
-							let userIdToken = await userCredential.user.getIdToken();
-							headers.current.Authorization = userIdToken;
-							let requestObj = {};
-							requestObj["fullName"] = values.fullName;
-							setRequestBody(JSON.stringify(requestObj));
-							setSubmitting(false);
-						} catch (err) {
-							setFirebaseError(err.toString());
-						}
-					}}
-				>
-					{({ values, isSubmitting }) => (
-						<Form>
-							<Grid direction="column" container spacing={2}>
-								<Grid item>
-									<TextFieldWrapper
-										variant="outlined"
-										margin="normal"
-										required
-										fullWidth
-										id="email"
-										label="Email Address"
-										name="email"
-										autoComplete="email"
-									/>
-								</Grid>
-								<Grid item xs={false} sm={6}>
-									<TextFieldWrapper
-										variant="outlined"
-										margin="normal"
-										required
-										fullWidth
-										name="fullName"
-										label="Full name"
-										type="text"
-										id="fullName"
-									/>
-								</Grid>
+		<>
+			<Typography>Sign up for your account</Typography>
+			<Formik
+				initialValues={{
+					email: "",
+					fullName: "",
+					password: "",
+				}}
+				validationSchema={validationSchema}
+				onSubmit={async (values, { setSubmitting }) => {
+					try {
+						let userCredential = await signUp(values.email, values.password);
+						let userIdToken = await userCredential.user.getIdToken();
+						headers.current.Authorization = userIdToken;
+						let requestObj = {};
+						requestObj["fullName"] = values.fullName;
+						setRequestBody(JSON.stringify(requestObj));
+						setSubmitting(false);
+					} catch (err) {
+						setFirebaseError(err.toString());
+					}
+				}}
+			>
+				{({ values, isSubmitting }) => (
+					<Form>
+						<TextFieldWrapper
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							id="email"
+							label="Email Address"
+							name="email"
+							autoComplete="email"
+						/>
 
-								<Grid item>
-									<TextFieldWrapper
-										variant="outlined"
-										margin="normal"
-										required
-										fullWidth
-										name="password"
-										label="Password"
-										type="password"
-										id="password"
-									/>
-								</Grid>
-								<Grid item>
-									<Button
-										type="submit"
-										fullWidth
-										variant="contained"
-										color="primary"
-										disabled={isSubmitting}
-									>
-										<Typography>Sign In</Typography>
-									</Button>
-								</Grid>
-								<Grid item>
-									<Link
-										onMouseDown={(event) => {
-											event.preventDefault();
-										}}
-										component={RouterLink}
-										to="/login"
-									>
-										<Typography align="center">
-											Already have an account? Login
-										</Typography>
-									</Link>
-									{isRejected && (
-										<Alert severity="error">
-											<Typography>{error}</Typography>
-										</Alert>
-									)}
-									{firebaseError && (
-										<Alert severity="error">
-											<Typography>{firebaseError}</Typography>
-										</Alert>
-									)}
-								</Grid>
-							</Grid>
-						</Form>
-					)}
-				</Formik>
-			</Box>
-		</Paper>
+						<TextFieldWrapper
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							name="fullName"
+							label="Full name"
+							type="text"
+							id="fullName"
+						/>
+
+						<TextFieldWrapper
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							name="password"
+							label="Password"
+							type="password"
+							id="password"
+						/>
+
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							color="primary"
+							disabled={isSubmitting}
+						>
+							<Typography>Sign up</Typography>
+						</Button>
+
+						{isRejected && (
+							<Alert severity="error">
+								<Typography>{error}</Typography>
+							</Alert>
+						)}
+						{firebaseError && (
+							<Alert severity="error">
+								<Typography>{firebaseError}</Typography>
+							</Alert>
+						)}
+					</Form>
+				)}
+			</Formik>
+		</>
 	);
 }

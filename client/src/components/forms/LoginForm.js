@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Alert } from "@material-ui/lab";
 import { Box, Typography, Button, Grid, Paper, Link } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
@@ -17,94 +18,75 @@ const validationSchema = Yup.object({
 
 export default function LoginForm() {
 	const { login } = useAuth();
-	const [error, setError] = useState("");
+	const [firebaseError, setFirebaseError] = useState(null);
 	const history = useHistory();
 	const [loginSuccessful, setLoginSuccesful] = useState(false);
 
 	useEffect(() => {
-		if (loginSuccessful) history.push("/");
+		if (loginSuccessful) history.push("/profile");
 	}, [loginSuccessful]);
 
 	return (
-		<Paper elevation={3}>
-			<Box p={5}>
-				<Typography>Login into your account</Typography>
-				<Formik
-					initialValues={{
-						email: "",
-						password: "",
-					}}
-					validationSchema={validationSchema}
-					onSubmit={async (values, { setSubmitting }) => {
-						try {
-							await login(values.email, values.password);
-							setSubmitting(false);
-							setLoginSuccesful(true);
-						} catch (err) {
-							setError(err.toString());
-						}
-					}}
-				>
-					{({ isSubmitting }) => (
-						<Form>
-							<TextFieldWrapper
-								variant="outlined"
-								margin="normal"
-								required
-								fullWidth
-								id="email"
-								label="Email Address"
-								name="email"
-								autoComplete="email"
-							/>
-							<TextFieldWrapper
-								variant="outlined"
-								margin="normal"
-								required
-								fullWidth
-								name="password"
-								label="Password"
-								type="password"
-								id="password"
-							/>
-							<Button
-								type="submit"
-								fullWidth
-								variant="contained"
-								color="primary"
-								disabled={isSubmitting}
-							>
-								<Typography>Sign In</Typography>
-							</Button>
-						</Form>
-					)}
-				</Formik>
+		<>
+			<Typography>Login into your account</Typography>
+			<Formik
+				initialValues={{
+					email: "",
+					password: "",
+				}}
+				validationSchema={validationSchema}
+				onSubmit={async (values, { setSubmitting }) => {
+					try {
+						await login(values.email, values.password);
+						setSubmitting(false);
+						setLoginSuccesful(true);
+					} catch (err) {
+						setFirebaseError(err.toString());
+					}
+				}}
+			>
+				{({ isSubmitting }) => (
+					<Form>
+						<TextFieldWrapper
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							id="email"
+							label="Email Address"
+							name="email"
+							autoComplete="email"
+						/>
+						<TextFieldWrapper
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							name="password"
+							label="Password"
+							type="password"
+							id="password"
+						/>
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							color="primary"
+							disabled={isSubmitting}
+						>
+							<Typography>Login</Typography>
+						</Button>
+					</Form>
+				)}
+			</Formik>
 
-				<Grid container justify="space-between" mt={8}>
-					<Grid item>
-						<Link
-							onMouseDown={(event) => {
-								event.preventDefault();
-							}}
-							component={RouterLink}
-							to="/forgotPassword"
-						>
-							Forgot password?
-						</Link>
-					</Grid>
-					<Grid item>
-						<Link
-							onMouseDown={(event) => {
-								event.preventDefault();
-							}}
-							component={RouterLink}
-							to="/signup"
-						>
-							<Typography>Don't have an account? Sign Up</Typography>
-						</Link>
-					</Grid>
-				</Grid>
+			<Box>
+				{firebaseError && (
+					<Alert severity="error">
+						<Typography>{firebaseError}</Typography>
+					</Alert>
+				)}
 			</Box>
-		</Paper>
+		</>
 	);
 }

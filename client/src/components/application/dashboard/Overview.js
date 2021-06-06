@@ -60,13 +60,15 @@ function CircularProgressWithLabel(props) {
 				position="absolute"
 				display="flex"
 				alignItems="center"
+				flexDirection="column"
 				justifyContent="center"
 			>
-				<Typography
-					variant="h6"
-					component="div"
-					color="textSecondary"
-				>{`${Math.round(props.value)}%`}</Typography>
+				<Typography variant="h6" color="textSecondary">
+					{`${Math.round(props.value)}%`}
+				</Typography>
+				<Typography variant="h6" color="textSecondary">
+					done
+				</Typography>
 			</Box>
 		</Box>
 	);
