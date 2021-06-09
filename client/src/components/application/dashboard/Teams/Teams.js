@@ -1,24 +1,12 @@
-import { useRef, useState, useContext, useEffect } from "react";
-import {
-	Box,
-	Breadcrumbs,
-	Typography,
-	makeStyles,
-	Link,
-	Button,
-} from "@material-ui/core";
+import { useRef, useState, useEffect } from "react";
+import { Box, Typography, makeStyles, Button } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import TeamCard from "components/subComponents/TeamCard";
 import DialogForm from "components/subComponents/DialogForm";
 import { useGetFetch } from "customHooks/useFetch";
 import TeamCreationForm from "components/forms/TeamCreationForm";
 import PropTypes from "prop-types";
-import {
-	Link as RouterLink,
-	Switch,
-	Route,
-	useRouteMatch,
-} from "react-router-dom";
+import { Switch, Route, useRouteMatch } from "react-router-dom";
 import TeamPage from "./TeamPage";
 import { useProjectContext } from "contexts/ProjectContext";
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Alert } from "@material-ui/lab";
-import { Box, Typography, Button, Grid, Paper, Link } from "@material-ui/core";
+import { Box, Typography, Button } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
@@ -8,7 +8,7 @@ import {
 	emailValidationSchema,
 	passwordValidationSchema,
 } from "../../utils/validationSchemas";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const validationSchema = Yup.object({
@@ -23,7 +23,7 @@ export default function LoginForm() {
 	const [loginSuccessful, setLoginSuccesful] = useState(false);
 
 	useEffect(() => {
-		if (loginSuccessful) history.push("/profile");
+		if (loginSuccessful) history.push("/");
 	}, [loginSuccessful]);
 
 	return (

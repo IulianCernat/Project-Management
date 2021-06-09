@@ -1,14 +1,7 @@
 import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import {
-	Button,
-	Typography,
-	Avatar,
-	Box,
-	Hidden,
-	makeStyles,
-} from "@material-ui/core";
+import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { trelloBoardUrlValidSchema } from "../../utils/validationSchemas";

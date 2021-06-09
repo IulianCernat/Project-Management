@@ -5,7 +5,6 @@ import {
 	Box,
 	Paper,
 	Typography,
-	CircularProgress,
 	Divider,
 	Hidden,
 } from "@material-ui/core";

@@ -1,24 +1,26 @@
+import { forwardRef, useMemo } from "react";
 import {
+	Divider,
 	List,
 	ListItem,
 	ListItemIcon,
 	ListItemText,
-	Typography,
 	makeStyles,
 } from "@material-ui/core";
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-import { Link } from "@material-ui/core";
-import { Home, GroupSharp, ViewList, Settings } from "@material-ui/icons";
+
+import {
+	Home,
+	GroupSharp,
+	ViewList,
+	Settings,
+	Dashboard,
+} from "@material-ui/icons";
 import { SiAffinitydesigner } from "react-icons/si";
 import { GiSprint } from "react-icons/gi";
-const useStyles = makeStyles((theme) => ({
-	listItem: {
-		fontWeight: 500,
-	},
-}));
 
 const iconArray = [
-	<Home />,
+	<Dashboard />,
 	<GroupSharp />,
 	<SiAffinitydesigner />,
 	<ViewList />,
@@ -34,36 +36,52 @@ const pageNames = [
 	"sprints",
 	"settings",
 ];
+
+function ListItemLink(props) {
+	const { icon, primary, to } = props;
+
+	const CustomLink = useMemo(
+		() =>
+			forwardRef((linkProps, ref) => (
+				<RouterLink ref={ref} to={to} {...linkProps} />
+			)),
+		[to]
+	);
+
+	return (
+		<ListItem button component={CustomLink}>
+			<ListItemIcon>{icon}</ListItemIcon>
+			<ListItemText primary={primary} />
+		</ListItem>
+	);
+}
+
 export default function DrawerListItems() {
-	const classes = useStyles();
 	let match = useRouteMatch();
 	return (
-		<List>
-			{[
-				"Overview",
-				"Teams",
-				"Architecture",
-				"Product Backlog",
-				"Sprints",
-				"Settings",
-			].map((text, index) => (
-				<ListItem button key={text}>
-					<ListItemIcon>{iconArray[index]}</ListItemIcon>
-					<ListItemText
-						disableTypography
-						primary={
-							<Typography className={classes.listItem}>
-								<Link
-									component={RouterLink}
-									to={`${match.url}/${pageNames[index]}`}
-								>
-									{text}
-								</Link>
-							</Typography>
-						}
+		<>
+			<List>
+				<ListItemLink primary="Profile" icon={<Home />} to={"/"} />
+			</List>
+
+			<Divider />
+			<List>
+				{[
+					"Overview",
+					"Teams",
+					"Architecture",
+					"Product Backlog",
+					"Sprints",
+					"Settings",
+				].map((text, index) => (
+					<ListItemLink
+						key={text}
+						primary={text}
+						icon={iconArray[index]}
+						to={`${match.url}/${pageNames[index]}`}
 					/>
-				</ListItem>
-			))}
-		</List>
+				))}
+			</List>
+		</>
 	);
 }

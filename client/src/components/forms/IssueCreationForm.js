@@ -1,13 +1,7 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import {
-	Button,
-	Typography,
-	Box,
-	MenuItem,
-	makeStyles,
-} from "@material-ui/core";
+import { Button, Typography, Box, makeStyles } from "@material-ui/core";
 
 import Alert from "@material-ui/lab/Alert";
 import {
@@ -22,7 +16,6 @@ import {
 } from "../../utils/validationSchemas";
 import { usePostFetch, useGetFetch } from "../../customHooks/useFetch.js";
 import PropTypes from "prop-types";
-import ProjectContext from "contexts/ProjectContext";
 import { useAuth } from "contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({

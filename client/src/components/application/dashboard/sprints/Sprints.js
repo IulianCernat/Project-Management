@@ -10,11 +10,10 @@ import {
 	makeStyles,
 	Box,
 	LinearProgress,
-	Toolbar,
 	Button,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { useRef, useState, useEffect, useContext } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGetFetch, usePatchFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";

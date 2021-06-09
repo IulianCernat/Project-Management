@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import IssueRow from "./IssueRow";
-import { useRef, useState, useEffect, useContext } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import { green, pink, blue } from "@material-ui/core/colors";
 import IssueCreationForm from "components/forms/IssueCreationForm";

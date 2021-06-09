@@ -1,9 +1,8 @@
 import React from "react";
-import { Box, Typography, Button, Grid, Paper, Link } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { Link as RouterLink } from "react-router-dom";
 import { emailValidationSchema } from "../../utils/validationSchemas";
 
 const validationSchema = Yup.object().shape({

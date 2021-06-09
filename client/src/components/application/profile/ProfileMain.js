@@ -6,7 +6,6 @@ import {
 	Tabs,
 	Tab,
 	Paper,
-	Typography,
 	Fab,
 	LinearProgress,
 } from "@material-ui/core";
@@ -18,7 +17,6 @@ import ProjectCard from "../../subComponents/ProjectCard";
 import DialogForm from "../../subComponents/DialogForm";
 import ProjectCreationForm from "../../forms/ProjectCreationForm";
 import { useGetFetch } from "../../../customHooks/useFetch";
-import { useAuth } from "contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
 	main: {

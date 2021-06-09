@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
 	Typography,
 	AppBar,
@@ -14,18 +14,17 @@ import {
 	useRouteMatch,
 	useParams,
 	Redirect,
-	useLocation,
 } from "react-router-dom";
 import { Menu } from "@material-ui/icons";
 import CustomDrawer from "components/subComponents/CustomDrawer";
 import Teams from "./teams/Teams";
 import Sprints from "./sprints/Sprints";
 import Backlog from "./backlog/Backlog";
-import { useProjectContext, ProjectProvider } from "contexts/ProjectContext";
+import { ProjectProvider } from "contexts/ProjectContext";
 import AppMenuNav from "components/subComponents/AppMenuNav";
 import { useGetFetch } from "customHooks/useFetch";
 import { useAuth } from "contexts/AuthContext";
-import { Alert } from "@material-ui/lab";
+import { deepPurple } from "@material-ui/core/colors";
 import Overview from "./Overview";
 
 const drawerWidth = "18rem";

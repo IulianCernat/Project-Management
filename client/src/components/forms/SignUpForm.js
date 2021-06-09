@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Box, Typography, Button, Grid, Paper, Link } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { usePostFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
@@ -31,7 +31,7 @@ export default function SignUpForm() {
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/users/", requestBody, headers.current);
 	useEffect(() => {
-		if (isResolved) history.push("/profile");
+		if (isResolved) history.push("/");
 	}, [isResolved]);
 	return (
 		<>

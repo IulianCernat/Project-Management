@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, Avatar, Box } from "@material-ui/core";
@@ -7,7 +7,6 @@ import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { generalInputString } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
-import CustomStepper from "../subComponents/CustomStepper";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({

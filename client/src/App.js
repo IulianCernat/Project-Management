@@ -16,7 +16,6 @@ function App() {
 			<BrowserRouter>
 				<AuthProvider>
 					<Switch>
-						<PrivateRoute exact path="/profile" component={Profile} />
 						<PrivateRoute
 							path="/dashboard/project/:projectId"
 							component={Dashboard}

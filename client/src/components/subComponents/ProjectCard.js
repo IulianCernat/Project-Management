@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
 	Typography,
 	Box,
@@ -7,7 +6,6 @@ import {
 	CardHeader,
 	Badge,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 import { People } from "@material-ui/icons";

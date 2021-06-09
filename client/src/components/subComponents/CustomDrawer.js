@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Drawer, Box, Hidden, makeStyles } from "@material-ui/core";
+import { Drawer, Hidden, makeStyles } from "@material-ui/core";
 import DrawerListItems from "./DrawerListItems";
 import PropTypes from "prop-types";
 
@@ -35,7 +34,17 @@ export default function CustomDrawer(props) {
 					variant="temporary"
 					onClose={props.handleDrawerToggle}
 				>
-					<DrawerListItems />
+					<div
+						role="presentation"
+						onClick={() => {
+							props.handleDrawerToggle();
+						}}
+						onKeyDown={() => {
+							props.handleDrawerToggle();
+						}}
+					>
+						<DrawerListItems />
+					</div>
 				</Drawer>
 			</Hidden>
 

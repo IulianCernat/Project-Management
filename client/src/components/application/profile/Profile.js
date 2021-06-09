@@ -4,12 +4,13 @@ import {
 	Grid,
 	makeStyles,
 	Container,
-	LinearProgress,
+	Typography,
 } from "@material-ui/core";
 import ProfileAside from "./ProfileAside";
 import ProfileMain from "./ProfileMain";
 import { useAuth } from "../../../contexts/AuthContext";
 import PropTypes from "prop-types";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -43,7 +44,9 @@ export default function Profile() {
 					</Grid>
 				</Box>
 			) : (
-				<LinearProgress />
+				<Alert severity="error">
+					<Typography>Failed to fetch user profile</Typography>
+				</Alert>
 			)}
 		</Container>
 	);

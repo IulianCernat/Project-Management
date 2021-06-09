@@ -1,14 +1,16 @@
 import { useEffect } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import Login from "components/authentication/Login";
 import SignUp from "components/authentication/SignUp";
 import ForgotPassword from "components/authentication/ForgotPassword";
 import Particles from "particlesjs";
+import PrivateRoute from "utils/PrivateRoute";
+import Profile from "components/application/profile/Profile";
+import { useAuth } from "contexts/AuthContext";
 
 const canvasStyling = {
 	backgroundColor: "#0F0B11",
 	position: "absolute",
-	display: "block",
 	top: 0,
 	left: 0,
 	bottom: 0,
@@ -17,6 +19,7 @@ const canvasStyling = {
 };
 
 export default function FrontPage() {
+	const { currentUser } = useAuth();
 	useEffect(() => {
 		Particles.init({
 			selector: ".background",
@@ -31,10 +34,25 @@ export default function FrontPage() {
 		<>
 			<canvas className="background" style={canvasStyling}></canvas>
 			<Switch>
-				<Route exact path="/" component={Login} />
-				<Route path="/login" component={Login} />
-				<Route path="/signup" component={SignUp} />
-				<Route path="/forgotPassword" component={ForgotPassword} />
+				<PrivateRoute exact path="/" component={Profile} />
+				<Route
+					path="/login"
+					render={() => {
+						return currentUser ? <Redirect to="/" /> : <Login />;
+					}}
+				/>
+				<Route
+					path="/signup"
+					render={() => {
+						return currentUser ? <Redirect to="/" /> : <SignUp />;
+					}}
+				/>
+				<Route
+					path="/forgotPassword"
+					render={() => {
+						return currentUser ? <Redirect to="/" /> : <ForgotPassword />;
+					}}
+				/>
 			</Switch>
 		</>
 	);

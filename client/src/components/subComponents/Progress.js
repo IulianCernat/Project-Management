@@ -1,10 +1,5 @@
 import { cloneElement } from "react";
-import {
-	CircularProgress,
-	Box,
-	Typography,
-	LinearProgress,
-} from "@material-ui/core";
+import { CircularProgress, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { purple, grey } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
