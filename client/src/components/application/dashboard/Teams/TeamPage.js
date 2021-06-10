@@ -70,10 +70,10 @@ export default function TeamPage() {
 					<TabPanel value={currentTab} index={0}>
 						<Paper>
 							<Box p={2}>
-								<Typography gutterBottom variant="h4">
+								<Typography gutterBottom variant="h6">
 									Description
 								</Typography>
-								<Typography variant="h6">
+								<Typography>
 									{isResolved ? receivedData.description : null}
 								</Typography>
 							</Box>

@@ -9,20 +9,26 @@ import {
 	Badge,
 	Avatar,
 } from "@material-ui/core";
-import { blue, grey } from "@material-ui/core/colors";
+import { lightBlue } from "@material-ui/core/colors";
 import { People } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 import TextDisplayWrapper from "../subComponents/TextDisplayWrapper";
+import { format } from "date-fns";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
-		minWidth: (props) => props.width,
-		maxWidth: (props) => props.width,
-		backgroundColor: grey[100],
+		minWidth: "20ch",
+		maxWidth: "40ch",
+		flex: "1 1 auto",
+		backgroundColor: lightBlue[50],
 	},
 	paper: {
 		border: "5px dashed red",
+	},
+	avatar: {
+		width: "4rem",
+		height: "4rem",
 	},
 }));
 
@@ -49,30 +55,18 @@ export default function TeamCard(props) {
 							</Badge>
 						</Box>
 					}
-					subheader={props.created_at}
+					subheader={format(new Date(props.created_at), "dd/MM/yyyy")}
 				/>
 				<CardContent>
-					<Typography variant="h6" gutterBottom>
-						Description
-					</Typography>
 					<TextDisplayWrapper gutterBottom>
-						{props.description.substr(0, 100) + "..."}
+						{props.description.substr(0, 200) +
+							(props.description.legth > 200 ? "..." : "")}
 					</TextDisplayWrapper>
-					<Box
-						display="flex"
-						justifyContent="center"
-						alignItems="center"
-						bgcolor={blue[50]}
-						p={1}
-						borderRadius={20}
-					>
-						<Box style={{ width: "4rem", height: "4rem" }} mr={1}>
+					<Box display="flex" justifyContent="center" alignItems="center" p={1}>
+						<Box mr={1}>
 							<Avatar
-								src={
-									scrumMasterProfile
-										? scrumMasterProfile.avatar_url
-										: "../../assets/defaultProfile.svg"
-								}
+								className={styles.avatar}
+								src={scrumMasterProfile.avatar_url}
 							/>
 						</Box>
 						<Box>

@@ -21,7 +21,7 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function SignUpForm() {
-	const { signUp } = useAuth();
+	const { signUp, logout } = useAuth();
 	const history = useHistory();
 	const [firebaseError, setFirebaseError] = useState("");
 	const [requestBody, setRequestBody] = useState(null);
@@ -30,8 +30,12 @@ export default function SignUpForm() {
 	});
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/users/", requestBody, headers.current);
+
 	useEffect(() => {
-		if (isResolved) history.push("/");
+		if (isResolved) {
+			history.push("/");
+			logout();
+		}
 	}, [isResolved]);
 	return (
 		<>
@@ -97,7 +101,7 @@ export default function SignUpForm() {
 							fullWidth
 							variant="contained"
 							color="primary"
-							disabled={isSubmitting}
+							disabled={isSubmitting || isLoading}
 						>
 							<Typography>Sign up</Typography>
 						</Button>

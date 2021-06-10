@@ -19,20 +19,20 @@ const canvasStyling = {
 };
 
 export default function FrontPage() {
-	const { currentUser } = useAuth();
-	useEffect(() => {
-		Particles.init({
-			selector: ".background",
-			connectParticles: true,
-			color: "#88C8FF",
-			speed: 0.2,
-			minDistance: 160,
-			sizeVariations: 5,
-		});
-	}, []);
+	const { currentUser, additionalUserInfo } = useAuth();
+	// useEffect(() => {
+	// 	Particles.init({
+	// 		selector: ".background",
+	// 		connectParticles: true,
+	// 		color: "#88C8FF",
+	// 		speed: 0.2,
+	// 		minDistance: 160,
+	// 		sizeVariations: 5,
+	// 	});
+	// }, []);
 	return (
 		<>
-			<canvas className="background" style={canvasStyling}></canvas>
+			{/* <canvas className="background" style={canvasStyling}></canvas> */}
 			<Switch>
 				<PrivateRoute exact path="/" component={Profile} />
 				<Route
@@ -44,8 +44,13 @@ export default function FrontPage() {
 				<Route
 					path="/signup"
 					render={() => {
-						return currentUser ? <Redirect to="/" /> : <SignUp />;
+						return currentUser && additionalUserInfo ? (
+							<Redirect to="/" />
+						) : (
+							<SignUp />
+						);
 					}}
+					component={SignUp}
 				/>
 				<Route
 					path="/forgotPassword"

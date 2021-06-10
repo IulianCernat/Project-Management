@@ -110,10 +110,11 @@ export default function Dashboard(props) {
 											<Menu />
 										</IconButton>
 									</Hidden>
-									<Typography variant="h6">
-										{getProjectReceivedData.name}
-									</Typography>
 								</Box>
+								<Box flex="1 1 auto">
+									<Typography>{getProjectReceivedData.name}</Typography>
+								</Box>
+
 								<Box>
 									<AppMenuNav />
 								</Box>
@@ -125,7 +126,7 @@ export default function Dashboard(props) {
 						mobileOpen={mobileOpen}
 						handleDrawerToggle={handleDrawerToggle}
 					/>
-					<Box className={classes.content}>
+					<Box p={1} className={classes.content}>
 						<div className={classes.toolbar} />
 						<ProjectProvider
 							projectId={Number(projectId)}

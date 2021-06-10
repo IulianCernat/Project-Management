@@ -5,6 +5,7 @@ import {
 	makeStyles,
 	Container,
 	Typography,
+	CircularProgress,
 } from "@material-ui/core";
 import ProfileAside from "./ProfileAside";
 import ProfileMain from "./ProfileMain";
@@ -44,9 +45,7 @@ export default function Profile() {
 					</Grid>
 				</Box>
 			) : (
-				<Alert severity="error">
-					<Typography>Failed to fetch user profile</Typography>
-				</Alert>
+				<CircularProgress />
 			)}
 		</Container>
 	);

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Box, Typography, makeStyles, Button } from "@material-ui/core";
+import { Box, Typography, makeStyles, Button, Paper } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import TeamCard from "components/subComponents/TeamCard";
 import DialogForm from "components/subComponents/DialogForm";
@@ -28,7 +28,6 @@ function TeamComponentList(teamList) {
 						return (
 							<TeamCard
 								linkTo={`${match.path}/${item.id}`}
-								width="50ch"
 								key={item.id}
 								{...item}
 							/>
@@ -71,24 +70,14 @@ export default function Teams(props) {
 	}, [startFetchingTeams]);
 
 	return (
-		<>
+		<Box mt={1}>
 			<Switch>
 				<Route path={`${match.path}/:teamId`}>
 					<TeamPage />
 				</Route>
 
 				<Route path={`${match.path}`}>
-					<DialogForm
-						title="Add new team"
-						open={openTeamCreation}
-						onClose={handleCancel}
-					>
-						<TeamCreationForm
-							setTeamCreationSuccess={setTeamCreationSuccess}
-							projectId={projectId}
-						/>
-					</DialogForm>
-					<Box>
+					<Box mb={1}>
 						<Button
 							variant="contained"
 							color="primary"
@@ -99,18 +88,32 @@ export default function Teams(props) {
 						</Button>
 					</Box>
 
-					<Box
-						display="flex"
-						justifyContent="center"
-						flexWrap="wrap"
-						style={{ gap: "1rem" }}
-					>
-						{isResolved ? TeamComponentList(receivedData) : null}
-						{isLoading ? "loading" : null}
-						{isRejected ? <Alert severity="error">{error} </Alert> : null}
-					</Box>
+					<Paper>
+						<DialogForm
+							title="Add new team"
+							open={openTeamCreation}
+							onClose={handleCancel}
+						>
+							<TeamCreationForm
+								setTeamCreationSuccess={setTeamCreationSuccess}
+								projectId={projectId}
+							/>
+						</DialogForm>
+
+						<Box
+							display="flex"
+							justifyContent="center"
+							flexWrap="wrap"
+							style={{ gap: "1rem" }}
+							p={1}
+						>
+							{isResolved ? TeamComponentList(receivedData) : null}
+							{isLoading ? "loading" : null}
+							{isRejected ? <Alert severity="error">{error} </Alert> : null}
+						</Box>
+					</Paper>
 				</Route>
 			</Switch>
-		</>
+		</Box>
 	);
 }

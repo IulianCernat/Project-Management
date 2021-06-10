@@ -31,6 +31,7 @@ SprintTable.propTypes = {
 	currentUserRole: PropTypes.string.isRequired,
 };
 function SprintTable({ sprint, currentUserRole }) {
+	const classes = useStyles();
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
 	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
@@ -57,7 +58,7 @@ function SprintTable({ sprint, currentUserRole }) {
 			sprintIssues.filter((item) => item.id !== issueIdToBeUpdated)
 		);
 	}, [isResolvedIssueUpdate]);
-	const classes = useStyles();
+
 	return (
 		<TableContainer component={Paper}>
 			<SprintHeader
