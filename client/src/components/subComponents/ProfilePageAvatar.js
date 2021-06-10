@@ -40,6 +40,7 @@ ProfilePageAvatar.propTypes = {
 	url: PropTypes.string.isRequired,
 };
 export default function ProfilePageAvatar(props) {
+	const [avatarUrl, setAvatarUrl] = useState(props.url);
 	const classes = useStyles({ width: props.width, height: props.height });
 	const [openBackdrop, setOpenBackdrop] = useState(false);
 	const [uploadingFile, setUploadingFile] = useState(false);
@@ -58,7 +59,7 @@ export default function ProfilePageAvatar(props) {
 			alignItems="center"
 			justifyContent="center"
 		>
-			<Avatar variant="circular" className={classes.avatar} src={props.url} />
+			<Avatar variant="circular" className={classes.avatar} src={avatarUrl} />
 
 			<label htmlFor="uploadButton">
 				<Backdrop
@@ -78,6 +79,7 @@ export default function ProfilePageAvatar(props) {
 			<UploadProfileAvatar
 				setUploadingProgress={setUploadingFile}
 				uploadButtonLabel="uploadButton"
+				setNewAvatarUrl={setAvatarUrl}
 			/>
 		</Box>
 	);

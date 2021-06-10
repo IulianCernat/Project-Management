@@ -8,15 +8,11 @@ import { useAuth } from "contexts/AuthContext";
 UploadProfileAvatar.propTypes = {
 	uploadButtonLabel: PropTypes.string.isRequired,
 	setUploadingProgress: PropTypes.func.isRequired,
+	setNewAvatarUrl: PropTypes.func.isRequired,
 };
 export default function UploadProfileAvatar(props) {
 	const { currentUser } = useAuth();
 	const [currentUserIdToken, setCurrentUserIdToken] = useState();
-	useEffect(() => {
-		currentUser.getIdToken().then((idToken) => {
-			setCurrentUserIdToken(idToken);
-		});
-	}, []);
 
 	const [
 		requestBodyForUpdatingCurrentUser,
@@ -32,6 +28,19 @@ export default function UploadProfileAvatar(props) {
 	} = usePatchFetch("api/users/loggedUser", requestBodyForUpdatingCurrentUser, {
 		Authorization: currentUserIdToken,
 	});
+
+	useEffect(() => {
+		currentUser.getIdToken().then((idToken) => {
+			setCurrentUserIdToken(idToken);
+		});
+	}, []);
+
+	useEffect(() => {
+		if (isResolvedUserUpdate) {
+			const newUrl = requestBodyForUpdatingCurrentUser.match(/https.*\w/);
+			props.setNewAvatarUrl(newUrl);
+		}
+	}, [isResolvedUserUpdate]);
 
 	const handleUpload = (event) => {
 		const file = event.target.files[0];
