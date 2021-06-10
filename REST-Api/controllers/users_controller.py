@@ -33,7 +33,7 @@ def get_users_by_filters(keyword, part_of_project_id=None):
             setattr(user, 'is_part_of_project', is_team_member)
             break
 
-        is_product_owner = Project.query.filter(Project.id == part_of_project_id,Project.product_owner_id == user.id)
+        is_product_owner = Project.query.filter(Project.id == part_of_project_id, Project.product_owner_id == user.id)
         is_product_owner = bool(db.session.query(literal(True)).filter(is_product_owner.exists()).scalar())
 
         setattr(user, 'is_part_of_project', is_product_owner)
@@ -50,3 +50,11 @@ def get_self(uid):
 def get_user_id(uid):
     user = User.query.filter(User.uid == uid).one()
     return user.id
+
+
+def update_user(uid, input_obj):
+    user = User.query.filter(User.uid == uid).one()
+    for field, value in input_obj.items():
+        setattr(user, field, value)
+
+    db.session.commit()

@@ -10,7 +10,7 @@ import {
 	Hidden,
 } from "@material-ui/core";
 import { useAuth } from "contexts/AuthContext";
-import Avatar from "../../subComponents/Avatar";
+import ProfilePageAvatar from "components/subComponents/ProfilePageAvatar";
 import TextDisplayWrapper from "../../subComponents/TextDisplayWrapper";
 import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -19,10 +19,9 @@ const useStyles = makeStyles((theme) => ({
 	identity: {
 		display: "flex",
 		flexDirection: "column",
+		justifyContent: "center",
 		alignItems: "center",
-		"& > *": {
-			marginTop: theme.spacing(4),
-		},
+		gap: "2rem",
 	},
 }));
 
@@ -49,9 +48,12 @@ export default function ProfileAside(props) {
 				<Grid container alignItems="center" spacing={2}>
 					<Grid item xs md={12}>
 						<Box className={classes.identity}>
-							<Box style={{ width: "10em", height: "10em" }}>
-								<Avatar url={props.additionalUserInfo.avatar_url} />
-							</Box>
+							<ProfilePageAvatar
+								width="10rem"
+								height="10rem"
+								url={props.additionalUserInfo.avatar_url}
+							/>
+
 							<TextDisplayWrapper paragraph>
 								{props.additionalUserInfo.fullName}
 							</TextDisplayWrapper>

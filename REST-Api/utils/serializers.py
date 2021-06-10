@@ -25,6 +25,11 @@ user_output = api.model('User output', {
     'is_part_of_project': Boolean(required=False, description="Whether user is part of specified query project")
 })
 
+user_update = api.model('User update', {
+    'contact': String(description="The new contact email address"),
+    'avatar_url': String(description="The new avatar url")
+})
+
 project_input = api.model('Project input', {
     'name': String(required=True, description="Project name"),
     'description': String(required=True, description="Project description"),

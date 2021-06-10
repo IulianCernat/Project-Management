@@ -1,7 +1,7 @@
 from flask_restx import Resource
 from flask import request, session
 from utils.restx import api
-from utils.serializers import user_input, message, bad_request, user_output
+from utils.serializers import user_input, message, bad_request, user_output, user_update
 from controllers.users_controller import *
 from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, user_filtering_args
@@ -69,3 +69,18 @@ class LoggedUser(Resource):
             raise e
 
         return get_self(decoded_token['uid'])
+
+    @api.response(200, 'User profile successfully updated', message)
+    @api.response(400, 'Bad request', bad_request)
+    @api.response(401, 'Authorization failed', message)
+    @api.expect(authorization_header)
+    @api.expect(user_update)
+    def patch(self):
+        input_data = request.json
+        try:
+            token_id = request.headers.get('Authorization')
+            decoded_token = verify_id_token(token_id)
+        except AuthorizationFailed as e:
+            raise e
+
+        return update_user(decoded_token['uid'], input_data)

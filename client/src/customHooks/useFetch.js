@@ -83,13 +83,14 @@ export async function doPost(url, stringifiedData, headers = null) {
 	}
 }
 
-export async function doPatch(url, stringifiedData) {
+export async function doPatch(url, stringifiedData, headers = null) {
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
 		let response = await fetch(url, {
 			method: "PATCH",
 			headers: {
 				"Content-Type": "application/json;charset=utf-8",
+				...headers,
 			},
 			body: stringifiedData,
 		});
@@ -213,7 +214,7 @@ export function usePostFetch(url, bodyContent, headers) {
 	return transformState(state);
 }
 
-export function usePatchFetch(url, bodyContent) {
+export function usePatchFetch(url, bodyContent, headers = null) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	useEffect(() => {
@@ -223,7 +224,7 @@ export function usePatchFetch(url, bodyContent) {
 				return;
 			}
 			dispatch({ type: "started" });
-			let fetchResponse = await doPatch(url, bodyContent);
+			let fetchResponse = await doPatch(url, bodyContent, headers);
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;
