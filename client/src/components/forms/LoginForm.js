@@ -8,7 +8,6 @@ import {
 	emailValidationSchema,
 	passwordValidationSchema,
 } from "../../utils/validationSchemas";
-import { useHistory } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 
 const validationSchema = Yup.object({
@@ -19,12 +18,6 @@ const validationSchema = Yup.object({
 export default function LoginForm() {
 	const { login } = useAuth();
 	const [firebaseError, setFirebaseError] = useState(null);
-	const history = useHistory();
-	const [loginSuccessful, setLoginSuccesful] = useState(false);
-
-	useEffect(() => {
-		if (loginSuccessful) history.push("/");
-	}, [loginSuccessful]);
 
 	return (
 		<>
@@ -39,7 +32,6 @@ export default function LoginForm() {
 					try {
 						await login(values.email, values.password);
 						setSubmitting(false);
-						setLoginSuccesful(true);
 					} catch (err) {
 						setFirebaseError(err.toString());
 					}

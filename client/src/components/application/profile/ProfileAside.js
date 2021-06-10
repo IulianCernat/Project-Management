@@ -7,6 +7,7 @@ import {
 	Paper,
 	makeStyles,
 	Divider,
+	Hidden,
 } from "@material-ui/core";
 import { useAuth } from "contexts/AuthContext";
 import Avatar from "../../subComponents/Avatar";
@@ -51,11 +52,13 @@ export default function ProfileAside(props) {
 							<Box style={{ width: "10em", height: "10em" }}>
 								<Avatar url={props.additionalUserInfo.avatar_url} />
 							</Box>
-							<TextDisplayWrapper>
+							<TextDisplayWrapper paragraph>
 								{props.additionalUserInfo.fullName}
 							</TextDisplayWrapper>
 						</Box>
-						<Divider />
+						<Hidden mdDown>
+							<Divider />
+						</Hidden>
 					</Grid>
 
 					<Grid

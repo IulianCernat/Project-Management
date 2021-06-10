@@ -39,7 +39,7 @@ function ProjectComponentList(projectList) {
 		<>
 			{projectList.length
 				? projectList.map((item) => (
-						<Box key={item.id} flex="1 1 40ch">
+						<Box key={item.id} maxWidth="50ch" flex="1 1 40ch">
 							<ProjectCard project={item} />
 						</Box>
 				  ))
@@ -52,39 +52,33 @@ TabPanel.propTypes = {
 	children: PropTypes.node,
 	index: PropTypes.any.isRequired,
 	value: PropTypes.any.isRequired,
-	additionalUserInfo: PropTypes.object.isRequired,
+	userId: PropTypes.number.isRequired,
 };
 function TabPanel(props) {
+	console.log(props.userId);
 	const classes = useStyles();
-	const { children, value, index, additionalUserInfo, ...other } = props;
-
-	const [startGetFecth, setStartGetFetch] = useState(true);
+	const [startGetFetch, setStartGetFetch] = useState(false);
 	const getParams = useRef({
-		user_id: additionalUserInfo.id,
-		user_type: tabs[index],
+		user_id: "",
+		user_type: tabs[props.index],
 	});
 
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch("api/projects/", getParams.current, startGetFecth);
+		useGetFetch("api/projects/", getParams.current, startGetFetch);
 
 	useEffect(() => {
+		getParams.current.user_id = props.userId;
 		setStartGetFetch(true);
-	}, [value, additionalUserInfo]);
+	}, [props.value, props.userId]);
 
 	useEffect(() => {
-		setStartGetFetch(false);
+		if (isResolved) setStartGetFetch(false);
+		console.log(getParams.current);
 	}, [isResolved]);
 
 	return (
-		<Box
-			maxWidth="100%"
-			role="tabpanel"
-			hidden={value !== index}
-			id={`tabpanel-${index}`}
-			aria-labelledby={`tab-${index}`}
-			{...other}
-		>
-			{value === index && (
+		<Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
+			{props.value === props.index && (
 				<Box
 					maxWidth="100%"
 					p={3}
@@ -94,7 +88,7 @@ function TabPanel(props) {
 					alignItems="center"
 					style={{ gap: "1rem" }}
 				>
-					{children}
+					{props.children}
 					{isResolved ? ProjectComponentList(receivedData) : null}
 					{isLoading ? (
 						<Box width="100%">
@@ -145,7 +139,7 @@ export default function ProfileMain(props) {
 				</Tabs>
 			</AppBar>
 			<TabPanel
-				additionalUserInfo={props.additionalUserInfo}
+				userId={props.additionalUserInfo.id}
 				value={currentTab}
 				index={0}
 			>
@@ -166,12 +160,12 @@ export default function ProfileMain(props) {
 				</Box>
 			</TabPanel>
 			<TabPanel
-				additionalUserInfo={props.additionalUserInfo}
+				userId={props.additionalUserInfo.id}
 				value={currentTab}
 				index={1}
 			/>
 			<TabPanel
-				additionalUserInfo={props.additionalUserInfo}
+				userId={props.additionalUserInfo.id}
 				value={currentTab}
 				index={2}
 			/>
