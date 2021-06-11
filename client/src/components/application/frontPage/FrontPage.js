@@ -28,7 +28,6 @@ export default function FrontPage() {
 			maxSpeed: 0.09,
 			minR: 1,
 			maxR: 2,
-			parallax: true,
 		});
 	}, []);
 	return (

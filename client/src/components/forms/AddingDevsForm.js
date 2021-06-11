@@ -74,12 +74,21 @@ export default function AddingDevsForm(props) {
 									display="flex"
 									alignItems="center"
 									justifyContent="space-between"
+									style={{ gap: "1rem" }}
 									px={4}
 								>
-									<Avatar src={option.avatar_url}>
-										{option.fullName.slice(0, 2)}
-									</Avatar>
-									<Typography>{option.fullName}</Typography>
+									<Box
+										display="flex"
+										alignItems="center"
+										justifyContent="flext-start"
+										style={{ gap: "1rem" }}
+									>
+										<Avatar src={option.avatar_url}>
+											{option.fullName.slice(0, 2)}
+										</Avatar>
+										<Typography>{option.fullName}</Typography>
+									</Box>
+
 									<Typography>
 										{option.is_part_of_project ? "joined" : null}
 									</Typography>

@@ -33,11 +33,12 @@ const useStyles = makeStyles((theme) => ({
 		height: 100,
 	},
 }));
-const UIRestrictionForRoles = ["developer", "scrumMaster"];
+const UIRestrictionForRoles = ["developer", "productOwner"];
 
 DevelopersList.propTypes = {
 	developers: PropTypes.arrayOf(PropTypes.any),
 	currentUserRole: PropTypes.string.isRequired,
+	isCurrentUserScrumMasterOfThisTeam: PropTypes.bool.isRequired,
 };
 
 export default function DevelopersList(props) {
@@ -69,32 +70,36 @@ export default function DevelopersList(props) {
 		}
 	}, [devIdTobeDeleted]);
 
-	return developers.map((item) => (
+	return (
 		<>
-			<Box key={item.id} className={classes.profileCard}>
-				<UserProfileCard
-					width={"30ch"}
-					{...item}
-					backdrop={
-						UIRestrictionForRoles.includes(props.currentUserRole) ? null : (
-							<Backdrop className={classes.backdrop}>
-								<IconButton
-									color="secondary"
-									onClick={() => {
-										handleDeletionClick(item.id);
-									}}
-								>
-									{isLoading ? (
-										<CircularProgress />
-									) : (
-										<DeleteForever fontSize="large" />
-									)}
-								</IconButton>
-							</Backdrop>
-						)
-					}
-				/>
-			</Box>
+			{" "}
+			{developers.map((item) => (
+				<Box className={classes.profileCard}>
+					<UserProfileCard
+						width={"30ch"}
+						{...item}
+						backdrop={
+							UIRestrictionForRoles.includes(props.currentUserRole) ||
+							!props.isCurrentUserScrumMasterOfThisTeam ? null : (
+								<Backdrop className={classes.backdrop}>
+									<IconButton
+										color="secondary"
+										onClick={() => {
+											handleDeletionClick(item.id);
+										}}
+									>
+										{isLoading ? (
+											<CircularProgress />
+										) : (
+											<DeleteForever fontSize="large" />
+										)}
+									</IconButton>
+								</Backdrop>
+							)
+						}
+					/>
+				</Box>
+			))}
 			<Snackbar
 				open={openDeleteSucces}
 				autoHideDuration={6000}
@@ -108,5 +113,5 @@ export default function DevelopersList(props) {
 				</Alert>
 			</Snackbar>
 		</>
-	));
+	);
 }

@@ -25,13 +25,14 @@ def get_users_by_filters(keyword, part_of_project_id=None):
         return keyword_filtered_users
 
     for user in keyword_filtered_users:
-        is_team_member = TeamMember.query.join(Team).filter(Team.project_id == part_of_project_id,
-                                                            TeamMember.user_id == user.id)
+        is_team_member = TeamMember.query.join(Team).filter(TeamMember.user_id == user.id,
+                                                            Team.project_id == part_of_project_id,
+                                                            )
         is_team_member = bool(db.session.query(literal(True)).filter(is_team_member.exists()).scalar())
 
         if is_team_member:
             setattr(user, 'is_part_of_project', is_team_member)
-            break
+            continue
 
         is_product_owner = Project.query.filter(Project.id == part_of_project_id, Project.product_owner_id == user.id)
         is_product_owner = bool(db.session.query(literal(True)).filter(is_product_owner.exists()).scalar())

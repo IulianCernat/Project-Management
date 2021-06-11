@@ -22,20 +22,12 @@ import { GiSprint } from "react-icons/gi";
 const iconArray = [
 	<Dashboard />,
 	<GroupSharp />,
-	<SiAffinitydesigner />,
 	<ViewList />,
 	<GiSprint />,
 	<Settings />,
 ];
 
-const pageNames = [
-	"overview",
-	"teams",
-	"architecture",
-	"backlog",
-	"sprints",
-	"settings",
-];
+const pageNames = ["overview", "teams", "backlog", "sprints", "settings"];
 
 function ListItemLink(props) {
 	const { icon, primary, to } = props;
@@ -66,21 +58,16 @@ export default function DrawerListItems() {
 
 			<Divider />
 			<List>
-				{[
-					"Overview",
-					"Teams",
-					"Architecture",
-					"Product Backlog",
-					"Sprints",
-					"Settings",
-				].map((text, index) => (
-					<ListItemLink
-						key={text}
-						primary={text}
-						icon={iconArray[index]}
-						to={`${match.url}/${pageNames[index]}`}
-					/>
-				))}
+				{["Overview", "Teams", "Product Backlog", "Sprints", "Settings"].map(
+					(text, index) => (
+						<ListItemLink
+							key={text}
+							primary={text}
+							icon={iconArray[index]}
+							to={`${match.url}/${pageNames[index]}`}
+						/>
+					)
+				)}
 			</List>
 		</>
 	);

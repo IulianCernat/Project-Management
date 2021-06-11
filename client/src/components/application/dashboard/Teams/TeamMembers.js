@@ -17,6 +17,7 @@ import AddingDevsForm from "components/forms/AddingDevsForm";
 import ChangingScrumMasterForm from "components/forms/ChangingScrumMasterForm";
 import DevelopersList from "./DevelopersList";
 import { useProjectContext } from "contexts/ProjectContext";
+import { useAuth } from "contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
 	membersTab: {
@@ -26,9 +27,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const UIRestrictionForRoles = ["developer", "scrumMaster"];
+const scrumMasterChangeRestrictionForRoles = ["developer", "scrumMaster"];
+const developersAdditionRestrictionForRoles = ["productOwner", "developer"];
 
 export default function TeamMembers() {
+	const { additionalUserInfo } = useAuth();
 	const { projectId, currentUserRole } = useProjectContext();
 	const { teamId } = useParams();
 	const [scrumMasterChangingSuccess, setScrumMasterChangingSuccess] =
@@ -126,7 +129,9 @@ export default function TeamMembers() {
 									onClick={() => {
 										openScrumMasterChangingForm();
 									}}
-									disabled={UIRestrictionForRoles.includes(currentUserRole)}
+									disabled={scrumMasterChangeRestrictionForRoles.includes(
+										currentUserRole
+									)}
 								>
 									<Typography>Change</Typography>
 								</Button>
@@ -152,7 +157,11 @@ export default function TeamMembers() {
 									variant="contained"
 									color="primary"
 									onClick={() => openDevsAdditionForm()}
-									disabled={UIRestrictionForRoles.includes(currentUserRole)}
+									disabled={
+										developersAdditionRestrictionForRoles.includes(
+											currentUserRole
+										) || !(receivedData[0].user_id === additionalUserInfo.id)
+									}
 								>
 									<Typography>Add new developers</Typography>
 								</Button>
@@ -170,6 +179,9 @@ export default function TeamMembers() {
 								<DevelopersList
 									currentUserRole={currentUserRole}
 									developers={receivedData.slice(1)}
+									isCurrentUserScrumMasterOfThisTeam={
+										receivedData[0].user_id === additionalUserInfo.id
+									}
 								/>
 							) : null}
 						</Box>

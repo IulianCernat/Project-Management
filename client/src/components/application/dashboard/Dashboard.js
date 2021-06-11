@@ -91,10 +91,9 @@ export default function Dashboard(props) {
 	function handleDrawerToggle() {
 		setmobileOpen(!mobileOpen);
 	}
-
 	return (
 		<>
-			{(isRejectedGetRole || isResolvedGetRole) && (
+			{isResolvedGetRole && isResolvedGetProject && (
 				<Box display="flex">
 					<AppBar className={classes.appBar} position="fixed">
 						<Toolbar>
@@ -130,7 +129,7 @@ export default function Dashboard(props) {
 						<div className={classes.toolbar} />
 						<ProjectProvider
 							projectId={Number(projectId)}
-							currentUserRole={getRoleReceivedData?.user_role}
+							currentUserRole={getRoleReceivedData.user_role}
 						>
 							<Switch>
 								<Route

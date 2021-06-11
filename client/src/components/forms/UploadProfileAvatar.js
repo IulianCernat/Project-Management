@@ -8,10 +8,9 @@ import { useAuth } from "contexts/AuthContext";
 UploadProfileAvatar.propTypes = {
 	uploadButtonLabel: PropTypes.string.isRequired,
 	setUploadingProgress: PropTypes.func.isRequired,
-	setNewAvatarUrl: PropTypes.func.isRequired,
 };
 export default function UploadProfileAvatar(props) {
-	const { currentUser } = useAuth();
+	const { currentUser, setAdditionalUserInfo } = useAuth();
 	const [currentUserIdToken, setCurrentUserIdToken] = useState();
 
 	const [
@@ -38,7 +37,7 @@ export default function UploadProfileAvatar(props) {
 	useEffect(() => {
 		if (isResolvedUserUpdate) {
 			const newUrl = requestBodyForUpdatingCurrentUser.match(/https.*\w/);
-			props.setNewAvatarUrl(newUrl);
+			setAdditionalUserInfo((prev) => ({ ...prev, avatar_url: newUrl }));
 		}
 	}, [isResolvedUserUpdate]);
 
