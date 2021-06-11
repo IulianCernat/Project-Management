@@ -40,6 +40,13 @@ class ProjectItem(Resource):
     def get(self, id):
         return get_project(id)
 
+    @api.response(200, 'Projects successfully queried', message)
+    @api.response(404, 'Project was not found', message)
+    def delete(self, id):
+        delete_project(id)
+        return {"message": "Project successfully deleted"}, 200
+
+
 @api.response(404, 'Project not found', message)
 @projects_namespace.route('/<id>/role')
 class ProjectItemRole(Resource):

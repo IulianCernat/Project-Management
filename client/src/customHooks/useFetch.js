@@ -65,7 +65,6 @@ async function processResponse(response) {
 }
 
 export async function doPost(url, stringifiedData, headers = null) {
-	console.log(headers);
 	try {
 		url = process.env.REACT_APP_API_URI + "/" + url;
 		let response = await fetch(url, {

@@ -57,3 +57,8 @@ def update_project(project_id, input_obj):
         setattr(project, field, value)
 
     db.session.commit()
+
+def delete_project(project_id):
+    project = get_project(project_id)
+    db.session.delete(project)
+    db.session.commit()

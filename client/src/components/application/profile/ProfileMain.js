@@ -8,6 +8,7 @@ import {
 	Paper,
 	Fab,
 	LinearProgress,
+	CircularProgress,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import AddIcon from "@material-ui/icons/Add";
@@ -16,7 +17,7 @@ import Alert from "@material-ui/lab/Alert";
 import ProjectCard from "../../subComponents/ProjectCard";
 import DialogForm from "../../subComponents/DialogForm";
 import ProjectCreationForm from "../../forms/ProjectCreationForm";
-import { useGetFetch } from "../../../customHooks/useFetch";
+import { useGetFetch, useDeleteFetch } from "../../../customHooks/useFetch";
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -34,13 +35,22 @@ const tabs = {
 	1: "scrumMaster",
 	2: "developer",
 };
-function ProjectComponentList(projectList) {
+ProjectComponentList.propTypes = {
+	projectsList: PropTypes.array.isRequired,
+	handleProjectDeletion: PropTypes.func.isRequired,
+	renderProjectsActions: PropTypes.func.isRequired,
+};
+function ProjectComponentList(props) {
 	return (
 		<>
-			{projectList.length
-				? projectList.map((item) => (
+			{props.projectsList.length
+				? props.projectsList.map((item) => (
 						<Box key={item.id} maxWidth="50ch" flex="1 1 40ch">
-							<ProjectCard project={item} />
+							<ProjectCard
+								handleDelete={props.handleProjectDeletion}
+								project={item}
+								renderActions={props.renderProjectsActions}
+							/>
 						</Box>
 				  ))
 				: null}
@@ -49,21 +59,52 @@ function ProjectComponentList(projectList) {
 }
 
 TabPanel.propTypes = {
-	children: PropTypes.node,
 	index: PropTypes.any.isRequired,
 	value: PropTypes.any.isRequired,
 	userId: PropTypes.number.isRequired,
+	withProjectAdditionForm: PropTypes.bool.isRequired,
 };
 function TabPanel(props) {
-	const classes = useStyles();
+	const [openProjectCreation, setOpenProjectCreation] = useState(false);
 	const [startGetFetch, setStartGetFetch] = useState(false);
+	const [projectIdToBeDeleted, setProjectIdToBeDeleted] = useState();
+	const [projectsList, setProjectsList] = useState();
+	const { isResolved: isResolvedDeleteProject } = useDeleteFetch(
+		projectIdToBeDeleted ? `api/projects/${projectIdToBeDeleted}` : null
+	);
 	const getParams = useRef({
 		user_id: "",
 		user_type: tabs[props.index],
 	});
-
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch("api/projects/", getParams.current, startGetFetch);
+
+	const handleProjectDeletion = (projectId) => {
+		setProjectIdToBeDeleted(projectId);
+	};
+
+	useEffect(() => {
+		if (!isResolvedDeleteProject) return;
+
+		setProjectsList((projectsList) =>
+			projectsList.filter((item) => item.id !== projectIdToBeDeleted)
+		);
+	}, [isResolvedDeleteProject]);
+
+	const openProjectCreationForm = () => {
+		setOpenProjectCreation(true);
+	};
+
+	const handleCancelProjectCreation = () => {
+		setOpenProjectCreation(false);
+	};
+
+	const insertNewCreatedProject = (newProjectObj) => {
+		handleCancelProjectCreation();
+		setProjectsList((prevProjectList) =>
+			[newProjectObj].concat(prevProjectList)
+		);
+	};
 
 	useEffect(() => {
 		getParams.current.user_id = props.userId;
@@ -71,8 +112,11 @@ function TabPanel(props) {
 	}, [props.value, props.userId]);
 
 	useEffect(() => {
-		if (isResolved) setStartGetFetch(false);
-	}, [isResolved]);
+		if (isResolved) {
+			setStartGetFetch(false);
+			setProjectsList(receivedData);
+		}
+	}, [isResolved, receivedData]);
 
 	return (
 		<Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
@@ -86,11 +130,36 @@ function TabPanel(props) {
 					alignItems="center"
 					style={{ gap: "1rem" }}
 				>
-					{props.children}
-					{isResolved ? ProjectComponentList(receivedData) : null}
+					{props.withProjectAdditionForm && (
+						<Box alignSelf="center" width="100%">
+							<Box display="flex" justifyContent="center">
+								<Fab color="primary" onClick={openProjectCreationForm}>
+									<AddIcon />
+								</Fab>
+							</Box>
+
+							<DialogForm
+								title="Create project"
+								open={openProjectCreation}
+								onClose={handleCancelProjectCreation}
+							>
+								<ProjectCreationForm
+									insertNewCreatedProject={insertNewCreatedProject}
+									productOwnerId={props.userId}
+								/>
+							</DialogForm>
+						</Box>
+					)}
+					{isResolved && projectsList ? (
+						<ProjectComponentList
+							handleProjectDeletion={handleProjectDeletion}
+							projectsList={projectsList}
+							renderProjectsActions={props.withProjectAdditionForm}
+						/>
+					) : null}
 					{isLoading ? (
-						<Box width="100%">
-							<LinearProgress />
+						<Box>
+							<CircularProgress />
 						</Box>
 					) : null}
 					{isRejected ? <Alert severity="error">{error} </Alert> : null}
@@ -106,18 +175,11 @@ ProfileMain.propTypes = {
 };
 export default function ProfileMain(props) {
 	const [currentTab, setCurrentTab] = useState(0);
-	const [openProjectCreation, setOpenProjectCreation] = useState(false);
+
 	const classes = useStyles();
 
 	function handleTabChange(event, newTab) {
 		setCurrentTab(newTab);
-	}
-
-	function openProjectCreationForm() {
-		setOpenProjectCreation(true);
-	}
-	function handleCancel() {
-		setOpenProjectCreation(false);
 	}
 
 	return (
@@ -139,33 +201,21 @@ export default function ProfileMain(props) {
 			<TabPanel
 				userId={props.additionalUserInfo.id}
 				value={currentTab}
+				withProjectAdditionForm={true}
 				index={0}
-			>
-				<Box alignSelf="center" width="100%">
-					<Box display="flex" justifyContent="center">
-						<Fab color="primary" onClick={openProjectCreationForm}>
-							<AddIcon />
-						</Fab>
-					</Box>
+			/>
 
-					<DialogForm
-						title="Create project"
-						open={openProjectCreation}
-						onClose={handleCancel}
-					>
-						<ProjectCreationForm productOwnerId={props.additionalUserInfo.id} />
-					</DialogForm>
-				</Box>
-			</TabPanel>
 			<TabPanel
 				userId={props.additionalUserInfo.id}
 				value={currentTab}
 				index={1}
+				withProjectAdditionForm={false}
 			/>
 			<TabPanel
 				userId={props.additionalUserInfo.id}
 				value={currentTab}
 				index={2}
+				withProjectAdditionForm={false}
 			/>
 		</Paper>
 	);

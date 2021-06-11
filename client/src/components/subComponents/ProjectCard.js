@@ -4,7 +4,9 @@ import {
 	CardActionArea,
 	Card,
 	CardHeader,
+	Button,
 	Badge,
+	CardActions,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
@@ -13,8 +15,10 @@ import CircularProgressWithLabel from "components/subComponents/Progress";
 
 ProjectCard.propTypes = {
 	project: PropTypes.object.isRequired,
+	handleDelete: PropTypes.func.isRequired,
+	renderActions: PropTypes.bool.isRequired,
 };
-export default function ProjectCard({ project }) {
+export default function ProjectCard({ project, handleDelete, renderActions }) {
 	const progressValue = project.total_nr_of_issues
 		? Math.round(
 				(project.nr_of_finished_issues * 100) / project.total_nr_of_issues
@@ -66,6 +70,20 @@ export default function ProjectCard({ project }) {
 					/>
 				</Box>
 			</CardActionArea>
+			{!renderActions ? null : (
+				<CardActions>
+					<Button
+						size="small"
+						color="secondary"
+						variant="outlined"
+						onClick={() => {
+							handleDelete(project.id);
+						}}
+					>
+						delete
+					</Button>
+				</CardActions>
+			)}
 		</Card>
 	);
 }

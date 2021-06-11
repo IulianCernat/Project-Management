@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, Backdrop, makeStyles } from "@material-ui/core";
@@ -8,7 +8,7 @@ import {
 	projectNameValidSchema,
 	projectDescriptionValidSchema,
 } from "../../utils/validationSchemas";
-import { usePostFetch } from "../../customHooks/useFetch.js";
+import { usePostFetch, useGetFetch } from "../../customHooks/useFetch.js";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -25,11 +25,44 @@ const validationSchema = Yup.object({
 
 projectDescriptionValidSchema.propTypes = {
 	productOwnerid: PropTypes.number.isRequired,
+	insertNewCreatedProject: PropTypes.func.isRequired,
 };
 export default function ProjectCreationForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { status, receivedData, error, isLoading, isRejected, isResolved } =
-		usePostFetch("api/projects/", requestBody);
+	const [createdProjectId, setCreateProjectId] = useState();
+	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] =
+		useState(false);
+
+	const {
+		status: projectCreationStatus,
+		receivedData: projectCreationReceivedData,
+		error: projectCreationError,
+		isLoading: isLoadingProjectCreation,
+		isRejected: isRejectedProjectCreation,
+		isResolved: isResolvedProjectCreation,
+	} = usePostFetch("api/projects/", requestBody);
+	const {
+		status: fetchedNewCreatedResourceStatus,
+		receivedData: fetchedNewCreatedResource,
+		error: fetchedNewCreatedResourceError,
+		isLoading: fetchedNewCreatedResourceIsLoading,
+		isRejected: fetchedNewCreatedResourceIsRejected,
+		isResolved: fetchedNewCreatedResourceIsResolved,
+	} = useGetFetch(
+		`api/projects/${createdProjectId}`,
+		null,
+		startFetchingNewCreatedResource
+	);
+	useEffect(() => {
+		if (!isResolvedProjectCreation) return;
+		setCreateProjectId(projectCreationReceivedData.split("/").pop());
+		setStartFetchingNewCreatedResource(true);
+	}, [isResolvedProjectCreation]);
+
+	useEffect(() => {
+		if (fetchedNewCreatedResourceIsResolved)
+			props.insertNewCreatedProject(fetchedNewCreatedResource);
+	}, [fetchedNewCreatedResourceIsResolved]);
 
 	return (
 		<>
@@ -55,7 +88,7 @@ export default function ProjectCreationForm(props) {
 						id="name"
 						label="Name"
 						name="name"
-						disabled={isLoading}
+						disabled={isLoadingProjectCreation}
 					/>
 
 					<TextFieldWrapper
@@ -69,7 +102,7 @@ export default function ProjectCreationForm(props) {
 						id="description"
 						label="description"
 						name="description"
-						disabled={isLoading}
+						disabled={isLoadingProjectCreation}
 					/>
 
 					<Button
@@ -77,18 +110,18 @@ export default function ProjectCreationForm(props) {
 						fullWidth
 						variant="contained"
 						color="primary"
-						disabled={isLoading}
+						disabled={isLoadingProjectCreation}
 					>
 						<Typography>Create project</Typography>
 					</Button>
-					{isResolved && (
+					{isResolvedProjectCreation && (
 						<Alert severity="success">
-							<Typography>{receivedData}</Typography>
+							<Typography>New project created</Typography>
 						</Alert>
 					)}
-					{isRejected && (
+					{isRejectedProjectCreation && (
 						<Alert severity="error">
-							<Typography>{error}</Typography>
+							<Typography>{projectCreationError}</Typography>
 						</Alert>
 					)}
 				</Form>
