@@ -38,7 +38,7 @@ const tabs = {
 ProjectComponentList.propTypes = {
 	projectsList: PropTypes.array.isRequired,
 	handleProjectDeletion: PropTypes.func.isRequired,
-	renderProjectsActions: PropTypes.func.isRequired,
+	renderProjectsActions: PropTypes.bool.isRequired,
 };
 function ProjectComponentList(props) {
 	return (

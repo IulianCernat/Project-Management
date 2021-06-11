@@ -12,6 +12,7 @@ import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 import { People } from "@material-ui/icons";
 import CircularProgressWithLabel from "components/subComponents/Progress";
+import { format } from "date-fns";
 
 ProjectCard.propTypes = {
 	project: PropTypes.object.isRequired,
@@ -47,10 +48,13 @@ export default function ProjectCard({ project, handleDelete, renderActions }) {
 							</Typography>
 						</Box>
 					}
+					subheader={format(new Date(project.created_at), "dd/MM/yyyy")}
 				/>
 				<Box p={2}>
 					<Typography variant="subtitle2">
-						{`${project.description.slice(0, 300)}...`}
+						{`${project.description.slice(0, 300)}${
+							project.description.length > 300 ? "..." : ""
+						}`}
 					</Typography>
 				</Box>
 				<Box p={2} display="flex" justifyContent="center">

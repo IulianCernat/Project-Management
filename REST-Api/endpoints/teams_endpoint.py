@@ -49,3 +49,9 @@ class TeamItem(Resource):
         input_data = request.json
         update_team(id, input_data)
         return {'message': f"Team with id {id} successfully updated"}, 200
+
+    @api.response(200, 'Teams successfully queried', message)
+    @api.response(404, 'Team was not found', message)
+    def delete(self, id):
+        delete_team(id)
+        return {"message": "Team was successfully deleted"}, 200

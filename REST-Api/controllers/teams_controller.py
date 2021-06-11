@@ -37,3 +37,8 @@ def update_team(team_id, input_obj):
         setattr(issue, field, value)
 
     db.session.commit()
+
+def delete_team(team_id):
+    team = get_team(team_id)
+    db.session.delete(team)
+    db.session.commit()

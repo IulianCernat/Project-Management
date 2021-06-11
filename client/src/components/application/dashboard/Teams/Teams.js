@@ -1,9 +1,16 @@
 import { useRef, useState, useEffect } from "react";
-import { Box, Typography, makeStyles, Button, Paper } from "@material-ui/core";
+import {
+	Box,
+	Typography,
+	makeStyles,
+	Button,
+	Paper,
+	CircularProgress,
+} from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import TeamCard from "components/subComponents/TeamCard";
 import DialogForm from "components/subComponents/DialogForm";
-import { useGetFetch } from "customHooks/useFetch";
+import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import TeamCreationForm from "components/forms/TeamCreationForm";
 import PropTypes from "prop-types";
 import { Switch, Route, useRouteMatch } from "react-router-dom";
@@ -17,9 +24,14 @@ const useStyles = makeStyles((theme) => ({
 	toolbar: theme.mixins.toolbar,
 }));
 
-const UIRestrictionForRoles = ["developer"];
+const UIRestrictionForRoles = ["developer", "scrumMaster"];
 
-function TeamComponentList(teamList) {
+TeamComponentList.propTypes = {
+	teamList: PropTypes.arrayOf(PropTypes.object).isRequired,
+	handleDelete: PropTypes.func.isRequired,
+	renderTeamCardActions: PropTypes.bool.isRequired,
+};
+function TeamComponentList({ teamList, handleDelete, renderTeamCardActions }) {
 	let match = useRouteMatch();
 	return (
 		<>
@@ -30,6 +42,8 @@ function TeamComponentList(teamList) {
 								linkTo={`${match.path}/${item.id}`}
 								key={item.id}
 								{...item}
+								renderActions={renderTeamCardActions}
+								handleDelete={handleDelete}
 							/>
 						);
 				  })
@@ -45,10 +59,16 @@ export default function Teams(props) {
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
 	const [startFetchingTeams, setStartFetchingTeams] = useState(true);
 	const [teamCreationSuccess, setTeamCreationSuccess] = useState(false);
+	const [teamIdToBeDeleted, setTeamIdToBeDeleted] = useState();
+	const [teamsList, setTeamsList] = useState();
 
 	const getParams = useRef({ project_id: projectId });
 	const { status, receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch("api/teams/", getParams.current, startFetchingTeams);
+
+	const { isResolved: isResolvedDeleteTeam } = useDeleteFetch(
+		teamIdToBeDeleted ? `api/teams/${teamIdToBeDeleted}` : null
+	);
 
 	function openTeamCreationForm() {
 		setOpenTeamCreation(true);
@@ -56,6 +76,21 @@ export default function Teams(props) {
 	function handleCancel() {
 		setOpenTeamCreation(false);
 	}
+
+	function handleTeamDeletion(teamId) {
+		setTeamIdToBeDeleted(teamId);
+	}
+	useEffect(() => {
+		if (isResolved) setTeamsList(receivedData);
+	}, [isResolved, receivedData]);
+
+	useEffect(() => {
+		if (!teamIdToBeDeleted) return;
+
+		setTeamsList((projectsList) =>
+			projectsList.filter((item) => item.id !== teamIdToBeDeleted)
+		);
+	}, [isResolvedDeleteTeam]);
 
 	useEffect(() => {
 		if (teamCreationSuccess) {
@@ -88,30 +123,36 @@ export default function Teams(props) {
 						</Button>
 					</Box>
 
-					<Paper>
-						<DialogForm
-							title="Add new team"
-							open={openTeamCreation}
-							onClose={handleCancel}
-						>
-							<TeamCreationForm
-								setTeamCreationSuccess={setTeamCreationSuccess}
-								projectId={projectId}
-							/>
-						</DialogForm>
+					<DialogForm
+						title="Add new team"
+						open={openTeamCreation}
+						onClose={handleCancel}
+					>
+						<TeamCreationForm
+							setTeamCreationSuccess={setTeamCreationSuccess}
+							projectId={projectId}
+						/>
+					</DialogForm>
 
-						<Box
-							display="flex"
-							justifyContent="center"
-							flexWrap="wrap"
-							style={{ gap: "1rem" }}
-							p={1}
-						>
-							{isResolved ? TeamComponentList(receivedData) : null}
-							{isLoading ? "loading" : null}
-							{isRejected ? <Alert severity="error">{error} </Alert> : null}
-						</Box>
-					</Paper>
+					<Box
+						display="flex"
+						justifyContent="flex-start"
+						flexWrap="wrap"
+						style={{ gap: "1rem" }}
+						p={1}
+					>
+						{isResolved && teamsList ? (
+							<TeamComponentList
+								teamList={teamsList}
+								handleDelete={handleTeamDeletion}
+								renderTeamCardActions={
+									!UIRestrictionForRoles.includes(currentUserRole)
+								}
+							/>
+						) : null}
+						{isLoading ? <CircularProgress /> : null}
+						{isRejected ? <Alert severity="error">{error} </Alert> : null}
+					</Box>
 				</Route>
 			</Switch>
 		</Box>
