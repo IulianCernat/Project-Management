@@ -3,12 +3,12 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import Login from "components/authentication/Login";
 import SignUp from "components/authentication/SignUp";
 import ForgotPassword from "components/authentication/ForgotPassword";
-import Particles from "particlesjs";
+import { Particle } from "jparticles";
 import PrivateRoute from "utils/PrivateRoute";
 import Profile from "components/application/profile/Profile";
 import { useAuth } from "contexts/AuthContext";
 
-const canvasStyling = {
+const backgroundParticlesStyling = {
 	backgroundColor: "#0F0B11",
 	position: "absolute",
 	top: 0,
@@ -20,19 +20,23 @@ const canvasStyling = {
 
 export default function FrontPage() {
 	const { currentUser, additionalUserInfo } = useAuth();
-	// useEffect(() => {
-	// 	Particles.init({
-	// 		selector: ".background",
-	// 		connectParticles: true,
-	// 		color: "#88C8FF",
-	// 		speed: 0.2,
-	// 		minDistance: 160,
-	// 		sizeVariations: 5,
-	// 	});
-	// }, []);
+	useEffect(() => {
+		new Particle("#backgroundParticlesStyling", {
+			range: 0,
+			num: 0.1,
+			minSpeed: 0.04,
+			maxSpeed: 0.09,
+			minR: 1,
+			maxR: 2,
+			parallax: true,
+		});
+	}, []);
 	return (
 		<>
-			{/* <canvas className="background" style={canvasStyling}></canvas> */}
+			<div
+				id="backgroundParticlesStyling"
+				style={backgroundParticlesStyling}
+			></div>
 			<Switch>
 				<PrivateRoute exact path="/" component={Profile} />
 				<Route

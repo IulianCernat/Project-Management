@@ -1,15 +1,19 @@
-import React from "react";
+import { useState } from "react";
 import { Typography, Button } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
+import { Alert } from "@material-ui/lab";
 import { emailValidationSchema } from "../../utils/validationSchemas";
-
+import { useAuth } from "contexts/AuthContext";
 const validationSchema = Yup.object().shape({
 	email: emailValidationSchema,
 });
 
 export default function ForgotPasswordForm() {
+	const { resetPassword } = useAuth();
+	const [firebaseError, setFirebaseError] = useState();
+	const [emailSent, setEmailSent] = useState();
 	return (
 		<>
 			<Typography>Sign up for your account</Typography>
@@ -19,9 +23,13 @@ export default function ForgotPasswordForm() {
 				}}
 				validationSchema={validationSchema}
 				onSubmit={(values, { setSubmitting }) => {
-					setTimeout(() => {
+					try {
+						resetPassword(values.email);
 						setSubmitting(false);
-					}, 400);
+						setEmailSent(true);
+					} catch (err) {
+						setFirebaseError(err.toString());
+					}
 				}}
 			>
 				{({ isSubmitting }) => (
@@ -46,6 +54,16 @@ export default function ForgotPasswordForm() {
 						>
 							<Typography>Send email</Typography>
 						</Button>
+						{firebaseError && (
+							<Alert severity="error">
+								<Typography>{firebaseError}</Typography>
+							</Alert>
+						)}
+						{emailSent && (
+							<Alert severity="success">
+								<Typography>An email with instructions was sent</Typography>
+							</Alert>
+						)}
 					</Form>
 				)}
 			</Formik>

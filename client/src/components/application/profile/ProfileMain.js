@@ -55,7 +55,6 @@ TabPanel.propTypes = {
 	userId: PropTypes.number.isRequired,
 };
 function TabPanel(props) {
-	console.log(props.userId);
 	const classes = useStyles();
 	const [startGetFetch, setStartGetFetch] = useState(false);
 	const getParams = useRef({
@@ -73,7 +72,6 @@ function TabPanel(props) {
 
 	useEffect(() => {
 		if (isResolved) setStartGetFetch(false);
-		console.log(getParams.current);
 	}, [isResolved]);
 
 	return (

@@ -4,14 +4,12 @@ import {
 	Grid,
 	makeStyles,
 	Container,
-	Typography,
+	Hidden,
 	CircularProgress,
 } from "@material-ui/core";
 import ProfileAside from "./ProfileAside";
 import ProfileMain from "./ProfileMain";
 import { useAuth } from "../../../contexts/AuthContext";
-import PropTypes from "prop-types";
-import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -29,7 +27,10 @@ export default function Profile() {
 			{additionalUserInfo && currentUser ? (
 				<Box>
 					<Grid container justify="center" spacing={2}>
-						<Grid item xs={false} md={12} style={{ minHeight: "10em" }} />
+						<Hidden mdDown>
+							<Grid item xs={false} md={12} style={{ minHeight: "10em" }} />
+						</Hidden>
+
 						<Grid item xs={12} md={3} xl={2}>
 							<ProfileAside
 								additionalUserInfo={additionalUserInfo}
