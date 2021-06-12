@@ -26,6 +26,7 @@ import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
 import { format } from "date-fns";
 import { useProjectContext } from "contexts/ProjectContext";
+
 const useStyles = makeStyles({
 	table: {
 		width: "100%",
@@ -289,23 +290,21 @@ export default function Sprints() {
 				<Alert severity="error">{getSprintsError} </Alert>
 			) : null}
 			{(isResolvedGetSprints && getSprintsReceivedData.length && (
-				<>
-					<Box
-						display="flex"
-						flexWrap="wrap"
-						flexDirection="column"
-						style={{ gap: "2rem" }}
-					>
-						{sprintsList.map((item) => (
-							<SprintTable
-								handleDeleteSprintClick={handleDeleteSprintClick}
-								currentUserRole={currentUserRole}
-								key={item.id}
-								sprint={item}
-							/>
-						))}
-					</Box>
-				</>
+				<Box
+					display="flex"
+					flexWrap="wrap"
+					flexDirection="column"
+					style={{ gap: "2rem" }}
+				>
+					{sprintsList.map((item) => (
+						<SprintTable
+							handleDeleteSprintClick={handleDeleteSprintClick}
+							currentUserRole={currentUserRole}
+							key={item.id}
+							sprint={item}
+						/>
+					))}
+				</Box>
 			)) || <Typography variant="h5">No sprints</Typography>}
 		</>
 	);

@@ -243,12 +243,12 @@ export default function IssueRow(props) {
 			</TableRow>
 
 			<TableRow classes={{ root: classes.rowTop }}>
-				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={5}>
+				<TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
 					<Collapse in={openMoreInfo} timeout="auto" unmountOnExit>
 						<Box>
 							<Table>
 								<TableHead>
-									<TableRow>
+									<TableRow style={!openMoreInfo ? { border: "unset" } : {}}>
 										<TableCell align="left">
 											<Typography>Description</Typography>
 										</TableCell>

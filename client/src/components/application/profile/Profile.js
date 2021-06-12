@@ -14,7 +14,6 @@ import { useAuth } from "../../../contexts/AuthContext";
 const useStyles = makeStyles((theme) => ({
 	container: {
 		height: "100vh",
-		// backgroundColor: theme.palette.info.light,
 	},
 }));
 

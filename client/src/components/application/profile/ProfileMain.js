@@ -18,11 +18,16 @@ import ProjectCard from "../../subComponents/ProjectCard";
 import DialogForm from "../../subComponents/DialogForm";
 import ProjectCreationForm from "../../forms/ProjectCreationForm";
 import { useGetFetch, useDeleteFetch } from "../../../customHooks/useFetch";
+import { Scrollbars } from "react-custom-scrollbars-2";
 
 const useStyles = makeStyles((theme) => ({
 	main: {
+		[theme.breakpoints.up("md")]: {
+			backgroundColor: grey[200],
+			overflow: "auto",
+			maxHeight: "75vh",
+		},
 		minHeight: "75vh",
-		backgroundColor: grey[200],
 	},
 	textWrapper: {
 		maxWidth: "100%",
@@ -198,13 +203,13 @@ export default function ProfileMain(props) {
 					<Tab label="Developer" />
 				</Tabs>
 			</AppBar>
+
 			<TabPanel
 				userId={props.additionalUserInfo.id}
 				value={currentTab}
 				withProjectAdditionForm={true}
 				index={0}
 			/>
-
 			<TabPanel
 				userId={props.additionalUserInfo.id}
 				value={currentTab}

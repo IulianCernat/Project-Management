@@ -7,6 +7,7 @@ import {
 	Hidden,
 	Box,
 	makeStyles,
+	CircularProgress,
 } from "@material-ui/core";
 import {
 	Switch,
@@ -26,6 +27,7 @@ import { useGetFetch } from "customHooks/useFetch";
 import { useAuth } from "contexts/AuthContext";
 import { deepPurple } from "@material-ui/core/colors";
 import Overview from "./Overview";
+import { Scrollbars } from "react-custom-scrollbars-2";
 
 const drawerWidth = "18rem";
 
@@ -39,10 +41,12 @@ const useStyles = makeStyles((theme) => ({
 	content: {
 		width: "100%",
 		[theme.breakpoints.up("md")]: {
-			padding: theme.spacing(6),
+			padding: theme.spacing(4),
 		},
 		[theme.breakpoints.down("md")]: {
-			paddingTop: theme.spacing(2),
+			paddingLeft: "1px",
+			paddingRight: "1px",
+			paddingTop: theme.spacing(1),
 		},
 	},
 	toolbar: theme.mixins.toolbar,
@@ -93,6 +97,11 @@ export default function Dashboard(props) {
 	}
 	return (
 		<>
+			{isLoadingGetProject && (
+				<Box display="flex" alignItems="center" justifyContent="center">
+					<CircularProgress />
+				</Box>
+			)}
 			{isResolvedGetRole && isResolvedGetProject && (
 				<Box display="flex">
 					<AppBar className={classes.appBar} position="fixed">
@@ -125,37 +134,39 @@ export default function Dashboard(props) {
 						mobileOpen={mobileOpen}
 						handleDrawerToggle={handleDrawerToggle}
 					/>
-					<Box className={classes.content} bgcolor="grey.200" height="100vh">
-						<div className={classes.toolbar} />
-						<ProjectProvider
-							projectId={Number(projectId)}
-							currentUserRole={getRoleReceivedData.user_role}
-						>
-							<Switch>
-								<Route
-									exact
-									path={`${match.url}`}
-									render={() => {
-										return isRejectedGetRole ? (
-											<Redirect to="/" />
-										) : (
-											<Redirect to={`${match.url}/overview`} />
-										);
-									}}
-								/>
-								<Route path={`${match.url}/overview`}>
-									<Overview project={getProjectReceivedData} />
-								</Route>
-								<Route path={`${match.url}/teams`}>
-									<Teams />
-								</Route>
-								<Route path={`${match.url}/sprints`}>
-									<Sprints />
-								</Route>
-								<Route path={`${match.url}/backlog`} component={Backlog} />
-							</Switch>
-						</ProjectProvider>
-					</Box>
+					<Scrollbars heightRelativeToParent autoHeight autoHeightMax={1920}>
+						<Box className={classes.content} bgcolor="grey.200" height="100vh">
+							<div className={classes.toolbar} />
+							<ProjectProvider
+								projectId={Number(projectId)}
+								currentUserRole={getRoleReceivedData.user_role}
+							>
+								<Switch>
+									<Route
+										exact
+										path={`${match.url}`}
+										render={() => {
+											return isRejectedGetRole ? (
+												<Redirect to="/" />
+											) : (
+												<Redirect to={`${match.url}/overview`} />
+											);
+										}}
+									/>
+									<Route path={`${match.url}/overview`}>
+										<Overview project={getProjectReceivedData} />
+									</Route>
+									<Route path={`${match.url}/teams`}>
+										<Teams />
+									</Route>
+									<Route path={`${match.url}/sprints`}>
+										<Sprints />
+									</Route>
+									<Route path={`${match.url}/backlog`} component={Backlog} />
+								</Switch>
+							</ProjectProvider>
+						</Box>
+					</Scrollbars>
 				</Box>
 			)}
 		</>
