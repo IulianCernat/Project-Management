@@ -125,12 +125,7 @@ export default function Dashboard(props) {
 						mobileOpen={mobileOpen}
 						handleDrawerToggle={handleDrawerToggle}
 					/>
-					<Box
-						p={1}
-						className={classes.content}
-						bgcolor="grey.200"
-						height="100vh"
-					>
+					<Box className={classes.content} bgcolor="grey.200" height="100vh">
 						<div className={classes.toolbar} />
 						<ProjectProvider
 							projectId={Number(projectId)}

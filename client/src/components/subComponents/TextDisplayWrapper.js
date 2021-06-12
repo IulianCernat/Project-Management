@@ -14,7 +14,7 @@ export default function TextDisplayWrapper({ children, ...other }) {
 
 	return (
 		<Box className={classes.textWrapper}>
-			<Typography component="p" align="center" {...other}>
+			<Typography component="p" {...other}>
 				{children}
 			</Typography>
 		</Box>

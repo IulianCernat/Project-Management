@@ -24,7 +24,7 @@ const iconArray = [
 	<GroupSharp />,
 	<ViewList />,
 	<GiSprint />,
-	<Settings />,
+	// <Settings />,
 ];
 
 const pageNames = ["overview", "teams", "backlog", "sprints", "settings"];
@@ -58,7 +58,7 @@ export default function DrawerListItems() {
 
 			<Divider />
 			<List>
-				{["Overview", "Teams", "Product Backlog", "Sprints", "Settings"].map(
+				{["Overview", "Teams", "Product Backlog", "Sprints"].map(
 					(text, index) => (
 						<ListItemLink
 							key={text}

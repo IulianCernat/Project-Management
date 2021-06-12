@@ -88,10 +88,12 @@ team_input = api.model('Team input', {
 team_output = api.inherit('Team output', team_input, {
     'team_members': List(Nested(team_member_output), description="All the people that are part of the team"),
     'id': Integer(required=True, description="Team's database id"),
+    "version_control_link": String(required=True, description="The public version control website link")
 
 })
 
 team_update_input = api.model('Team input for update', {
+    'version_control_link': String(description="The public url that implements the version control system"),
     'trello_board_id': String(required=False, description="The public trello board id")
 })
 

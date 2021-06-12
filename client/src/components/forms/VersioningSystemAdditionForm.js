@@ -4,42 +4,43 @@ import * as Yup from "yup";
 import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
-import { trelloBoardUrlValidSchema } from "../../utils/validationSchemas";
+import { versioningSystemUrlValidShema } from "../../utils/validationSchemas";
 import { usePatchFetch } from "../../customHooks/useFetch.js";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
-	trello_board_url: trelloBoardUrlValidSchema,
+	version_control_link: versioningSystemUrlValidShema,
 });
 
-TrelloBoardAdditionForm.propTypes = {
+VersioningSystemAdditionForm.propTypes = {
 	teamId: PropTypes.number.isRequired,
 	hideForm: PropTypes.func.isRequired,
-	setAddedBoardId: PropTypes.func.isRequired,
+	setAddedVersionControlUrl: PropTypes.func.isRequired,
 };
-export default function TrelloBoardAdditionForm(props) {
+export default function VersioningSystemAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
 	const { status, receivedData, error, isLoading, isRejected, isResolved } =
 		usePatchFetch(`api/teams/${props.teamId}`, requestBody);
 	useEffect(() => {
-		if (isResolved) {
-			let addedBoardId = requestBody.split(":").pop();
-			addedBoardId = addedBoardId.slice(1, -2).trim();
-			props.setAddedBoardId(addedBoardId);
-		}
+		if (!isResolved) return;
+		const addedUrl = requestBody.match(/http.*[^}"]/);
+		if (addedUrl)
+			props.setAddedVersionControlUrl(requestBody.match(/http.*[^}"]/)[0]);
+		else props.setAddedVersionControlUrl("");
+
+		props.hideForm();
 	}, [isResolved]);
+
 	return (
 		<>
 			<Formik
 				initialValues={{
-					trello_board_url: "",
+					version_control_link: "",
 				}}
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
 					let requestObj = {};
-					requestObj["trello_board_id"] = values.trello_board_url
-						.split("/")
-						.pop();
+					requestObj["version_control_link"] = values.version_control_link;
 					const stringifiedData = JSON.stringify(requestObj);
 					setRequestBody(stringifiedData);
 				}}
@@ -50,36 +51,41 @@ export default function TrelloBoardAdditionForm(props) {
 						required
 						fullWidth
 						margin="normal"
-						id="trello_board_url"
-						label="Trello board link"
-						name="trello_board_url"
+						id="version_control_link"
+						label="Version control public link"
+						name="version_control_link"
 						disabled={isLoading}
 					/>
 					<Box display="flex" style={{ gap: "1rem" }} flexWrap="wrap">
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							color="primary"
-							disabled={isLoading}
-						>
-							<Typography>Add board</Typography>
-						</Button>
-
-						<Button
-							fullWidth
-							variant="contained"
-							color="secondary"
-							disabled={isLoading}
-							onClick={() => props.hideForm()}
-						>
-							<Typography>cancel</Typography>
-						</Button>
+						<Box flex="1 1 auto">
+							<Button
+								size="small"
+								type="submit"
+								fullWidth
+								variant="contained"
+								color="primary"
+								disabled={isLoading}
+							>
+								<Typography variant="subtitle2">Add link</Typography>
+							</Button>
+						</Box>
+						<Box flex="1 1 auto">
+							<Button
+								size="small"
+								fullWidth
+								variant="contained"
+								color="secondary"
+								disabled={isLoading}
+								onClick={() => props.hideForm()}
+							>
+								<Typography variant="subtitle2">cancel</Typography>
+							</Button>
+						</Box>
 					</Box>
 
 					{isResolved && (
 						<Alert severity="success">
-							<Typography>{receivedData}</Typography>
+							<Typography>Link added successfuly</Typography>
 						</Alert>
 					)}
 

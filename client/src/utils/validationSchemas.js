@@ -135,3 +135,9 @@ export const trelloBoardUrlValidSchema = Yup.string(
 )
 	.url("Enter a valid url")
 	.max(255, "Url must be of maximum 255 characters length");
+
+export const versioningSystemUrlValidShema = Yup.string(
+	"Paste the public version control system"
+)
+	.url("Enter a valid url")
+	.max(255, "Url must be of maximum 255 characters length");

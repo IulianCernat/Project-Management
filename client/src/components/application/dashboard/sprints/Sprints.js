@@ -119,7 +119,7 @@ function SprintHeader({
 	currentUserRole,
 }) {
 	const [requestBodyForUpdate, setRequesBodyForUpdate] = useState(null);
-	const [isStartedState, setIsStartedState] = useState(isCompleted);
+	const [isStartedState, setIsStartedState] = useState(isStarted);
 	const [isCompletedState, setIsCompletedState] = useState(isCompleted);
 	const {
 		status: updateStatus,

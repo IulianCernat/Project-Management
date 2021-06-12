@@ -15,7 +15,7 @@ import { Alert } from "@material-ui/lab";
 import TrelloBoardAdditionForm from "components/forms/TrelloBoardAdditionForm";
 import { useState } from "react";
 
-const UIRestrictionForRoles = ["developer"];
+const UIRestrictionForRoles = ["developer", "productOwner"];
 
 function BoardCard(props) {
 	return (

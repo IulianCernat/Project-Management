@@ -15,7 +15,7 @@ import TeamMembers from "./TeamMembers";
 import Board from "./Board";
 import { Alert } from "@material-ui/lab";
 import { useProjectContext } from "contexts/ProjectContext";
-
+import TeamInfo from "./TeamInfo";
 const useStyles = makeStyles((theme) => ({
 	toolbar: theme.mixins.toolbar,
 }));
@@ -68,21 +68,16 @@ export default function TeamPage() {
 					</AppBar>
 
 					<TabPanel value={currentTab} index={0}>
-						<Paper>
-							<Box p={2}>
-								<Typography gutterBottom variant="h6">
-									Description
-								</Typography>
-								<Typography>
-									{isResolved ? receivedData.description : null}
-								</Typography>
-							</Box>
-						</Paper>
+						<TeamInfo
+							teamId={Number(teamId)}
+							description={receivedData.description}
+							version_control_link={receivedData.version_control_link}
+						/>
 					</TabPanel>
 					<TabPanel value={currentTab} index={1}>
 						<Board
 							currentUserRole={currentUserRole}
-							teamId={receivedData.id}
+							teamId={Number(receivedData.id)}
 							boardId={receivedData.trello_board_id}
 						/>
 					</TabPanel>

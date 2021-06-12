@@ -47,8 +47,10 @@ class Team(db.Model):
     avatar_url = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, nullable=False)
     trello_board_id = db.Column(db.String(50))
+    version_control_link = db.Column(db.String(255))
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
     team_members = db.relationship('TeamMember', backref="teams", order_by="desc(TeamMember.user_type)", cascade="all,delete", lazy=True)
+
 
     def __init__(self, input_obj):
         self.name = input_obj['name']

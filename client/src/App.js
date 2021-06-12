@@ -17,10 +17,11 @@ function App() {
 				<AuthProvider>
 					<Switch>
 						<PrivateRoute
+							strict
 							path="/dashboard/project/:projectId"
 							component={Dashboard}
 						/>
-						<Route path="/" component={FrontPage} />
+						<Route exact path="/" component={FrontPage} />
 					</Switch>
 				</AuthProvider>
 			</BrowserRouter>

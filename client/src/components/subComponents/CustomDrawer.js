@@ -1,4 +1,11 @@
-import { Drawer, Hidden, makeStyles } from "@material-ui/core";
+import {
+	Drawer,
+	Hidden,
+	makeStyles,
+	Box,
+	Typography,
+	Divider,
+} from "@material-ui/core";
 import DrawerListItems from "./DrawerListItems";
 import PropTypes from "prop-types";
 
@@ -12,6 +19,7 @@ const useStyles = makeStyles((theme) => ({
 			flexShrink: 0,
 		},
 	},
+	toolbarSpace: theme.mixins.toolbar,
 }));
 
 CustomDrawer.propTypes = {
@@ -43,6 +51,18 @@ export default function CustomDrawer(props) {
 							props.handleDrawerToggle();
 						}}
 					>
+						<Box
+							display="flex"
+							alignItems="center"
+							justifyContent="center"
+							className={classes.toolbarSpace}
+							bgcolor="grey.200"
+						>
+							<Typography color="primary" variant="h6">
+								Dashboard
+							</Typography>
+						</Box>
+						<Divider />
 						<DrawerListItems />
 					</div>
 				</Drawer>
@@ -57,6 +77,19 @@ export default function CustomDrawer(props) {
 					variant="permanent"
 					open
 				>
+					<Box
+						display="flex"
+						alignItems="center"
+						justifyContent="center"
+						className={classes.toolbarSpace}
+						bgcolor="grey.200"
+					>
+						<Typography color="primary" variant="h6">
+							Dashboard
+						</Typography>
+					</Box>
+					<Divider />
+
 					<DrawerListItems />
 				</Drawer>
 			</Hidden>
