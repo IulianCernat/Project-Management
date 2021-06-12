@@ -89,6 +89,7 @@ class Issue(db.Model):
     priority = db.Column(db.Enum('1', '2', '3', '4', '5'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
+    creator_user_profile = db.relationship('User', backref="issues", lazy=True)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
     creator_user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
     sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id', ondelete='cascade'), nullable=True)
@@ -115,9 +116,10 @@ class Sprint(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
     start = db.Column(db.Boolean, default=False, nullable=False)
     completed = db.Column(db.Boolean, default=False, nullable=False)
+
     user_creator_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
-
+    creator_user_profile = db.relationship('User', backref="sprints", lazy=True)
     issues = db.relationship('Issue', backref='issues', lazy=True)
 
     def __init__(self, input_obj):
