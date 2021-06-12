@@ -217,12 +217,22 @@ export default function IssueRow(props) {
 						disabled={UIRestrictionForRoles.includes(currentUserRole)}
 					>
 						{isBacklogIssue ? (
-							<Tooltip title="Delete issue" arrow>
-								<DeleteForever />
+							<Tooltip
+								title={
+									<Typography variant="subtitle2">Delete issue</Typography>
+								}
+								arrow
+							>
+								<DeleteForever color="secondary" />
 							</Tooltip>
 						) : (
-							<Tooltip title="Move to backlog" arrow>
-								<OpenWith />
+							<Tooltip
+								title={
+									<Typography variant="subtitle2">Move to backlog</Typography>
+								}
+								arrow
+							>
+								<OpenWith color="primary" />
 							</Tooltip>
 						)}
 					</IconButton>

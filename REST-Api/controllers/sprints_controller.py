@@ -33,6 +33,8 @@ def update_sprint(sprint_id, input_obj):
 
 def delete_sprint(sprint_id):
     sprint = get_sprint(sprint_id)
+    for sprint_issue in sprint.issues:
+        sprint_issue.status = "pending"
+        sprint_issue.sprint_id = None
     db.session.delete(sprint)
-
     db.session.commit()

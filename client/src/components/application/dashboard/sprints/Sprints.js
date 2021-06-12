@@ -11,10 +11,17 @@ import {
 	Box,
 	LinearProgress,
 	Button,
+	IconButton,
+	Tooltip,
 } from "@material-ui/core";
+import { DeleteForever } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { useRef, useState, useEffect } from "react";
-import { useGetFetch, usePatchFetch } from "customHooks/useFetch";
+import {
+	useDeleteFetch,
+	useGetFetch,
+	usePatchFetch,
+} from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
 import { format } from "date-fns";
@@ -29,8 +36,9 @@ const UIRestrictionForRoles = ["developer", "scrumMaster"];
 SprintTable.propTypes = {
 	sprint: PropTypes.object.isRequired,
 	currentUserRole: PropTypes.string.isRequired,
+	handleDeleteSprintClick: PropTypes.func.isRequired,
 };
-function SprintTable({ sprint, currentUserRole }) {
+function SprintTable({ sprint, currentUserRole, handleDeleteSprintClick }) {
 	const classes = useStyles();
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
@@ -62,6 +70,7 @@ function SprintTable({ sprint, currentUserRole }) {
 	return (
 		<TableContainer component={Paper}>
 			<SprintHeader
+				handleDeleteSprintClick={handleDeleteSprintClick}
 				currentUserRole={currentUserRole}
 				name={sprint.name}
 				startDate={sprint.start_date}
@@ -117,6 +126,7 @@ function SprintHeader({
 	isCompleted,
 	isStarted,
 	currentUserRole,
+	handleDeleteSprintClick,
 }) {
 	const [requestBodyForUpdate, setRequesBodyForUpdate] = useState(null);
 	const [isStartedState, setIsStartedState] = useState(isStarted);
@@ -149,8 +159,8 @@ function SprintHeader({
 	}, [isResolvedUpdate]);
 
 	return (
-		<Box p={2}>
-			<Box display="flex" flexWrap="wrap" style={{ gap: "2rem" }}>
+		<Box p={1}>
+			<Box display="flex" style={{ gap: "2rem" }}>
 				<Box>
 					<Typography variant="h5">{name}</Typography>
 				</Box>
@@ -167,7 +177,7 @@ function SprintHeader({
 					<Typography>{endDate}</Typography>
 				</Box>
 
-				<Box>
+				<Box flex="1 1 auto">
 					{!isStartedState ? (
 						<Button
 							onClick={() => {
@@ -194,7 +204,27 @@ function SprintHeader({
 						<Typography color="primary">Sprint completed</Typography>
 					)}
 				</Box>
+				<Box>
+					<IconButton
+						color="secondary"
+						onClick={() => {
+							handleDeleteSprintClick(id);
+						}}
+					>
+						<Tooltip
+							title={
+								<Typography variant="subtitle2">
+									Delete sprint and move issues to backlog
+								</Typography>
+							}
+							arrow
+						>
+							<DeleteForever />
+						</Tooltip>
+					</IconButton>
+				</Box>
 			</Box>
+
 			<Box>
 				<Typography variant="h6">Sprint Goal</Typography>
 				<Typography> {goal}</Typography>
@@ -204,6 +234,8 @@ function SprintHeader({
 }
 export default function Sprints() {
 	const { projectId, currentUserRole } = useProjectContext();
+	const [sprintsList, setSprintsList] = useState([]);
+	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
 	const getParams = useRef({ project_id: projectId });
 	const {
 		status: getSprintsStatus,
@@ -213,6 +245,31 @@ export default function Sprints() {
 		isResolved: isResolvedGetSprints,
 		isRejected: isRejectedGetSprints,
 	} = useGetFetch(`api/sprints/`, getParams.current);
+
+	const {
+		status: deleteSprintStatus,
+		isResolved: isResolvedDeleteSprint,
+		isRejected: isRejectedDeleteSprint,
+		isLoading: isLoadingDeleteSprint,
+	} = useDeleteFetch(
+		sprintIdToBeDeleted ? `api/sprints/${sprintIdToBeDeleted}` : null
+	);
+
+	const handleDeleteSprintClick = (sprintId) => {
+		setSprintIdToBeDeleted(sprintId);
+	};
+
+	useEffect(() => {
+		if (isResolvedDeleteSprint) {
+			setSprintsList((currentSprintsList) =>
+				currentSprintsList.filter((sprint) => sprint.id !== sprintIdToBeDeleted)
+			);
+		}
+	}, [isResolvedDeleteSprint]);
+
+	useEffect(() => {
+		if (isResolvedGetSprints) setSprintsList(getSprintsReceivedData);
+	}, [isResolvedGetSprints, getSprintsReceivedData]);
 	return (
 		<>
 			{isLoadingGetSprints ? (
@@ -229,8 +286,9 @@ export default function Sprints() {
 						flexDirection="column"
 						style={{ gap: "2rem" }}
 					>
-						{getSprintsReceivedData.map((item) => (
+						{sprintsList.map((item) => (
 							<SprintTable
+								handleDeleteSprintClick={handleDeleteSprintClick}
 								currentUserRole={currentUserRole}
 								key={item.id}
 								sprint={item}
