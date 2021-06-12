@@ -214,7 +214,9 @@ export default function IssueRow(props) {
 				<TableCell>
 					<IconButton
 						onClick={(event) => props.handleDeleteIssueClick(row.id)}
-						disabled={UIRestrictionForRoles.includes(currentUserRole)}
+						disabled={
+							UIRestrictionForRoles.includes(currentUserRole) || isSelected
+						}
 					>
 						{isBacklogIssue ? (
 							<Tooltip
@@ -223,7 +225,7 @@ export default function IssueRow(props) {
 								}
 								arrow
 							>
-								<DeleteForever color="secondary" />
+								<DeleteForever color={isSelected ? "disabled" : "secondary"} />
 							</Tooltip>
 						) : (
 							<Tooltip
@@ -232,7 +234,7 @@ export default function IssueRow(props) {
 								}
 								arrow
 							>
-								<OpenWith color="primary" />
+								<OpenWith color={isSelected ? "disabled" : "primary"} />
 							</Tooltip>
 						)}
 					</IconButton>

@@ -89,7 +89,7 @@ function TableToolbar(props) {
 						</>
 					) : (
 						<>
-							<Typography>Issues</Typography>
+							<Typography variant="h6">Issues</Typography>
 							<Button
 								onClick={(event) => {
 									openIssueCreationDialog();
