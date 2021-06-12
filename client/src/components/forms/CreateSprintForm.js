@@ -40,6 +40,7 @@ const sprintDurationOptions = (function () {
 
 CreateSprintForm.propTypes = {
 	projectId: PropTypes.number.isRequired,
+	issuesIds: PropTypes.array.isRequired,
 };
 export default function CreateSprintForm(props) {
 	const { additionalUserInfo } = useAuth();

@@ -78,7 +78,7 @@ function TableToolbar(props) {
 							<Typography>{numIssuesSelected} selected</Typography>
 							<Button
 								variant="contained"
-								color="primary"
+								color="secondary"
 								onClick={() => {
 									props.openSprintCreationDialog();
 								}}

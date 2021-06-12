@@ -160,20 +160,26 @@ function SprintHeader({
 
 	return (
 		<Box p={1}>
+			<Box>
+				<Typography variant="h5">{name}</Typography>
+			</Box>
 			<Box display="flex" style={{ gap: "2rem" }}>
 				<Box>
-					<Typography variant="h5">{name}</Typography>
-				</Box>
-				<Box>
-					<Typography variant="h6">Start date </Typography>
+					<Typography color="primary" variant="h6">
+						Start date
+					</Typography>
 					<Typography>{startDate}</Typography>
 				</Box>
 				<Box>
-					<Typography variant="h6">Duration </Typography>
+					<Typography color="primary" variant="h6">
+						Duration
+					</Typography>
 					<Typography>{duration} weeks</Typography>
 				</Box>
 				<Box>
-					<Typography variant="h6">End date </Typography>
+					<Typography color="primary" variant="h6">
+						End date
+					</Typography>
 					<Typography>{endDate}</Typography>
 				</Box>
 
@@ -201,7 +207,9 @@ function SprintHeader({
 							Complete sprint
 						</Button>
 					) : (
-						<Typography color="primary">Sprint completed</Typography>
+						<Box p={1} width="20ch" border="1px solid blue">
+							<Typography color="primary">Sprint completed</Typography>
+						</Box>
 					)}
 				</Box>
 				<Box>
@@ -225,9 +233,11 @@ function SprintHeader({
 				</Box>
 			</Box>
 
-			<Box>
-				<Typography variant="h6">Sprint Goal</Typography>
-				<Typography> {goal}</Typography>
+			<Box maxWidth="100ch">
+				<Typography color="primary" variant="h6">
+					Sprint Goal
+				</Typography>
+				<Typography>{goal}</Typography>
 			</Box>
 		</Box>
 	);

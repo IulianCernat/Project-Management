@@ -30,6 +30,7 @@ import { green, pink, blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
+import { format } from "date-fns";
 
 const useStyles = makeStyles((theme) => ({
 	table: {
@@ -251,12 +252,17 @@ export default function IssueRow(props) {
 										<TableCell align="left">
 											<Typography>Description</Typography>
 										</TableCell>
-										<TableCell align="left">Created by</TableCell>
+										<TableCell align="left">
+											<Typography>Created by</Typography>
+										</TableCell>
+										<TableCell align="left">
+											<Typography>Created at</Typography>
+										</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
 									<TableRow className={classes.tableRow}>
-										<TableCell style={{ width: "100ch" }} align="left">
+										<TableCell style={{ maxWidth: "60ch" }} align="left">
 											<Typography>{row.description}</Typography>
 										</TableCell>
 										<TableCell align="left">
@@ -270,6 +276,11 @@ export default function IssueRow(props) {
 												}
 												label={row.creator_user_profile.fullName}
 											/>
+										</TableCell>
+										<TableCell>
+											<Typography>
+												{format(new Date(row.created_at), "dd/MM/yyyy")}
+											</Typography>
 										</TableCell>
 									</TableRow>
 								</TableBody>
