@@ -1,23 +1,23 @@
 import * as Yup from "yup";
-const minPasswordLen = 8;
+export const minPasswordLen = 8;
 
-const minFullNameLen = 2;
+export const minFullNameLen = 2;
 
-const minProjectNameLen = 2;
-const maxProjectNameLen = 255;
-const minProjectDescriptionLen = 50;
-const maxProjectDescriptionLen = 500;
+export const minProjectNameLen = 2;
+export const maxProjectNameLen = 255;
+export const minProjectDescriptionLen = 50;
+export const maxProjectDescriptionLen = 1500;
 
-const minTeamNameLen = 2;
-const maxTeamNameLen = 255;
-const minTeamDescriptionLen = 50;
-const maxTeamDescriptionLen = 500;
+export const minTeamNameLen = 2;
+export const maxTeamNameLen = 255;
+export const minTeamDescriptionLen = 50;
+export const maxTeamDescriptionLen = 1500;
 
-const maxIssueTitleLen = 255;
-const maxIssueDescriptionLen = 500;
+export const maxIssueTitleLen = 500;
+export const maxIssueDescriptionLen = 1500;
 
-const maxSprintGoalLen = 500;
-const maxSprintNameLen = 255;
+export const maxSprintGoalLen = 1500;
+export const maxSprintNameLen = 500;
 
 export const generalInputString = Yup.string().required();
 

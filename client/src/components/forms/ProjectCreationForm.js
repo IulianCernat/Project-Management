@@ -10,6 +10,7 @@ import {
 } from "../../utils/validationSchemas";
 import { usePostFetch, useGetFetch } from "../../customHooks/useFetch.js";
 import PropTypes from "prop-types";
+import { maxProjectDescriptionLen } from "utils/validationSchemas";
 
 const useStyles = makeStyles((theme) => ({
 	backdrop: {
@@ -96,8 +97,8 @@ export default function ProjectCreationForm(props) {
 						variant="outlined"
 						required
 						fullWidth
-						rows={8}
-						maxTextWidth={500}
+						rows={10}
+						maxTextWidth={maxProjectDescriptionLen}
 						margin="normal"
 						id="description"
 						label="description"

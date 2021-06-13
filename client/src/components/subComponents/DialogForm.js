@@ -5,6 +5,7 @@ import {
 	DialogTitle,
 	IconButton,
 	useMediaQuery,
+	Box,
 } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import CancelIcon from "@material-ui/icons/Cancel";
@@ -27,15 +28,21 @@ export default function DialogForm(props) {
 			onClose={props.onClose}
 			aria-labelledby="dialog-title"
 			fullWidth
-			maxWidth="sm"
+			maxWidth="md"
 			disableBackdropClick
 		>
-			<DialogActions>
+			<Box
+				display="flex"
+				flexWrap="wrap"
+				justifyContent="space-between"
+				alignItems="center"
+			>
+				<DialogTitle id="dialog-title">{props.title}</DialogTitle>
 				<IconButton onClick={props.onClose}>
 					<CancelIcon />
 				</IconButton>
-			</DialogActions>
-			<DialogTitle id="dialog-title">{props.title}</DialogTitle>
+			</Box>
+
 			<DialogContent>{props.children}</DialogContent>
 		</Dialog>
 	);

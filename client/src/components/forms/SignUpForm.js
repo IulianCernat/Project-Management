@@ -54,6 +54,7 @@ export default function SignUpForm() {
 						headers.current.Authorization = userIdToken;
 						let requestObj = {};
 						requestObj["fullName"] = values.fullName;
+						requestObj["contact"] = values.email;
 						setRequestBody(JSON.stringify(requestObj));
 						setSubmitting(false);
 					} catch (err) {

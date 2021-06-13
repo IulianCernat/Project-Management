@@ -106,7 +106,7 @@ class Issue(db.Model):
 class Sprint(db.Model):
     __tablename__ = 'sprints'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
+    name = db.Column(db.String(500), nullable=False)
     start_date = db.Column(db.DateTime, nullable=False)
     duration = db.Column(db.Enum('1', '2', '3', '4'), nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)

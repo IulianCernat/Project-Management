@@ -37,8 +37,10 @@ export default function AppMenuNav() {
 		<Box>
 			<ClickAwayListener onClickAway={handleClickAway}>
 				<Box display="flex" alignItems="center">
-					<Box display="flex" style={{ gap: "1rem" }} alignItems="center">
-						<Typography>{additionalUserInfo.fullName}</Typography>
+					<Box display="flex" style={{ gap: "4px" }} alignItems="center">
+						<Typography variant="subtitle2">
+							{additionalUserInfo.fullName}
+						</Typography>
 						<IconButton onClick={handleClick}>
 							<Avatar src={additionalUserInfo.avatar_url} />
 						</IconButton>

@@ -1,14 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-	Typography,
-	AppBar,
-	Toolbar,
-	IconButton,
-	Hidden,
-	Box,
-	makeStyles,
-	CircularProgress,
-} from "@material-ui/core";
+import { Box, CircularProgress } from "@material-ui/core";
 import {
 	Switch,
 	Route,
@@ -16,28 +7,21 @@ import {
 	useParams,
 	Redirect,
 } from "react-router-dom";
-import { Menu } from "@material-ui/icons";
+import { makeStyles } from "@material-ui/core/styles";
 import CustomDrawer from "components/subComponents/CustomDrawer";
 import Teams from "./teams/Teams";
 import Sprints from "./sprints/Sprints";
 import Backlog from "./backlog/Backlog";
 import { ProjectProvider } from "contexts/ProjectContext";
-import AppMenuNav from "components/subComponents/AppMenuNav";
 import { useGetFetch } from "customHooks/useFetch";
 import { useAuth } from "contexts/AuthContext";
-import { deepPurple } from "@material-ui/core/colors";
 import Overview from "./Overview";
 import { Scrollbars } from "react-custom-scrollbars-2";
+import CustomAppBar from "components/subComponents/CustomAppBar";
 
 const drawerWidth = "18rem";
 
 const useStyles = makeStyles((theme) => ({
-	appBar: {
-		[theme.breakpoints.up("md")]: {
-			width: `calc(100% - ${drawerWidth})`,
-			marginLeft: drawerWidth,
-		},
-	},
 	content: {
 		width: "100%",
 		[theme.breakpoints.up("md")]: {
@@ -58,6 +42,7 @@ export default function Dashboard(props) {
 	const { projectId } = useParams();
 	const classes = useStyles();
 	const [mobileOpen, setmobileOpen] = useState(false);
+	const [minimizedDrawer, setMinimizedDrawer] = useState(false);
 	const [getRoleHeaders, setGetRoleHeaders] = useState();
 	const [startGetroleFetch, setStartGetRoleFetch] = useState(false);
 
@@ -104,35 +89,17 @@ export default function Dashboard(props) {
 			)}
 			{isResolvedGetRole && isResolvedGetProject && (
 				<Box display="flex">
-					<AppBar className={classes.appBar} position="fixed">
-						<Toolbar>
-							<Box
-								width="100%"
-								display="flex"
-								alignItems="center"
-								justifyContent="space-between"
-							>
-								<Box>
-									<Hidden mdUp>
-										<IconButton color="inherit" onClick={handleDrawerToggle}>
-											<Menu />
-										</IconButton>
-									</Hidden>
-								</Box>
-								<Box flex="1 1 auto">
-									<Typography>{getProjectReceivedData.name}</Typography>
-								</Box>
-
-								<Box>
-									<AppMenuNav />
-								</Box>
-							</Box>
-						</Toolbar>
-					</AppBar>
+					<CustomAppBar
+						drawerWidth={drawerWidth}
+						handleDrawerToggle={handleDrawerToggle}
+						projectName={getProjectReceivedData.name}
+						minimizedDrawer={minimizedDrawer}
+					/>
 					<CustomDrawer
 						drawerWidth={drawerWidth}
 						mobileOpen={mobileOpen}
 						handleDrawerToggle={handleDrawerToggle}
+						setMinimizedDrawer={setMinimizedDrawer}
 					/>
 					<Scrollbars heightRelativeToParent autoHeight autoHeightMax={1920}>
 						<Box className={classes.content} bgcolor="grey.200" height="100vh">
