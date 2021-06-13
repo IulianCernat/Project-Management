@@ -23,3 +23,4 @@ issues_filtering_args.add_argument('project_id', type=int, location='args', requ
 
 sprints_filtering_args = api.parser()
 sprints_filtering_args.add_argument('project_id', type=int, location="args", required=True)
+sprints_filtering_args.add_argument('minimal_info', type=bool, location="args",required=False)

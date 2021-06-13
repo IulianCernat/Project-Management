@@ -5,7 +5,6 @@ from utils.serializers import sprint_input, message, bad_request, sprint_output,
 from utils.parsers import sprints_filtering_args
 from controllers.sprints_controller import *
 
-
 sprints_namespace = api.namespace('sprints', description='Operations related to sprints')
 
 
@@ -26,12 +25,16 @@ class SprintsCollection(Resource):
     def get(self):
         args = sprints_filtering_args.parse_args(request)
         project_id = args.get('project_id', None)
+        minimal_info = args.get('minimal_info', False)
+        if minimal_info:
+            return get_sprints_with_minimal_info(project_id), 200
+
         return get_sprints(project_id), 200
 
 
 @api.response(404, 'Sprint not found', message)
 @sprints_namespace.route('/<id>')
-class TeamItem(Resource):
+class SprintItem(Resource):
     @api.response(200, 'Sprints successfully queried', sprint_output)
     @api.marshal_with(sprint_output)
     def get(self, id):
