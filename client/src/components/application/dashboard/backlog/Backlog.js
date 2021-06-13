@@ -21,6 +21,7 @@ import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import { green, pink, blue } from "@material-ui/core/colors";
 import IssueCreationForm from "components/forms/IssueCreationForm";
 import CreateSprintForm from "components/forms/CreateSprintForm";
+import AddingIssuesToExistingSprintForm from "components/forms/AddingIssuesToExistingSprintForm";
 import DialogForm from "components/subComponents/DialogForm";
 import PropTypes from "prop-types";
 import { useProjectContext } from "contexts/ProjectContext";
@@ -63,6 +64,7 @@ TableToolbar.propTypes = {
 	numIssuesSelected: PropTypes.number.isRequired,
 	openIssueCreationDialog: PropTypes.func.isRequired,
 	openSprintCreationDialog: PropTypes.func.isRequired,
+	openTransferIssuesToSprintDialog: PropTypes.func.isRequired,
 	currentUserRole: PropTypes.string.isRequired,
 };
 function TableToolbar(props) {
@@ -85,6 +87,16 @@ function TableToolbar(props) {
 								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
 							>
 								<Typography>Create sprint</Typography>
+							</Button>
+							<Button
+								variant="contained"
+								color="secondary"
+								onClick={() => {
+									props.openTransferIssuesToSprintDialog();
+								}}
+								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
+							>
+								<Typography>Move to sprint</Typography>
 							</Button>
 						</>
 					) : (
@@ -116,6 +128,9 @@ export default function Backlog() {
 	const [selectedIssues, setSelectedIssues] = useState([]);
 	const [openIssueCreationForm, setOpenIssueCreationForm] = useState(false);
 	const [openSprintCreationForm, setOpenSprintCreationForm] = useState(false);
+	const [openTransferIssuesToSprintForm, setOpenTransferIssuesToSprintForm] =
+		useState(false);
+
 	const [issuesList, setIssuesList] = useState([]);
 	let {
 		status: getIssuesStatus,
@@ -147,6 +162,14 @@ export default function Backlog() {
 	}
 	function handleCancelSprintCreation() {
 		setOpenSprintCreationForm(false);
+	}
+
+	function openTransferIssuesToSprintDialog() {
+		setOpenTransferIssuesToSprintForm(true);
+	}
+
+	function handleCancelTransferIssuesToSprint() {
+		setOpenTransferIssuesToSprintForm(false);
 	}
 
 	const handleSelectionClick = (issueId) => {
@@ -192,7 +215,7 @@ export default function Backlog() {
 		if (!isResolvedGetIssues) return;
 		setIssuesList(getIssuesReceivedData);
 	}, [isResolvedGetIssues, getIssuesReceivedData]);
-	useEffect(() => {}, [issuesList]);
+
 	return (
 		<>
 			<DialogForm
@@ -213,6 +236,16 @@ export default function Backlog() {
 			>
 				<CreateSprintForm projectId={projectId} issuesIds={selectedIssues} />
 			</DialogForm>
+			<DialogForm
+				title="Transfer issues to existing spring"
+				open={openTransferIssuesToSprintForm}
+				onClose={handleCancelTransferIssuesToSprint}
+			>
+				<AddingIssuesToExistingSprintForm
+					projectId={projectId}
+					issuesIds={selectedIssues}
+				/>
+			</DialogForm>
 
 			<Box>
 				{isLoadingGetIssues ? (
@@ -226,6 +259,7 @@ export default function Backlog() {
 					<TableToolbar
 						openIssueCreationDialog={openIssueCreationDialog}
 						openSprintCreationDialog={openSprintCreationDialog}
+						openTransferIssuesToSprintDialog={openTransferIssuesToSprintDialog}
 						numIssuesSelected={selectedIssues.length}
 						currentUserRole={currentUserRole}
 					/>

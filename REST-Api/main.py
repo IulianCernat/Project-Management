@@ -1,7 +1,5 @@
 import logging.config
-
-import os
-from flask import Flask, Blueprint, make_response
+from flask import Flask, Blueprint
 import settings
 from utils.restx import api
 from database import db
@@ -15,8 +13,7 @@ from endpoints.sprints_endpoint import sprints_namespace
 from flask_cors import CORS
 
 app = Flask(__name__)
-# logging_conf_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'logging.conf'))
-# logging.config.fileConfig(logging_conf_path)
+
 log = logging.getLogger(__name__)
 
 
@@ -30,21 +27,20 @@ def configure_app(flask_app):
     flask_app.config['ERROR_404_HELP'] = settings.RESTX_ERROR_404_HELP
 
     # flask_app.config['PROPAGATE_EXCEPTIONS'] = True
-    # CORS(app, resources={r'/*': {'origins': '*'}})
 
 
 def initialize_app(flask_app):
-    flask_app.secret_key = settings.FLASK_SECRET
     configure_app(flask_app)
-
     blueprint = Blueprint('api', __name__, url_prefix='/api')
     api.init_app(blueprint)
+
     api.add_namespace(users_namespace)
     api.add_namespace(projects_namespace)
     api.add_namespace(teams_namespace)
     api.add_namespace(teams_members_namespace)
     api.add_namespace(issues_namespace)
     api.add_namespace(sprints_namespace)
+
     flask_app.register_blueprint(blueprint)
 
     db.init_app(flask_app)
@@ -53,7 +49,7 @@ def initialize_app(flask_app):
     with flask_app.app_context():
         db.create_all()  # Create database tables for our data models
 
-    CORS(flask_app)
+    CORS(flask_app)  # for development purpose, CORS is set to everyone
 
 
 def main():

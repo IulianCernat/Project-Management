@@ -10,8 +10,4 @@ RESTX_ERROR_404_HELP = False
 
 # SQLAlchemy settings
 SQLALCHEMY_DATABASE_URI = 'mariadb+pymysql://root:root@localhost:3306/projectsmanager'
-SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-
-# Flask secret
-FLASK_SECRET = b'_5#y2L"F4Q8z\n\xec]/'
+SQLALCHEMY_TRACK_MODIFICATIONS = True

@@ -13,9 +13,9 @@ projects_namespace = api.namespace('projects', description='Operations related t
 
 @projects_namespace.route('/')
 @api.response(400, 'Bad request', bad_request)
-@api.response(404, 'Projects not found', message)
 class ProjectsCollection(Resource):
     @api.response(201, 'Project successfully created', location)
+    @api.response(404, "Foreign key check failure (product_owner_id doesn't exist)")
     @api.expect(project_input)
     def post(self):
         input_data = request.json
@@ -41,7 +41,6 @@ class ProjectItem(Resource):
         return get_project(id)
 
     @api.response(200, 'Projects successfully queried', message)
-    @api.response(404, 'Project was not found', message)
     def delete(self, id):
         delete_project(id)
         return {"message": "Project successfully deleted"}, 200

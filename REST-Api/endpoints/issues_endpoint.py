@@ -1,19 +1,19 @@
 from flask_restx import Resource
 from flask import request
 from utils.restx import api
-from utils.serializers import issue_input, message, bad_request, issue_output, issue_update_input, location
+from utils.serializers import issue_input, message, bad_request, issue_output, issue_update_input, location, \
+    multiple_issues_update_input
 from utils.parsers import issues_filtering_args
 from controllers.issues_controller import *
-
 
 issues_namespace = api.namespace('issues', description='Operations related to issues')
 
 
 @issues_namespace.route('/')
 @api.response(400, 'Bad request', bad_request)
-@api.response(404, "Project id or User id don't exist", message)
 class IssuesCollection(Resource):
     @api.response(201, 'Issue successfully created', location)
+    @api.response(404, "Foreign key check failure (project_id or creator_user_id doesn't exist)")
     @api.expect(issue_input)
     def post(self):
         input_data = request.json
@@ -28,26 +28,30 @@ class IssuesCollection(Resource):
         project_id = args.get('project_id', None)
         return get_issues(project_id), 200
 
-
+    @api.response(200, 'Issues successfully updated', message)
+    @api.response(404, 'Issue was not found')
+    @api.expect(multiple_issues_update_input)
+    def patch(self):
+        input_data = request.json
+        update_issues(input_data)
+        return {'message': f"Issues successfully updated"}, 200
 
 
 @api.response(404, 'Issue not found', message)
 @issues_namespace.route('/<id>')
-class TeamItem(Resource):
-    @api.response(200, 'teams successfully queried', issue_output)
+class IssueItem(Resource):
+    @api.response(200, 'Issues successfully queried', issue_output)
     @api.marshal_with(issue_output)
     def get(self, id):
         return get_issue(id), 200
 
-    @api.response(200, 'Issue successfully queried', [issue_output])
-    @api.response(404, 'Issue was not found', message)
+    @api.response(200, 'Issues successfully queried')
     def delete(self, id):
         delete_issue(id)
         return {"message": "Issue successfully deleted"}, 200
 
     @api.response(200, 'Issue successfully updated', message)
     @api.response(400, 'Bad request', bad_request)
-    @api.response(404, 'Issue was not found')
     @api.expect(issue_update_input)
     def patch(self, id):
         input_data = request.json

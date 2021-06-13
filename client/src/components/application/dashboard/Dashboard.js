@@ -154,7 +154,7 @@ export default function Dashboard(props) {
 										}}
 									/>
 									<Route path={`${match.url}/overview`}>
-										<Overview project={getProjectReceivedData} />
+										<Overview />
 									</Route>
 									<Route path={`${match.url}/teams`}>
 										<Teams />

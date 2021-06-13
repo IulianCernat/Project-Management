@@ -1,5 +1,4 @@
 from database import db
-from datetime import datetime
 import zulu
 
 
@@ -25,7 +24,7 @@ class Project(db.Model):
     __tablename__ = 'projects'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.String(500), nullable=False)
+    description = db.Column(db.String(1500), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
     product_owner_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
@@ -43,14 +42,13 @@ class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.String(5000), nullable=False)
-    avatar_url = db.Column(db.String(255), nullable=True)
+    description = db.Column(db.String(1500), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
-    trello_board_id = db.Column(db.String(50))
+    trello_board_id = db.Column(db.String(255))
     version_control_link = db.Column(db.String(255))
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
-    team_members = db.relationship('TeamMember', backref="teams", order_by="desc(TeamMember.user_type)", cascade="all,delete", lazy=True)
-
+    team_members = db.relationship('TeamMember', backref="teams", order_by="desc(TeamMember.user_type)",
+                                   cascade="all,delete", lazy=True)
 
     def __init__(self, input_obj):
         self.name = input_obj['name']
@@ -84,8 +82,8 @@ class Issue(db.Model):
     __tablename__ = 'issues'
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.Enum('story', 'bug', 'task'), nullable=False)
-    title = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.String(500))
+    title = db.Column(db.String(500), nullable=False)
+    description = db.Column(db.String(1500))
     priority = db.Column(db.Enum('1', '2', '3', '4', '5'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
@@ -112,7 +110,7 @@ class Sprint(db.Model):
     start_date = db.Column(db.DateTime, nullable=False)
     duration = db.Column(db.Enum('1', '2', '3', '4'), nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
-    goal = db.Column(db.String(500), nullable=False)
+    goal = db.Column(db.String(1500), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     start = db.Column(db.Boolean, default=False, nullable=False)
     completed = db.Column(db.Boolean, default=False, nullable=False)

@@ -1,5 +1,5 @@
 from database import db
-from database.models import Team, User, TeamMember
+from database.models import Team
 from controllers.teams_members_controller import add_team_members
 
 
@@ -21,6 +21,7 @@ def add_team(input_data):
 def get_team(team_id):
     return Team.query.filter(Team.id == team_id).one()
 
+
 def get_nr_of_members_for_project(project_id):
     members_number = 0
     teams = Team.query.filter(Team.project_id == project_id).all()
@@ -28,8 +29,10 @@ def get_nr_of_members_for_project(project_id):
         members_number += len(team.team_members)
     return members_number
 
+
 def get_teams(project_id):
     return Team.query.filter(Team.project_id == project_id).all()
+
 
 def update_team(team_id, input_obj):
     issue = get_team(team_id)
@@ -37,6 +40,7 @@ def update_team(team_id, input_obj):
         setattr(issue, field, value)
 
     db.session.commit()
+
 
 def delete_team(team_id):
     team = get_team(team_id)

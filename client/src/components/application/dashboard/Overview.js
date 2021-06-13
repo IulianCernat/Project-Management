@@ -1,5 +1,4 @@
-import React from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 import {
 	Grid,
 	Box,
@@ -12,6 +11,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import UserProfileCard from "components/subComponents/UserProfileCard";
 import CircularProgressWithLabel from "components/subComponents/Progress";
 import { purple } from "@material-ui/core/colors";
+import { useGetFetch } from "customHooks/useFetch";
+import { useProjectContext } from "contexts/ProjectContext";
+
 const useStyles = makeStyles((theme) => ({
 	paper: { height: "100%" },
 	headlineText: {
@@ -23,17 +25,33 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-Overview.propTypes = {
-	project: PropTypes.object.isRequired,
-};
-export default function Overview({ project }) {
+export default function Overview() {
+	const { projectId } = useProjectContext();
+	const {
+		status: getProjectStatus,
+		receivedData: getProjectReceivedData,
+		error: getProjectError,
+		isLoading: isLoadingGetProject,
+		isResolved: isResolvedGetProject,
+		isRejected: isRejectedGetProject,
+	} = useGetFetch(`api/projects/${projectId}`);
 	const classes = useStyles();
-	const progress = project.total_nr_of_issues
-		? Math.round(
-				(project.nr_of_finished_issues * 100) / project.total_nr_of_issues
-		  )
-		: 0;
-	return (
+	const [projectProgress, setProjectProgress] = useState();
+
+	useEffect(() => {
+		if (isResolvedGetProject) {
+			const progress = getProjectReceivedData.total_nr_of_issues
+				? Math.round(
+						(getProjectReceivedData.nr_of_finished_issues * 100) /
+							getProjectReceivedData.total_nr_of_issues
+				  )
+				: 0;
+
+			setProjectProgress(progress);
+		}
+	}, [isResolvedGetProject]);
+
+	return !isResolvedGetProject ? null : (
 		<Grid container spacing={2}>
 			<Grid item spacing={2} container>
 				<Grid item xs={12} sm={5} md={4}>
@@ -41,7 +59,7 @@ export default function Overview({ project }) {
 						<Box p={4} height="100%">
 							<UserProfileCard
 								width="100%"
-								user_profile={project.product_owner_profile}
+								user_profile={getProjectReceivedData.product_owner_profile}
 								user_type="productOwner"
 							/>
 						</Box>
@@ -53,7 +71,7 @@ export default function Overview({ project }) {
 							<Typography gutterBottom variant="h5">
 								Project description
 							</Typography>
-							<Typography>{project.description}</Typography>
+							<Typography>{getProjectReceivedData.description}</Typography>
 						</Box>
 					</Paper>
 				</Grid>
@@ -73,12 +91,12 @@ export default function Overview({ project }) {
 								Progress
 							</Typography>
 							<CircularProgressWithLabel
-								value={progress}
+								value={projectProgress}
 								size="10rem"
 								label={
 									<Box>
 										<Typography variant="h6" color="textSecondary">
-											{`${progress}%`}
+											{`${projectProgress}%`}
 										</Typography>
 										<Typography variant="h6" color="textSecondary">
 											done
@@ -105,7 +123,7 @@ export default function Overview({ project }) {
 									display="inline"
 									variant="h4"
 								>
-									{project.total_nr_of_issues}
+									{getProjectReceivedData.total_nr_of_issues}
 								</Typography>
 							</Box>
 
@@ -122,7 +140,7 @@ export default function Overview({ project }) {
 									display="inline"
 									variant="h4"
 								>
-									{project.nr_of_finished_issues}
+									{getProjectReceivedData.nr_of_finished_issues}
 								</Typography>
 							</Box>
 						</Box>
@@ -142,7 +160,7 @@ export default function Overview({ project }) {
 								display="inline"
 								variant="h4"
 							>
-								{project.number_of_members}
+								{getProjectReceivedData.number_of_members}
 							</Typography>
 						</Box>
 					</Box>

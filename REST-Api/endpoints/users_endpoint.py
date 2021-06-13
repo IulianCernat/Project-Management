@@ -11,10 +11,10 @@ users_namespace = api.namespace('users', description='Operations related to user
 
 
 @users_namespace.route('/')
+@api.response(400, 'Bad request', bad_request)
 class ProfilesCollection(Resource):
 
     @api.response(201, 'Profile successfully created', message)
-    @api.response(400, 'Bad request', bad_request)
     @api.response(401, 'Authorization failed', message)
     @api.expect(user_input, authorization_header)
     def post(self):
@@ -29,8 +29,7 @@ class ProfilesCollection(Resource):
 
         return {"location": f"{api.base_url}{users_namespace.path[1:]}/{profile_id}"}, 201
 
-    @api.response(200, 'teams_members successfully queried')
-    @api.response(400, 'Bad request', bad_request)
+    @api.response(200, 'Users successfully queried')
     @api.marshal_list_with(user_output)
     @api.expect(user_filtering_args)
     def get(self):
@@ -52,12 +51,12 @@ class ProfileItem(Resource):
         return user_profile
 
 
-@api.response(404, 'User not found', message)
 @users_namespace.route('/loggedUser')
+@api.response(404, 'User not found', message)
+@api.response(400, 'Bad request', bad_request)
 class LoggedUser(Resource):
 
     @api.response(200, 'Users successfully queried', user_output)
-    @api.response(400, 'Bad request', bad_request)
     @api.response(401, 'Authorization failed', message)
     @api.expect(authorization_header)
     @api.marshal_with(user_output)
@@ -68,10 +67,9 @@ class LoggedUser(Resource):
         except AuthorizationFailed as e:
             raise e
 
-        return get_self(decoded_token['uid'])
+        return get_self(decoded_token['uid']), 200
 
     @api.response(200, 'User profile successfully updated', message)
-    @api.response(400, 'Bad request', bad_request)
     @api.response(401, 'Authorization failed', message)
     @api.expect(authorization_header)
     @api.expect(user_update)
@@ -83,4 +81,4 @@ class LoggedUser(Resource):
         except AuthorizationFailed as e:
             raise e
 
-        return update_user(decoded_token['uid'], input_data)
+        return update_user(decoded_token['uid'], input_data), 200

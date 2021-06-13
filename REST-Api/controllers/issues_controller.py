@@ -18,11 +18,14 @@ def get_issues(project_id):
 def get_nr_of_issues_for_project(project_id):
     return Issue.query.filter(Issue.project_id == project_id).count()
 
+
 def get_nr_of_finished_issues_for_sprint(sprint_id):
     return Issue.query.filter(Issue.sprint_id == sprint_id, Issue.status == 'done').count()
 
+
 def get_nr_of_finished_issues_for_project(project_id):
     return Issue.query.filter(Issue.project_id == project_id, Issue.status == "done").count()
+
 
 def get_issue(issue_id):
     issue = Issue.query.filter(Issue.id == issue_id).one()
@@ -38,6 +41,18 @@ def update_issue(issue_id, input_obj):
 
     for field, value in input_obj.items():
         setattr(issue, field, value)
+
+    db.session.commit()
+
+
+def update_issues(input_obj):
+    found_issues = []
+    for issue in input_obj['issues']:
+        found_issues.append(get_issue(issue['id']))
+
+    for issue_list_index, found_issue in enumerate(found_issues):
+        for field, value in input_obj['issues'][issue_list_index]['updates'].items():
+            setattr(found_issue, field, value)
 
     db.session.commit()
 

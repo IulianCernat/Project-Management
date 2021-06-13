@@ -10,9 +10,10 @@ sprints_namespace = api.namespace('sprints', description='Operations related to 
 
 @sprints_namespace.route('/')
 @api.response(400, 'Bad request', bad_request)
-@api.response(404, "Project id or User id don't exist", message)
 class SprintsCollection(Resource):
     @api.response(201, 'Sprint successfully created', location)
+    @api.response(404, "Foreign key check failure (one of the issue id from issues_ids"
+                       "or user_creator_id or project_id doesn't exist)")
     @api.expect(sprint_input)
     def post(self):
         input_data = request.json
@@ -33,6 +34,7 @@ class SprintsCollection(Resource):
 
 
 @api.response(404, 'Sprint not found', message)
+@api.response(400, 'Bad request', bad_request)
 @sprints_namespace.route('/<id>')
 class SprintItem(Resource):
     @api.response(200, 'Sprints successfully queried', sprint_output)
@@ -41,14 +43,11 @@ class SprintItem(Resource):
         return get_sprint(id), 200
 
     @api.response(200, 'Sprint successfully queried', [sprint_output])
-    @api.response(404, 'Sprint was not found', message)
     def delete(self, id):
         delete_sprint(id)
         return {"message": "Sprint successfully deleted"}, 200
 
     @api.response(200, 'Sprint successfully updated', message)
-    @api.response(400, 'Bad request', bad_request)
-    @api.response(404, 'Sprint was not found')
     @api.expect(sprint_update_input)
     def patch(self, id):
         input_data = request.json

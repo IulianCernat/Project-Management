@@ -7,12 +7,10 @@ import { Particle } from "jparticles";
 import PrivateRoute from "utils/PrivateRoute";
 import Profile from "components/application/profile/Profile";
 import { useAuth } from "contexts/AuthContext";
-import { Box } from "@material-ui/core";
 
 const backgroundParticlesStyling = {
 	backgroundColor: "#0F0B11",
 	position: "absolute",
-	flexGrow: 1,
 	top: 0,
 	left: 0,
 	bottom: 0,
@@ -33,7 +31,7 @@ export default function FrontPage() {
 		});
 	}, []);
 	return (
-		<Box display="flex" flexDirection="column">
+		<>
 			<div
 				id="backgroundParticlesStyling"
 				style={backgroundParticlesStyling}
@@ -64,6 +62,6 @@ export default function FrontPage() {
 					}}
 				/>
 			</Switch>
-		</Box>
+		</>
 	);
 }

@@ -3,6 +3,7 @@ from database.models import Project, Team, TeamMember
 from controllers.issues_controller import get_nr_of_finished_issues_for_project, get_nr_of_issues_for_project
 from controllers.teams_controller import get_nr_of_members_for_project
 
+
 def check_project_existance(project_id):
     return Project.query.filter(Project.id == project_id).scalar()
 
@@ -17,7 +18,7 @@ def add_project(input_data):
 def get_additional_project_info(project_id):
     return {'total_nr_of_issues': get_nr_of_issues_for_project(project_id),
             'nr_of_finished_issues': get_nr_of_finished_issues_for_project(project_id),
-            'number_of_members':get_nr_of_members_for_project(project_id)}
+            'number_of_members': get_nr_of_members_for_project(project_id)}
 
 
 def get_project(project_id):
@@ -57,6 +58,7 @@ def update_project(project_id, input_obj):
         setattr(project, field, value)
 
     db.session.commit()
+
 
 def delete_project(project_id):
     project = get_project(project_id)
