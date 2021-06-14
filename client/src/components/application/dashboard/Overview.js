@@ -13,6 +13,7 @@ import CircularProgressWithLabel from "components/subComponents/Progress";
 import { purple } from "@material-ui/core/colors";
 import { useGetFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
+import { SignalCellularNullSharp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
 	paper: { height: "100%" },
@@ -39,7 +40,7 @@ export default function Overview() {
 		isRejected: isRejectedGetProject,
 	} = useGetFetch(`api/projects/${projectId}`);
 	const classes = useStyles();
-	const [projectProgress, setProjectProgress] = useState();
+	const [projectProgress, setProjectProgress] = useState(null);
 
 	useEffect(() => {
 		if (isResolvedGetProject) {
@@ -107,20 +108,22 @@ export default function Overview() {
 							<Typography gutterBottom align="center" variant="h5">
 								Progress
 							</Typography>
-							<CircularProgressWithLabel
-								value={projectProgress}
-								size="10rem"
-								label={
-									<Box>
-										<Typography variant="h6" color="textSecondary">
-											{`${projectProgress}%`}
-										</Typography>
-										<Typography variant="h6" color="textSecondary">
-											done
-										</Typography>
-									</Box>
-								}
-							/>
+							{projectProgress !== null && (
+								<CircularProgressWithLabel
+									value={projectProgress}
+									size="10rem"
+									label={
+										<Box>
+											<Typography variant="h6" color="textSecondary">
+												{`${projectProgress}%`}
+											</Typography>
+											<Typography variant="h6" color="textSecondary">
+												done
+											</Typography>
+										</Box>
+									}
+								/>
+							)}
 						</Box>
 						<Hidden smDown>
 							<Divider orientation="vertical" flexItem />

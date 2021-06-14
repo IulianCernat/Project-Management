@@ -5,11 +5,12 @@ import {
 	makeStyles,
 	Container,
 	Hidden,
-	CircularProgress,
+	Typography,
 } from "@material-ui/core";
 import ProfileAside from "./ProfileAside";
 import ProfileMain from "./ProfileMain";
 import { useAuth } from "../../../contexts/AuthContext";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
 	container: {
@@ -45,7 +46,16 @@ export default function Profile() {
 					</Grid>
 				</Box>
 			) : (
-				<CircularProgress />
+				<Box
+					display="flex"
+					height="70vh"
+					justifyContent="center"
+					alignItems="center"
+				>
+					<Alert severity="error">
+						<Typography>Failed to load profile</Typography>
+					</Alert>
+				</Box>
 			)}
 		</Container>
 	);

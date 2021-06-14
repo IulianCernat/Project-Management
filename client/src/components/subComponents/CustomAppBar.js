@@ -13,7 +13,7 @@ import { makeStyles } from "@material-ui/core/styles";
 const useStyles = makeStyles((theme) => ({
 	appBar: (props) => ({
 		[theme.breakpoints.up("md")]: {
-			transition: theme.transitions.create("width", "margin", {
+			transition: theme.transitions.create("width", {
 				easing: theme.transitions.easing.sharp,
 				duration: theme.transitions.duration.leavingScreen,
 			}),
@@ -23,12 +23,12 @@ const useStyles = makeStyles((theme) => ({
 	}),
 
 	appBarForMinimizedDrawer: {
-		transition: theme.transitions.create("width", "margin", {
+		transition: theme.transitions.create("width", {
 			easing: theme.transitions.easing.sharp,
 			duration: theme.transitions.duration.leavingScreen,
 		}),
-		width: `calc(100% - ${theme.spacing(7)})`,
-		marginLeft: theme.spacing(7),
+		width: `calc(100% - ${theme.spacing(7)}px)`,
+		marginLeft: `theme.spacing(7)px`,
 	},
 }));
 

@@ -101,7 +101,7 @@ export default function Dashboard(props) {
 						handleDrawerToggle={handleDrawerToggle}
 						setMinimizedDrawer={setMinimizedDrawer}
 					/>
-					<Scrollbars heightRelativeToParent autoHeight autoHeightMax={1920}>
+					<Scrollbars autoHeight autoHeightMax={1920}>
 						<Box className={classes.content} bgcolor="grey.200" height="100vh">
 							<div className={classes.toolbar} />
 							<ProjectProvider
