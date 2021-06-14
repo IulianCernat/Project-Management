@@ -104,39 +104,39 @@ export default function Dashboard() {
 						handleDrawerToggle={handleDrawerToggle}
 						setMinimizedDrawer={setMinimizedDrawer}
 					/>
-					<Scrollbars autoHeight autoHeightMax={1920}>
-						<Box className={classes.content} bgcolor="grey.200" height="100vh">
-							<div className={classes.toolbar} />
-							<ProjectProvider
-								projectId={Number(projectId)}
-								currentUserRole={getRoleReceivedData.user_role}
-							>
-								<Switch>
-									<Route
-										exact
-										path={`${match.url}`}
-										render={() => {
-											return isRejectedGetRole ? (
-												<Redirect to="/" />
-											) : (
-												<Redirect to={`${match.url}/overview`} />
-											);
-										}}
-									/>
-									<Route path={`${match.url}/overview`}>
-										<Overview />
-									</Route>
-									<Route path={`${match.url}/teams`}>
-										<Teams />
-									</Route>
-									<Route path={`${match.url}/sprints`}>
-										<Sprints />
-									</Route>
-									<Route path={`${match.url}/backlog`} component={Backlog} />
-								</Switch>
-							</ProjectProvider>
-						</Box>
-					</Scrollbars>
+
+					<Box className={classes.content} bgcolor="grey.200" minHeight="100vh">
+						<div className={classes.toolbar} />
+
+						<ProjectProvider
+							projectId={Number(projectId)}
+							currentUserRole={getRoleReceivedData.user_role}
+						>
+							<Switch>
+								<Route
+									exact
+									path={`${match.url}`}
+									render={() => {
+										return isRejectedGetRole ? (
+											<Redirect to="/" />
+										) : (
+											<Redirect to={`${match.url}/overview`} />
+										);
+									}}
+								/>
+								<Route path={`${match.url}/overview`}>
+									<Overview />
+								</Route>
+								<Route path={`${match.url}/teams`}>
+									<Teams />
+								</Route>
+								<Route path={`${match.url}/sprints`}>
+									<Sprints />
+								</Route>
+								<Route path={`${match.url}/backlog`} component={Backlog} />
+							</Switch>
+						</ProjectProvider>
+					</Box>
 				</Box>
 			)}
 		</>

@@ -12,6 +12,7 @@ import {
 	issuePriorityValidSchema,
 	issueTitleValidSchema,
 	issueTypeValidSchema,
+	maxIssueDescriptionLen,
 } from "utils/validationSchemas";
 import { usePostFetch, useGetFetch } from "customHooks/useFetch.js";
 import PropTypes from "prop-types";
@@ -178,8 +179,8 @@ export default function IssueCreationForm({
 							multiline
 							variant="outlined"
 							fullWidth
-							rows={8}
-							maxTextWidth={500}
+							rows={20}
+							maxTextWidth={maxIssueDescriptionLen}
 							margin="normal"
 							id="description"
 							label="Description"
@@ -194,7 +195,7 @@ export default function IssueCreationForm({
 							color="primary"
 							disabled={postFetchIsLoading}
 						>
-							<Typography>Create sprint</Typography>
+							<Typography>Create issue</Typography>
 						</Button>
 
 						{postFetchIsResolved && (

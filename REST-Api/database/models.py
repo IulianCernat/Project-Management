@@ -23,8 +23,8 @@ class User(db.Model):
 class Project(db.Model):
     __tablename__ = 'projects'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.String(1500), nullable=False)
+    name = db.Column(db.String(500), nullable=False)
+    description = db.Column(db.String(5000), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
     product_owner_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
@@ -41,8 +41,8 @@ class Project(db.Model):
 class Team(db.Model):
     __tablename__ = 'teams'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.String(1500), nullable=False)
+    name = db.Column(db.String(500), nullable=False)
+    description = db.Column(db.String(5000), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     trello_board_id = db.Column(db.String(255))
     version_control_link = db.Column(db.String(255))
@@ -83,7 +83,7 @@ class Issue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.Enum('story', 'bug', 'task'), nullable=False)
     title = db.Column(db.String(500), nullable=False)
-    description = db.Column(db.String(1500))
+    description = db.Column(db.String(5000))
     priority = db.Column(db.Enum('1', '2', '3', '4', '5'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
@@ -110,7 +110,7 @@ class Sprint(db.Model):
     start_date = db.Column(db.DateTime, nullable=False)
     duration = db.Column(db.Enum('1', '2', '3', '4'), nullable=False)
     end_date = db.Column(db.DateTime, nullable=False)
-    goal = db.Column(db.String(1500), nullable=False)
+    goal = db.Column(db.String(5000), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     start = db.Column(db.Boolean, default=False, nullable=False)
     completed = db.Column(db.Boolean, default=False, nullable=False)

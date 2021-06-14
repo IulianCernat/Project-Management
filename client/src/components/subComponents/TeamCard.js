@@ -54,7 +54,11 @@ export default function TeamCard(props) {
 					<CardHeader
 						title={
 							<Box display="flex" justifyContent="space-between">
-								<Typography variant="h6">{props.name}</Typography>
+								<Typography color="primary" variant="h6">
+									{props.name.length > 70
+										? props.name.slice(0, 70) + "..."
+										: props.name}
+								</Typography>
 								<Badge badgeContent={nrOfTeammates} color="primary" showZero>
 									<People fontSize="large" />
 								</Badge>
@@ -64,8 +68,9 @@ export default function TeamCard(props) {
 					/>
 					<CardContent>
 						<TextDisplayWrapper gutterBottom>
-							{props.description.substr(0, 200) +
-								(props.description.legth > 200 ? "..." : "")}
+							{props.description.length > 200
+								? props.description.slice(0, 200) + "..."
+								: props.description}
 						</TextDisplayWrapper>
 						<Box
 							display="flex"

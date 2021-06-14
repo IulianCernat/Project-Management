@@ -44,7 +44,9 @@ export default function ProjectCard({ project, handleDelete, renderActions }) {
 								<People />
 							</Badge>
 							<Typography color="primary" variant="h6">
-								{project.name}
+								{project.name.length > 60
+									? project.name.slice(0, 60) + "..."
+									: project.name}
 							</Typography>
 						</Box>
 					}

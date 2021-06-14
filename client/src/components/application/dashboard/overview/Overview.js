@@ -56,7 +56,7 @@ export default function Overview() {
 
 	return !isResolvedGetProject ? null : (
 		<Grid container spacing={2}>
-			<Grid item container justify="space-evenly" spacing={2}>
+			<Grid item container justify="space-evenly" alignItems="flex-start">
 				<Grid item xs={12} xl={3}>
 					<Paper className={classes.paper}>
 						<Box
@@ -77,13 +77,18 @@ export default function Overview() {
 				<Grid item xs={12} xl={8}>
 					<Paper className={classes.paper}>
 						<Box p={2} height="100%">
-							<Typography gutterBottom variant="h5">
+							<Typography color="primary" gutterBottom variant="h5">
 								Project Name
 							</Typography>
 							<Typography gutterBottom>
 								{getProjectReceivedData.name}
 							</Typography>
-							<Typography gutterBottom variant="h5">
+							<Typography
+								align="justify"
+								color="primary"
+								gutterBottom
+								variant="h5"
+							>
 								Project description
 							</Typography>
 							<Typography className={classes.textContent}>

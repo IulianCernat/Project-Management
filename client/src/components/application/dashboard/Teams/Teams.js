@@ -125,6 +125,7 @@ export default function Teams(props) {
 						title="Add new team"
 						open={openTeamCreation}
 						onClose={handleCancel}
+						maxWidth="sm"
 					>
 						<TeamCreationForm
 							setTeamCreationSuccess={setTeamCreationSuccess}
@@ -136,6 +137,8 @@ export default function Teams(props) {
 						display="flex"
 						justifyContent="flex-start"
 						flexWrap="wrap"
+						alignItems="flex-start"
+						alignContent="center"
 						style={{ gap: "1rem" }}
 						p={1}
 					>

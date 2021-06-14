@@ -88,7 +88,7 @@ export default function ProjectCreationForm(props) {
 						variant="outlined"
 						required
 						fullWidth
-						rows={10}
+						rows={20}
 						maxTextWidth={maxProjectDescriptionLen}
 						margin="normal"
 						id="description"

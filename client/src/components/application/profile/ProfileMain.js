@@ -145,6 +145,7 @@ function TabPanel(props) {
 								title="Create project"
 								open={openProjectCreation}
 								onClose={handleCancelProjectCreation}
+								maxWidth="md"
 							>
 								<ProjectCreationForm
 									insertNewCreatedProject={insertNewCreatedProject}

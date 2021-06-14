@@ -8,8 +8,10 @@ import {
 	teamNameValidSchema,
 	teamDescriptionValidSchema,
 	generalInputString,
-} from "../../utils/validationSchemas";
-import { usePostFetch } from "../../customHooks/useFetch.js";
+	maxTeamDescriptionLen,
+} from "utils/validationSchemas";
+
+import { usePostFetch } from "customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
 import PropTypes from "prop-types";
 
@@ -115,12 +117,12 @@ export default function TeamCreationForm(props) {
 							variant="outlined"
 							required
 							fullWidth
-							rows={8}
-							maxTextWidth={500}
+							rows={20}
 							margin="normal"
 							id="description"
 							label="description"
 							name="description"
+							maxTextWidth={maxTeamDescriptionLen}
 							disabled={isLoading}
 						/>
 

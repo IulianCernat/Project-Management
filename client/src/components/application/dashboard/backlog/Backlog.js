@@ -221,6 +221,7 @@ export default function Backlog() {
 				title="Create new issue"
 				open={openIssueCreationForm}
 				onClose={handleCancelIssueCreation}
+				maxWidth="md"
 			>
 				<IssueCreationForm
 					projectId={projectId}
@@ -232,6 +233,7 @@ export default function Backlog() {
 				title="Create new sprint"
 				open={openSprintCreationForm}
 				onClose={handleCancelSprintCreation}
+				maxWidth="md"
 			>
 				<CreateSprintForm projectId={projectId} issuesIds={selectedIssues} />
 			</DialogForm>

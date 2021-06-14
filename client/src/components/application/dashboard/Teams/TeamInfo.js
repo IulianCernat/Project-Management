@@ -26,6 +26,8 @@ TeamInfo.propTypes = {
 	description: PropTypes.string.isRequired,
 	teamId: PropTypes.number.isRequired,
 	version_control_link: PropTypes.any.isRequired,
+	name: PropTypes.string.isRequired,
+	nrMembers: PropTypes.number.isRequired,
 };
 export default function TeamInfo(props) {
 	const classes = useStyles();
@@ -51,24 +53,24 @@ export default function TeamInfo(props) {
 
 	return (
 		<Grid container spacing={1}>
-			<Grid item xs={12} md={6}>
+			<Grid item xs={12} md={4}>
 				<Paper>
-					<Box p={1} minHeight="50ch">
-						<TextDisplayWrapper>{props.description}</TextDisplayWrapper>
-					</Box>
-				</Paper>
-			</Grid>
-			<Grid item xs={12} md={6}>
-				<Paper>
-					<Box p={1}>
+					<Box
+						p={1}
+						display="flex"
+						flexDirection="column"
+						alignItems="center"
+						style={{ gap: "2rem" }}
+					>
 						{hideVersionControlAdditionForm ? (
 							<Button
-								variant="outlined"
+								className={classes.linkButton}
+								variant="contained"
 								color="primary"
 								onClick={handleFormAdditionClick}
 								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
 							>
-								Link your public version control link
+								Add version control link
 							</Button>
 						) : (
 							<Box width="50ch">
@@ -82,13 +84,13 @@ export default function TeamInfo(props) {
 						<Box>
 							{addedVersionControlUrl && (
 								<Button
-									classes={{ root: '{textTransform:"none"}' }}
 									onClick={openVersionControlLink}
 									className={classes.linkButton}
+									variant="contained"
 								>
 									<Box
 										display="flex"
-										style={{ gap: "5px" }}
+										style={{ gap: "1rem" }}
 										alignItems="center"
 									>
 										<Avatar
@@ -105,15 +107,32 @@ export default function TeamInfo(props) {
 													: null
 											}
 										/>
-										<Typography variant="h5" color="primary">
-											{addedVersionControlUrl
-												.match(/(https:\/\/)(.*?\/+)/)[2]
-												.slice(0, -1)}
+										<Typography variant="h6" color="primary">
+											{addedVersionControlUrl.match(/(https:\/\/)(.*)/)[2]}
 										</Typography>
 									</Box>
 								</Button>
 							)}
 						</Box>
+					</Box>
+				</Paper>
+			</Grid>
+			<Grid item xs={12} md={8}>
+				<Paper>
+					<Box p={1} minHeight="50ch">
+						<Typography color="primary" variant="h6">
+							Team name
+						</Typography>
+						<TextDisplayWrapper className={classes.textContent}>
+							{props.name}
+						</TextDisplayWrapper>
+						<Box mt={2} />
+						<Typography color="primary" variant="h6">
+							Team description
+						</Typography>
+						<TextDisplayWrapper className={classes.textContent}>
+							{props.description}
+						</TextDisplayWrapper>
 					</Box>
 				</Paper>
 			</Grid>

@@ -4,20 +4,20 @@ export const minPasswordLen = 8;
 export const minFullNameLen = 2;
 
 export const minProjectNameLen = 2;
-export const maxProjectNameLen = 255;
+export const maxProjectNameLen = 500;
 export const minProjectDescriptionLen = 50;
-export const maxProjectDescriptionLen = 1500;
+export const maxProjectDescriptionLen = 5000;
 
 export const minTeamNameLen = 2;
-export const maxTeamNameLen = 255;
+export const maxTeamNameLen = 500;
 export const minTeamDescriptionLen = 50;
-export const maxTeamDescriptionLen = 1500;
+export const maxTeamDescriptionLen = 5000;
 
 export const maxIssueTitleLen = 500;
-export const maxIssueDescriptionLen = 1500;
+export const maxIssueDescriptionLen = 5000;
 
-export const maxSprintGoalLen = 1500;
 export const maxSprintNameLen = 500;
+export const maxSprintGoalLen = 5000;
 
 export const generalInputString = Yup.string().required();
 

@@ -66,6 +66,8 @@ export default function TeamPage() {
 							teamId={Number(teamId)}
 							description={receivedData.description}
 							version_control_link={receivedData.version_control_link}
+							name={receivedData.name}
+							nrMembers={receivedData.team_members.length}
 						/>
 					</TabPanel>
 					<TabPanel value={currentTab} index={1}>

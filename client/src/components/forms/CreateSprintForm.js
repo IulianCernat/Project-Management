@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Button, Typography } from "@material-ui/core";
+import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import {
 	TextFieldWrapper,
@@ -12,8 +12,9 @@ import {
 	sprintGoalValidSchema,
 	sprintNameValidSchema,
 	sprintDurationValidSchema,
-} from "../../utils/validationSchemas";
-import { usePostFetch } from "../../customHooks/useFetch.js";
+	maxSprintGoalLen,
+} from "utils/validationSchemas";
+import { usePostFetch } from "customHooks/useFetch.js";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { useAuth } from "contexts/AuthContext";
 
@@ -113,57 +114,66 @@ export default function CreateSprintForm(props) {
 							name="name"
 							disabled={postFetchIsLoading}
 						/>
-						<DatetimePickerWrapper
-							id="startDate"
-							inputVariant="outlined"
-							label="Start date"
-							name="start_date"
-							runChangeEffect={(newDateValue) => {
-								setFieldValue("start_date", newDateValue);
-								setFieldValue(
-									"end_date",
-									getNewEndDateAccordingToStartDate(
-										newDateValue,
-										values.duration
-									)
-								);
-							}}
-						/>
-						<TextFieldSelectWrapper
-							fullWidth
-							variant="outlined"
-							margin="normal"
-							id="duration"
-							label="Select duration"
-							name="duration"
-							menuOptions={sprintDurationOptions}
-							disabled={postFetchIsLoading}
-							runChangeEffect={(newDuration) => {
-								setFieldValue("duration", newDuration);
+						<Box
+							mt={2}
+							display="flex"
+							flexWrap="wrap"
+							alignItems="center"
+							style={{ gap: "1rem" }}
+						>
+							<DatetimePickerWrapper
+								id="startDate"
+								inputVariant="outlined"
+								label="Start date"
+								name="start_date"
+								runChangeEffect={(newDateValue) => {
+									setFieldValue("start_date", newDateValue);
+									setFieldValue(
+										"end_date",
+										getNewEndDateAccordingToStartDate(
+											newDateValue,
+											values.duration
+										)
+									);
+								}}
+							/>
+							<Box flex="1 1 auto">
+								<TextFieldSelectWrapper
+									fullWidth
+									variant="outlined"
+									id="duration"
+									label="Select duration"
+									name="duration"
+									menuOptions={sprintDurationOptions}
+									disabled={postFetchIsLoading}
+									runChangeEffect={(newDuration) => {
+										setFieldValue("duration", newDuration);
 
-								setFieldValue(
-									"end_date",
-									getNewEndDateAccordingToStartDate(
-										values.start_date,
-										newDuration
-									)
-								);
-							}}
-						/>
+										setFieldValue(
+											"end_date",
+											getNewEndDateAccordingToStartDate(
+												values.start_date,
+												newDuration
+											)
+										);
+									}}
+								/>
+							</Box>
 
-						<DatetimePickerWrapper
-							id="endDate"
-							inputVariant="outlined"
-							label="End date"
-							name="end_date"
-							disabled
-						/>
+							<DatetimePickerWrapper
+								id="endDate"
+								inputVariant="outlined"
+								label="End date"
+								name="end_date"
+								disabled
+							/>
+						</Box>
 						<TextFieldWrapper
 							multiline
 							variant="outlined"
 							fullWidth
-							rows={8}
-							maxTextWidth={500}
+							rows={20}
+							maxTextWidth={maxSprintGoalLen}
 							margin="normal"
 							id="goal"
 							label="Sprint goal"

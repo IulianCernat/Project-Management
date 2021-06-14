@@ -14,8 +14,13 @@ import {
 	Button,
 	IconButton,
 	Tooltip,
+	Fab,
 } from "@material-ui/core";
-import { DeleteForever } from "@material-ui/icons";
+import {
+	DeleteForever,
+	KeyboardArrowDown,
+	KeyboardArrowUp,
+} from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
 import {
@@ -25,12 +30,23 @@ import {
 } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
+import { Scrollbars } from "react-custom-scrollbars-2";
 
 import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles({
 	table: {
 		width: "100%",
+	},
+	textContent: {
+		whiteSpace: "pre-wrap",
+	},
+	showMoreContent: {
+		maxHeight: "auto",
+	},
+	hideMoreContent: {
+		maxHeight: "20ch",
+		overflow: "hidden",
 	},
 });
 const UIRestrictionForRoles = ["developer", "scrumMaster"];
@@ -70,7 +86,7 @@ function SprintTable({ sprint, currentUserRole, handleDeleteSprintClick }) {
 	}, [isResolvedIssueUpdate]);
 
 	return (
-		<TableContainer component={Paper}>
+		<TableContainer component={Paper} style={{ padding: "1rem" }}>
 			<SprintHeader
 				handleDeleteSprintClick={handleDeleteSprintClick}
 				currentUserRole={currentUserRole}
@@ -130,6 +146,8 @@ function SprintHeader({
 	currentUserRole,
 	handleDeleteSprintClick,
 }) {
+	const [showMoreGoalInfo, setShowMoreGoalInfo] = useState(false);
+	const classes = useStyles();
 	const [requestBodyForUpdate, setRequesBodyForUpdate] = useState(null);
 	const [isStartedState, setIsStartedState] = useState(isStarted);
 	const [isCompletedState, setIsCompletedState] = useState(isCompleted);
@@ -161,11 +179,11 @@ function SprintHeader({
 	}, [isResolvedUpdate]);
 
 	return (
-		<Box p={1}>
+		<Box p={1} display="flex" flexWrap="wrap" style={{ gap: "1rem" }}>
 			<Box>
 				<Typography variant="h5">{name}</Typography>
 			</Box>
-			<Box display="flex" style={{ gap: "2rem" }}>
+			<Box display="flex" style={{ gap: "2rem" }} alignItems="center">
 				<Box>
 					<Typography color="primary" variant="h6">
 						Start date
@@ -235,11 +253,43 @@ function SprintHeader({
 				</Box>
 			</Box>
 
-			<Box maxWidth="100ch">
+			<Box>
 				<Typography color="primary" variant="h6">
 					Sprint Goal
 				</Typography>
-				<Typography>{goal}</Typography>
+
+				<Box
+					px={2}
+					className={
+						showMoreGoalInfo ? classes.showMoreContent : classes.hideMoreContent
+					}
+				>
+					<Typography className={classes.textContent}>{goal}</Typography>
+				</Box>
+
+				<Box display="flex" justifyContent="center">
+					{showMoreGoalInfo ? (
+						<Tooltip title="Hide info">
+							<Fab
+								onClick={() => {
+									setShowMoreGoalInfo(false);
+								}}
+							>
+								<KeyboardArrowUp />
+							</Fab>
+						</Tooltip>
+					) : (
+						<Tooltip title="Show more info">
+							<Fab
+								onClick={() => {
+									setShowMoreGoalInfo(true);
+								}}
+							>
+								<KeyboardArrowDown />
+							</Fab>
+						</Tooltip>
+					)}
+				</Box>
 			</Box>
 		</Box>
 	);
