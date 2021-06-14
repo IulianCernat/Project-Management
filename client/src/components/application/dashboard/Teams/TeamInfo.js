@@ -3,14 +3,23 @@ import PropTypes from "prop-types";
 import {
 	Box,
 	Paper,
-	IconButton,
 	Grid,
 	Button,
 	Avatar,
+	Typography,
 } from "@material-ui/core";
 import VersionSystemAdditionForm from "components/forms/VersioningSystemAdditionForm";
 import TextDisplayWrapper from "components/subComponents/TextDisplayWrapper";
+import { makeStyles } from "@material-ui/core/styles";
 
+const useStyles = makeStyles({
+	textContent: {
+		whiteSpace: "pre-wrap",
+	},
+	linkButton: {
+		textTransform: "none",
+	},
+});
 const UIRestrictionForRoles = ["developer", "productOwner"];
 
 TeamInfo.propTypes = {
@@ -19,6 +28,7 @@ TeamInfo.propTypes = {
 	version_control_link: PropTypes.any.isRequired,
 };
 export default function TeamInfo(props) {
+	const classes = useStyles();
 	const [hideVersionControlAdditionForm, setHideVersionControlAdditionForm] =
 		useState(true);
 	const [addedVersionControlUrl, setAddedVersionControlUrl] = useState(
@@ -70,20 +80,39 @@ export default function TeamInfo(props) {
 							</Box>
 						)}
 						<Box>
-							<IconButton onClick={openVersionControlLink}>
-								<Avatar
-									src={
-										addedVersionControlUrl
-											? (function () {
-													const baseUrl =
-														addedVersionControlUrl.match(/https:\/\/.*?\/+/);
-													if (baseUrl) return baseUrl + "favicon.ico";
-													return "";
-											  })()
-											: null
-									}
-								/>
-							</IconButton>
+							{addedVersionControlUrl && (
+								<Button
+									classes={{ root: '{textTransform:"none"}' }}
+									onClick={openVersionControlLink}
+									className={classes.linkButton}
+								>
+									<Box
+										display="flex"
+										style={{ gap: "5px" }}
+										alignItems="center"
+									>
+										<Avatar
+											src={
+												addedVersionControlUrl
+													? (function () {
+															const baseUrl =
+																addedVersionControlUrl.match(
+																	/https:\/\/.*?\/+/
+																);
+															if (baseUrl) return baseUrl + "favicon.ico";
+															return "";
+													  })()
+													: null
+											}
+										/>
+										<Typography variant="h5" color="primary">
+											{addedVersionControlUrl
+												.match(/(https:\/\/)(.*?\/+)/)[2]
+												.slice(0, -1)}
+										</Typography>
+									</Box>
+								</Button>
+							)}
 						</Box>
 					</Box>
 				</Paper>
