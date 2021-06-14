@@ -124,6 +124,7 @@ export default function TeamMembers() {
 								<Typography variant="h6">Scrum Master</Typography>
 
 								<Button
+									size="small"
 									variant="contained"
 									color="primary"
 									onClick={() => {
@@ -154,6 +155,7 @@ export default function TeamMembers() {
 							>
 								<Typography variant="h6">Developers</Typography>
 								<Button
+									size="small"
 									variant="contained"
 									color="primary"
 									onClick={() => openDevsAdditionForm()}

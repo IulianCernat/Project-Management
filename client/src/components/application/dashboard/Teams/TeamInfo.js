@@ -28,6 +28,7 @@ TeamInfo.propTypes = {
 	version_control_link: PropTypes.any.isRequired,
 	name: PropTypes.string.isRequired,
 	nrMembers: PropTypes.number.isRequired,
+	currentUserRole: PropTypes.string.isRequired,
 };
 export default function TeamInfo(props) {
 	const classes = useStyles();

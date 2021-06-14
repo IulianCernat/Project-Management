@@ -68,6 +68,7 @@ export default function TeamPage() {
 							version_control_link={receivedData.version_control_link}
 							name={receivedData.name}
 							nrMembers={receivedData.team_members.length}
+							currentUserRole={currentUserRole}
 						/>
 					</TabPanel>
 					<TabPanel value={currentTab} index={1}>

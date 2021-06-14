@@ -10,6 +10,7 @@ import { useAuth } from "contexts/AuthContext";
 
 const backgroundParticlesStyling = {
 	backgroundColor: "#0F0B11",
+	height: "100%",
 	position: "absolute",
 	top: 0,
 	left: 0,
@@ -23,11 +24,11 @@ export default function FrontPage() {
 	useEffect(() => {
 		new Particle("#backgroundParticlesStyling", {
 			range: 0,
-			num: 0.1,
+			num: 0.08,
 			minSpeed: 0.04,
 			maxSpeed: 0.09,
-			minR: 1,
-			maxR: 2,
+			minR: 10,
+			maxR: 50,
 		});
 	}, []);
 	return (
