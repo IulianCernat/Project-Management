@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, Box, makeStyles } from "@material-ui/core";
-
 import Alert from "@material-ui/lab/Alert";
 import {
 	TextFieldWrapper,
@@ -13,17 +12,10 @@ import {
 	issuePriorityValidSchema,
 	issueTitleValidSchema,
 	issueTypeValidSchema,
-} from "../../utils/validationSchemas";
-import { usePostFetch, useGetFetch } from "../../customHooks/useFetch.js";
+} from "utils/validationSchemas";
+import { usePostFetch, useGetFetch } from "customHooks/useFetch.js";
 import PropTypes from "prop-types";
 import { useAuth } from "contexts/AuthContext";
-
-const useStyles = makeStyles((theme) => ({
-	backdrop: {
-		zIndex: theme.zIndex.drawer + 1,
-		color: "#fff",
-	},
-}));
 
 const validationSchema = Yup.object({
 	title: issueTitleValidSchema,
@@ -73,7 +65,6 @@ export default function IssueCreationForm({
 	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] =
 		useState(false);
 	const {
-		status: postFetchStatus,
 		receivedData: postFetchReceivedData,
 		error: postFetchError,
 		isLoading: postFetchIsLoading,
@@ -82,7 +73,6 @@ export default function IssueCreationForm({
 	} = usePostFetch("api/issues/", requestBody);
 
 	const {
-		status: fetchedNewCreatedResourceStatus,
 		receivedData: fetchedNewCreatedResource,
 		error: fetchedNewCreatedResourceError,
 		isLoading: fetchedNewCreatedResourceIsLoading,
@@ -209,7 +199,7 @@ export default function IssueCreationForm({
 
 						{postFetchIsResolved && (
 							<Alert severity="success">
-								<Typography>{postFetchReceivedData}</Typography>
+								<Typography>New issue created</Typography>
 							</Alert>
 						)}
 						{postFetchIsRejected && (

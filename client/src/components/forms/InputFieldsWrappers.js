@@ -4,14 +4,6 @@ import { TextField, Box, MenuItem } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import PropTypes from "prop-types";
 import DateFnsUtils from "@date-io/date-fns";
-import { makeStyles } from "@material-ui/core/styles";
-import { mergeClasses } from "@material-ui/styles";
-
-const useStyles = makeStyles({
-	textContent: {
-		whiteSpace: "pre-wrap",
-	},
-});
 
 TextFieldWrapper.propTypes = {
 	label: PropTypes.string.isRequired,
@@ -24,7 +16,6 @@ export function TextFieldWrapper({
 	value,
 	...props
 }) {
-	const classes = useStyles();
 	const [field, meta] = useField(props);
 	const currentText = useRef(null);
 	return (

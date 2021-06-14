@@ -43,7 +43,7 @@ export default function TeamMembers() {
 	const [openScrumMasterChangingFrom, setOpenScrumMasterChangingFrom] =
 		useState(false);
 	const getParams = useRef({ team_id: teamId });
-	const { status, receivedData, error, isLoading, isResolved, isRejected } =
+	const { receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch(`api/teams_members/`, getParams.current, startFetchingDevs);
 
 	function openDevsAdditionForm() {

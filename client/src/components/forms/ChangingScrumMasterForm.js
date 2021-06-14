@@ -4,8 +4,8 @@ import * as Yup from "yup";
 import { Button, Typography, Avatar, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
-import { generalInputString } from "../../utils/validationSchemas";
-import { usePostFetch, usePatchFetch } from "../../customHooks/useFetch.js";
+import { generalInputString } from "utils/validationSchemas";
+import { usePostFetch, usePatchFetch } from "customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
 import PropTypes from "prop-types";
 
@@ -28,7 +28,6 @@ export default function ChangingScrumMasterForm(props) {
 	] = useState(null);
 
 	const {
-		status: scrumMasterChangingStatus,
 		receivedData: scrumMasterChangingReceivedData,
 		error: scrumMasterChangingError,
 		isLoading: isLoadingScrumMasterChanging,
@@ -40,7 +39,6 @@ export default function ChangingScrumMasterForm(props) {
 	);
 
 	const {
-		status: scrumMasterAdditionStatus,
 		receivedData: scrumMasterAdditionReceivedData,
 		error: scrumMasterAdditionError,
 		isLoading: isLoadingScrumMasterAddition,
@@ -136,7 +134,7 @@ export default function ChangingScrumMasterForm(props) {
 								isLoadingScrumMasterChanging || isLoadingScrumMasterAddition
 							}
 						>
-							<Typography>Add new member</Typography>
+							<Typography>Change scrum master</Typography>
 						</Button>
 
 						{isResolvedScrumMasterAddition && isResolvedScrumMasterChanging && (

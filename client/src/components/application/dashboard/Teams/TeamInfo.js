@@ -4,21 +4,19 @@ import {
 	Box,
 	Paper,
 	IconButton,
-	Typography,
 	Grid,
 	Button,
 	Avatar,
 } from "@material-ui/core";
 import VersionSystemAdditionForm from "components/forms/VersioningSystemAdditionForm";
 import TextDisplayWrapper from "components/subComponents/TextDisplayWrapper";
-import { useGetFetch } from "customHooks/useFetch";
 
 const UIRestrictionForRoles = ["developer", "productOwner"];
 
 TeamInfo.propTypes = {
 	description: PropTypes.string.isRequired,
 	teamId: PropTypes.number.isRequired,
-	version_control_link: PropTypes.string.isRequired,
+	version_control_link: PropTypes.any.isRequired,
 };
 export default function TeamInfo(props) {
 	const [hideVersionControlAdditionForm, setHideVersionControlAdditionForm] =

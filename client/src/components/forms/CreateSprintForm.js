@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography } from "@material-ui/core";
-
 import Alert from "@material-ui/lab/Alert";
 import {
 	TextFieldWrapper,
@@ -49,7 +48,6 @@ export default function CreateSprintForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
 	const defaultDurationOption = "2";
 	const {
-		status: postFetchStatus,
 		receivedData: postFetchReceivedData,
 		error: postFetchError,
 		isLoading: postFetchIsLoading,
@@ -179,11 +177,11 @@ export default function CreateSprintForm(props) {
 							color="primary"
 							disabled={postFetchIsLoading}
 						>
-							<Typography>Create team</Typography>
+							<Typography>Create sprint</Typography>
 						</Button>
 						{postFetchIsResolved && (
 							<Alert severity="success">
-								<Typography>{postFetchReceivedData}</Typography>
+								<Typography>Sprint Created</Typography>
 							</Alert>
 						)}
 						{postFetchIsRejected && (

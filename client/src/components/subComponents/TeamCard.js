@@ -12,7 +12,6 @@ import {
 	Avatar,
 	Paper,
 } from "@material-ui/core";
-import { deepPurple } from "@material-ui/core/colors";
 import { People } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";

@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from "react";
 import {
 	TableContainer,
 	TableRow,
@@ -16,7 +17,7 @@ import {
 } from "@material-ui/core";
 import { DeleteForever } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
-import { useRef, useState, useEffect } from "react";
+import { format } from "date-fns";
 import {
 	useDeleteFetch,
 	useGetFetch,
@@ -24,7 +25,7 @@ import {
 } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
-import { format } from "date-fns";
+
 import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles({

@@ -1,3 +1,4 @@
+import { useRef, useState, useEffect } from "react";
 import {
 	TableContainer,
 	TableRow,
@@ -14,16 +15,16 @@ import {
 	Button,
 	lighten,
 } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-import IssueRow from "./IssueRow";
-import { useRef, useState, useEffect } from "react";
-import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import { green, pink, blue } from "@material-ui/core/colors";
+import { Alert } from "@material-ui/lab";
+import PropTypes from "prop-types";
+import IssueRow from "./IssueRow";
+import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import IssueCreationForm from "components/forms/IssueCreationForm";
 import CreateSprintForm from "components/forms/CreateSprintForm";
 import AddingIssuesToExistingSprintForm from "components/forms/AddingIssuesToExistingSprintForm";
 import DialogForm from "components/subComponents/DialogForm";
-import PropTypes from "prop-types";
+
 import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -133,7 +134,6 @@ export default function Backlog() {
 
 	const [issuesList, setIssuesList] = useState([]);
 	let {
-		status: getIssuesStatus,
 		receivedData: getIssuesReceivedData,
 		error: getIssuesError,
 		isLoading: isLoadingGetIssues,
@@ -142,7 +142,6 @@ export default function Backlog() {
 	} = useGetFetch("api/issues/", getParams.current);
 
 	let {
-		status: deleteIssueStatus,
 		receivedData: deleteIssueReceivedData,
 		error: deleteIssueError,
 		isLoading: isLoadingDeleteIssue,

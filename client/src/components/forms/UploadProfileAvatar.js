@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { storage } from "utils/firebase";
-import { CircularProgress, IconButton } from "@material-ui/core";
-import { PhotoCamera } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
 import { useAuth } from "contexts/AuthContext";
@@ -18,7 +16,6 @@ export default function UploadProfileAvatar(props) {
 		setRequestBodyForUpdatingCurrentUser,
 	] = useState(null);
 	const {
-		status: userUpdateStatus,
 		receivedData: userUpdateReceivedData,
 		error: userUpdateError,
 		isLoading: isLoadingUserUpdate,

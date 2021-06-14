@@ -4,15 +4,14 @@ import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "contexts/AuthContext";
 import { usePostFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
-
 import {
 	emailValidationSchema,
 	passwordValidationSchema,
 	fullNameValidationSchema,
-} from "../../utils/validationSchemas";
+} from "utils/validationSchemas";
 
 const validationSchema = Yup.object().shape({
 	email: emailValidationSchema,
@@ -28,7 +27,7 @@ export default function SignUpForm() {
 	const headers = useRef({
 		Authorization: "",
 	});
-	const { status, receivedData, error, isLoading, isRejected, isResolved } =
+	const { receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/users/", requestBody, headers.current);
 
 	useEffect(() => {

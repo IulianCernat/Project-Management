@@ -16,9 +16,6 @@ import Board from "./Board";
 import { Alert } from "@material-ui/lab";
 import { useProjectContext } from "contexts/ProjectContext";
 import TeamInfo from "./TeamInfo";
-const useStyles = makeStyles((theme) => ({
-	toolbar: theme.mixins.toolbar,
-}));
 
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
@@ -37,12 +34,9 @@ function TabPanel(props) {
 
 export default function TeamPage() {
 	const { currentUserRole } = useProjectContext();
-
-	const classes = useStyles();
 	let { teamId } = useParams();
 	const [currentTab, setCurrentTab] = useState(0);
-
-	const { status, receivedData, error, isLoading, isResolved, isRejected } =
+	const { receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch(`api/teams/${teamId}`);
 
 	const handleTabChange = (event, newValue) => {

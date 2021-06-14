@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
 	Box,
 	Grid,
@@ -12,11 +11,11 @@ import ProfileMain from "./ProfileMain";
 import { useAuth } from "../../../contexts/AuthContext";
 import { Alert } from "@material-ui/lab";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
 	container: {
 		height: "100vh",
 	},
-}));
+});
 
 export default function Profile() {
 	const classes = useStyles();

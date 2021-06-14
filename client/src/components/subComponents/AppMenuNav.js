@@ -5,15 +5,14 @@ import {
 	IconButton,
 	Typography,
 	Button,
-	Link,
 	ClickAwayListener,
 	Slide,
 } from "@material-ui/core";
 import { useAuth } from "contexts/AuthContext";
-import { useHistory, Link as RouterLink } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 export default function AppMenuNav() {
-	const { additionalUserInfo, logout, currentUser } = useAuth();
+	const { additionalUserInfo, logout } = useAuth();
 	const [openAppbardOptions, setOpenAppbarOptions] = useState(false);
 	const history = useHistory();
 

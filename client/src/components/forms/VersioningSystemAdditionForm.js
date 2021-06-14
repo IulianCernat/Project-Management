@@ -4,8 +4,8 @@ import * as Yup from "yup";
 import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
-import { versioningSystemUrlValidShema } from "../../utils/validationSchemas";
-import { usePatchFetch } from "../../customHooks/useFetch.js";
+import { versioningSystemUrlValidShema } from "utils/validationSchemas";
+import { usePatchFetch } from "customHooks/useFetch.js";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
@@ -19,8 +19,10 @@ VersioningSystemAdditionForm.propTypes = {
 };
 export default function VersioningSystemAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { status, receivedData, error, isLoading, isRejected, isResolved } =
-		usePatchFetch(`api/teams/${props.teamId}`, requestBody);
+	const { error, isLoading, isRejected, isResolved } = usePatchFetch(
+		`api/teams/${props.teamId}`,
+		requestBody
+	);
 	useEffect(() => {
 		if (!isResolved) return;
 		const addedUrl = requestBody.match(/http.*[^}"]/);

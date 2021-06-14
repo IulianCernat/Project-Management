@@ -13,7 +13,6 @@ import CircularProgressWithLabel from "components/subComponents/Progress";
 import { purple } from "@material-ui/core/colors";
 import { useGetFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
-import { SignalCellularNullSharp } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
 	paper: { height: "100%" },

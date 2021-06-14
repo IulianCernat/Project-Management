@@ -1,5 +1,4 @@
 import { useRef, useEffect } from "react";
-
 import {
 	Box,
 	Avatar,
@@ -77,7 +76,6 @@ export default function Board(props) {
 		key: process.env.REACT_APP_TRELLO_KEY,
 	});
 	const {
-		status: getCardsStatus,
 		receivedData: getCardsReceivedData,
 		error: getCardsError,
 		isLoading: isLoadingGetCards,
@@ -97,7 +95,6 @@ export default function Board(props) {
 		key: process.env.REACT_APP_TRELLO_KEY,
 	});
 	const {
-		status: getListssStatus,
 		receivedData: getListsReceivedData,
 		error: getListsError,
 		isLoading: isLoadingGetLists,

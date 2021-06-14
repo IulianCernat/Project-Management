@@ -72,7 +72,6 @@ export default function DevelopersList(props) {
 
 	return (
 		<>
-			{" "}
 			{developers.map((item) => (
 				<Box className={classes.profileCard}>
 					<UserProfileCard

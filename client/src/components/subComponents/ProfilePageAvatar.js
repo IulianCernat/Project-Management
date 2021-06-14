@@ -1,14 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
 	makeStyles,
 	Backdrop,
-	Typography,
 	Box,
 	Avatar,
 	CircularProgress,
 } from "@material-ui/core";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
-import { Person } from "@material-ui/icons";
 import UploadProfileAvatar from "components/forms/UploadProfileAvatar";
 import PropTypes from "prop-types";
 

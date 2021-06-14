@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import {
 	TableRow,
 	TableHead,
@@ -25,14 +26,14 @@ import {
 	DeleteForever,
 	OpenWith,
 } from "@material-ui/icons";
-import { useState, useRef, useEffect } from "react";
+
 import { green, pink, blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
 import { format } from "date-fns";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
 	table: {
 		width: "100%",
 	},
@@ -62,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 	statusField: {
 		width: "25ch",
 	},
-}));
+});
 
 const UIRestrictionForRoles = ["developer"];
 

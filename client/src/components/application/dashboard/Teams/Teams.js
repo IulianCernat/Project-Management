@@ -4,7 +4,6 @@ import {
 	Typography,
 	makeStyles,
 	Button,
-	Paper,
 	CircularProgress,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
@@ -55,7 +54,6 @@ function TeamComponentList({ teamList, handleDelete, renderTeamCardActions }) {
 export default function Teams(props) {
 	const { currentUserRole, projectId } = useProjectContext();
 	let match = useRouteMatch();
-	const classes = useStyles();
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
 	const [startFetchingTeams, setStartFetchingTeams] = useState(true);
 	const [teamCreationSuccess, setTeamCreationSuccess] = useState(false);
@@ -63,7 +61,7 @@ export default function Teams(props) {
 	const [teamsList, setTeamsList] = useState();
 
 	const getParams = useRef({ project_id: projectId });
-	const { status, receivedData, error, isLoading, isResolved, isRejected } =
+	const { receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch("api/teams/", getParams.current, startFetchingTeams);
 
 	const { isResolved: isResolvedDeleteTeam } = useDeleteFetch(

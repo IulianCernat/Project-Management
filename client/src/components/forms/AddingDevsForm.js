@@ -4,8 +4,8 @@ import * as Yup from "yup";
 import { Button, Typography, Avatar, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
-import { generalInputString } from "../../utils/validationSchemas";
-import { usePostFetch } from "../../customHooks/useFetch.js";
+import { generalInputString } from "utils/validationSchemas";
+import { usePostFetch } from "customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
 import PropTypes from "prop-types";
 
@@ -20,8 +20,10 @@ AddingDevsForm.props = {
 };
 export default function AddingDevsForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { status, receivedData, error, isLoading, isRejected, isResolved } =
-		usePostFetch("api/teams_members/", requestBody);
+	const { error, isLoading, isRejected, isResolved } = usePostFetch(
+		"api/teams_members/",
+		requestBody
+	);
 
 	useEffect(() => {
 		if (isResolved) props.setDevAdditionSuccess(true);
@@ -105,12 +107,12 @@ export default function AddingDevsForm(props) {
 							color="primary"
 							disabled={isLoading}
 						>
-							<Typography>Add new member</Typography>
+							<Typography>Add developer</Typography>
 						</Button>
 
 						{isResolved && (
 							<Alert severity="success">
-								<Typography>Team member added</Typography>
+								<Typography>Developer added</Typography>
 							</Alert>
 						)}
 						{isRejected && (

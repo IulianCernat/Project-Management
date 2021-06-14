@@ -7,17 +7,18 @@ import {
 	useParams,
 	Redirect,
 } from "react-router-dom";
+import { Alert } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
+import { Scrollbars } from "react-custom-scrollbars-2";
+import CustomAppBar from "components/subComponents/CustomAppBar";
 import CustomDrawer from "components/subComponents/CustomDrawer";
 import Teams from "./teams/Teams";
 import Sprints from "./sprints/Sprints";
 import Backlog from "./backlog/Backlog";
+import Overview from "./overview/Overview";
 import { ProjectProvider } from "contexts/ProjectContext";
 import { useGetFetch } from "customHooks/useFetch";
 import { useAuth } from "contexts/AuthContext";
-import Overview from "./Overview";
-import { Scrollbars } from "react-custom-scrollbars-2";
-import CustomAppBar from "components/subComponents/CustomAppBar";
 
 const drawerWidth = "18rem";
 
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 	toolbar: theme.mixins.toolbar,
 }));
 
-export default function Dashboard(props) {
+export default function Dashboard() {
 	const { currentUser } = useAuth();
 	let match = useRouteMatch();
 	const { projectId } = useParams();
@@ -54,7 +55,6 @@ export default function Dashboard(props) {
 	}, []);
 
 	const {
-		status: getRoleStatus,
 		receivedData: getRoleReceivedData,
 		error: getRoleError,
 		isLoading: isLoadingGetRole,
@@ -69,7 +69,6 @@ export default function Dashboard(props) {
 	);
 
 	const {
-		status: getProjectStatus,
 		receivedData: getProjectReceivedData,
 		error: getProjectError,
 		isLoading: isLoadingGetProject,
@@ -82,7 +81,11 @@ export default function Dashboard(props) {
 	}
 	return (
 		<>
-			{isLoadingGetProject && (
+			{isRejectedGetProject && (
+				<Alert severity="error">{getProjectError}</Alert>
+			)}
+			{isRejectedGetRole && <Alert severity="error">{getRoleError}</Alert>}
+			{(isLoadingGetProject || isLoadingGetRole) && (
 				<Box display="flex" alignItems="center" justifyContent="center">
 					<CircularProgress />
 				</Box>

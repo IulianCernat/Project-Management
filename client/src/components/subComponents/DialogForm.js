@@ -1,6 +1,5 @@
 import {
 	Dialog,
-	DialogActions,
 	DialogContent,
 	DialogTitle,
 	IconButton,
@@ -17,19 +16,25 @@ DialogForm.propTypes = {
 	onClose: PropTypes.func.isRequired,
 	children: PropTypes.any,
 };
-export default function DialogForm(props) {
+export default function DialogForm({
+	title,
+	onClose,
+	children,
+	open,
+	...other
+}) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
 	return (
 		<Dialog
 			fullScreen={fullScreen}
-			open={props.open}
-			onClose={props.onClose}
+			open={open}
+			onClose={onClose}
 			aria-labelledby="dialog-title"
 			fullWidth
-			maxWidth="md"
 			disableBackdropClick
+			{...other}
 		>
 			<Box
 				display="flex"
@@ -37,13 +42,13 @@ export default function DialogForm(props) {
 				justifyContent="space-between"
 				alignItems="center"
 			>
-				<DialogTitle id="dialog-title">{props.title}</DialogTitle>
-				<IconButton onClick={props.onClose}>
+				<DialogTitle id="dialog-title">{title}</DialogTitle>
+				<IconButton onClick={onClose}>
 					<CancelIcon />
 				</IconButton>
 			</Box>
 
-			<DialogContent>{props.children}</DialogContent>
+			<DialogContent>{children}</DialogContent>
 		</Dialog>
 	);
 }

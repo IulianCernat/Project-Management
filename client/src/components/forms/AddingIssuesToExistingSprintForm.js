@@ -1,14 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Formik, Form } from "formik";
-import * as Yup from "yup";
 import { Button, Typography } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldSelectWrapper } from "./InputFieldsWrappers";
-import {
-	sprintGoalValidSchema,
-	sprintNameValidSchema,
-	sprintDurationValidSchema,
-} from "../../utils/validationSchemas";
 import { usePatchFetch, useGetFetch } from "../../customHooks/useFetch.js";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import PropTypes from "prop-types";

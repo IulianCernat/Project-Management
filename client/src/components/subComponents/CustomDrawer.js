@@ -13,6 +13,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import DrawerListItems from "./DrawerListItems";
 import PropTypes from "prop-types";
 import { makeStyles } from "@material-ui/core/styles";
+
 const useStyles = makeStyles((theme) => ({
 	drawerPaper: {
 		width: (props) => props.width,

@@ -7,18 +7,16 @@ import {
 	Tab,
 	Paper,
 	Fab,
-	LinearProgress,
 	CircularProgress,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import AddIcon from "@material-ui/icons/Add";
 import { grey } from "@material-ui/core/colors";
 import Alert from "@material-ui/lab/Alert";
-import ProjectCard from "../../subComponents/ProjectCard";
-import DialogForm from "../../subComponents/DialogForm";
-import ProjectCreationForm from "../../forms/ProjectCreationForm";
-import { useGetFetch, useDeleteFetch } from "../../../customHooks/useFetch";
-import { Scrollbars } from "react-custom-scrollbars-2";
+import ProjectCard from "components/subComponents/ProjectCard";
+import DialogForm from "components/subComponents/DialogForm";
+import ProjectCreationForm from "components/forms/ProjectCreationForm";
+import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 
 const useStyles = makeStyles((theme) => ({
 	main: {

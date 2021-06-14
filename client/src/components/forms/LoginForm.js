@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Alert } from "@material-ui/lab";
 import { Box, Typography, Button } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
@@ -7,8 +7,8 @@ import * as Yup from "yup";
 import {
 	emailValidationSchema,
 	passwordValidationSchema,
-} from "../../utils/validationSchemas";
-import { useAuth } from "../../contexts/AuthContext";
+} from "utils/validationSchemas";
+import { useAuth } from "contexts/AuthContext";
 
 const validationSchema = Yup.object({
 	email: emailValidationSchema,

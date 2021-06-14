@@ -1,32 +1,17 @@
 import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import {
-	Button,
-	Typography,
-	Avatar,
-	Box,
-	Hidden,
-	makeStyles,
-} from "@material-ui/core";
+import { Button, Typography, Avatar, Box, Hidden } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import {
 	teamNameValidSchema,
 	teamDescriptionValidSchema,
 	generalInputString,
-	idValidSchema,
 } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
 import { SearchField } from "./SearchField";
 import PropTypes from "prop-types";
-
-const useStyles = makeStyles((theme) => ({
-	backdrop: {
-		zIndex: theme.zIndex.drawer + 1,
-		color: "#fff",
-	},
-}));
 
 const validationSchema = Yup.object({
 	name: teamNameValidSchema,
@@ -40,7 +25,7 @@ TeamCreationForm.propTypes = {
 };
 export default function TeamCreationForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { status, receivedData, error, isLoading, isRejected, isResolved } =
+	const { receivedData, error, isLoading, isRejected, isResolved } =
 		usePostFetch("api/teams/", requestBody);
 
 	useEffect(() => {
@@ -151,7 +136,7 @@ export default function TeamCreationForm(props) {
 
 						{isResolved && (
 							<Alert severity="success">
-								<Typography>{receivedData}</Typography>
+								<Typography>New Team created</Typography>
 							</Alert>
 						)}
 						{isRejected && (

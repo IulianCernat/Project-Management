@@ -19,7 +19,7 @@ TrelloBoardAdditionForm.propTypes = {
 };
 export default function TrelloBoardAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { status, receivedData, error, isLoading, isRejected, isResolved } =
+	const { receivedData, error, isLoading, isRejected, isResolved } =
 		usePatchFetch(`api/teams/${props.teamId}`, requestBody);
 	useEffect(() => {
 		if (isResolved) {
@@ -79,7 +79,7 @@ export default function TrelloBoardAdditionForm(props) {
 
 					{isResolved && (
 						<Alert severity="success">
-							<Typography>{receivedData}</Typography>
+							<Typography>New trello board added</Typography>
 						</Alert>
 					)}
 

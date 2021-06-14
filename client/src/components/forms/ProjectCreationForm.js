@@ -1,23 +1,16 @@
 import { useState, useEffect } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { Button, Typography, Backdrop, makeStyles } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import {
 	projectNameValidSchema,
 	projectDescriptionValidSchema,
-} from "../../utils/validationSchemas";
-import { usePostFetch, useGetFetch } from "../../customHooks/useFetch.js";
+} from "utils/validationSchemas";
+import { usePostFetch, useGetFetch } from "customHooks/useFetch.js";
 import PropTypes from "prop-types";
 import { maxProjectDescriptionLen } from "utils/validationSchemas";
-
-const useStyles = makeStyles((theme) => ({
-	backdrop: {
-		zIndex: theme.zIndex.drawer + 1,
-		color: "#fff",
-	},
-}));
 
 const validationSchema = Yup.object({
 	name: projectNameValidSchema,
@@ -35,7 +28,6 @@ export default function ProjectCreationForm(props) {
 		useState(false);
 
 	const {
-		status: projectCreationStatus,
 		receivedData: projectCreationReceivedData,
 		error: projectCreationError,
 		isLoading: isLoadingProjectCreation,
@@ -43,7 +35,6 @@ export default function ProjectCreationForm(props) {
 		isResolved: isResolvedProjectCreation,
 	} = usePostFetch("api/projects/", requestBody);
 	const {
-		status: fetchedNewCreatedResourceStatus,
 		receivedData: fetchedNewCreatedResource,
 		error: fetchedNewCreatedResourceError,
 		isLoading: fetchedNewCreatedResourceIsLoading,

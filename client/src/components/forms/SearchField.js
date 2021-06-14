@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, cloneElement } from "react";
 import { Autocomplete } from "@material-ui/lab";
-import { useGetFetch } from "../../customHooks/useFetch";
+import { useGetFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 
 function sleep(delay = 10) {
@@ -55,7 +55,7 @@ export function SearchField({
 	const [startFetching, setStartFetching] = useState(false);
 	const getParams = useRef({ search: "", part_of_project_id: partOfProjectId });
 
-	const { status, receivedData, error, isLoading, isResolved, isRejected } =
+	const { receivedData, error, isLoading, isResolved, isRejected } =
 		useGetFetch(fetchUrl, getParams.current, startFetching);
 
 	useEffect(() => {
