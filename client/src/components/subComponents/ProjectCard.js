@@ -62,7 +62,7 @@ export default function ProjectCard({ project, handleDelete, renderActions }) {
 				<Box p={2} display="flex" justifyContent="center">
 					<CircularProgressWithLabel
 						value={progressValue}
-						size="6rem"
+						size="4rem"
 						label={
 							<Box display="flex" flexDirection="column" alignItems="center">
 								<Typography variant="subtitle2" color="textSecondary">

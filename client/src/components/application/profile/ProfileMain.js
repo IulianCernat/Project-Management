@@ -23,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
 		[theme.breakpoints.up("md")]: {
 			backgroundColor: grey[200],
 			overflow: "auto",
-			maxHeight: "75vh",
+			maxHeight: "80vh",
 		},
-		minHeight: "75vh",
+		minHeight: "80vh",
 	},
 	textWrapper: {
 		maxWidth: "100%",
@@ -136,7 +136,11 @@ function TabPanel(props) {
 					{props.withProjectAdditionForm && (
 						<Box alignSelf="center" width="100%">
 							<Box display="flex" justifyContent="center">
-								<Fab color="primary" onClick={openProjectCreationForm}>
+								<Fab
+									size="small"
+									color="primary"
+									onClick={openProjectCreationForm}
+								>
 									<AddIcon />
 								</Fab>
 							</Box>

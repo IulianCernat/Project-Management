@@ -92,9 +92,9 @@ export default function UserProfileCard(props) {
 					className: classes.rankIcon,
 				}}
 			>
-				{(props.user_type === "scrumMaster" && <FaChessKing />) ||
+				{(props.user_type === "scrumMaster" && <FaChessRook />) ||
 					(props.user_type === "developer" && <FaChessPawn />) ||
-					(props.user_type === "productOwner" && <FaChessRook />)}
+					(props.user_type === "productOwner" && <FaChessKing />)}
 			</IconContext.Provider>
 			<CardContent>
 				<Box display="flex" alignItems="center" flexDirection="column">

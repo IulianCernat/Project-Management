@@ -56,8 +56,14 @@ export default function Overview() {
 
 	return !isResolvedGetProject ? null : (
 		<Grid container spacing={2}>
-			<Grid item container justify="space-evenly" alignItems="flex-start">
-				<Grid item xs={12} xl={3}>
+			<Grid
+				item
+				container
+				justify="space-evenly"
+				alignItems="flex-start"
+				spacing={2}
+			>
+				<Grid item xs={12} md={4} xl={3}>
 					<Paper className={classes.paper}>
 						<Box
 							p={4}
@@ -74,7 +80,7 @@ export default function Overview() {
 						</Box>
 					</Paper>
 				</Grid>
-				<Grid item xs={12} xl={8}>
+				<Grid item xs={12} md={8} xl={8}>
 					<Paper className={classes.paper}>
 						<Box p={2} height="100%">
 							<Typography color="primary" gutterBottom variant="h5">

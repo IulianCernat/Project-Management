@@ -21,7 +21,7 @@ import { format } from "date-fns";
 const useStyles = makeStyles((theme) => ({
 	root: {
 		minWidth: "20ch",
-		maxWidth: "40ch",
+		maxWidth: "60ch",
 		flex: "1 1 auto",
 	},
 	paper: {

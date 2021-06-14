@@ -44,18 +44,7 @@ export default function Profile() {
 						</Grid>
 					</Grid>
 				</Box>
-			) : (
-				<Box
-					display="flex"
-					height="70vh"
-					justifyContent="center"
-					alignItems="center"
-				>
-					<Alert severity="error">
-						<Typography>Failed to load profile</Typography>
-					</Alert>
-				</Box>
-			)}
+			) : null}
 		</Container>
 	);
 }
