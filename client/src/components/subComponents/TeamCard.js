@@ -17,6 +17,9 @@ import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 import TextDisplayWrapper from "../subComponents/TextDisplayWrapper";
 import { format } from "date-fns";
+import { lightBlue } from "@material-ui/core/colors";
+import { useAuth } from "contexts/AuthContext";
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -30,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
 	avatar: {
 		width: "4rem",
 		height: "4rem",
+	},
+	paperHighlight: {
+		backgroundColor: lightBlue[100],
 	},
 }));
 
@@ -45,11 +51,24 @@ TeamCard.propTypes = {
 };
 export default function TeamCard(props) {
 	const styles = useStyles(props);
+	const { additionalUserInfo } = useAuth();
 	const scrumMasterProfile = props.team_members[0]?.user_profile;
 	const nrOfTeammates = props.team_members.length;
+
 	return (
 		<Paper elevation={2}>
-			<Card className={styles.root} variant="outlined">
+			<Card
+				className={clsx(
+					styles.root,
+					additionalUserInfo.id === scrumMasterProfile.id ||
+						props.team_members.find(
+							(item) => item.user_profile.id === additionalUserInfo.id
+						)
+						? styles.paperHighlight
+						: ""
+				)}
+				variant="outlined"
+			>
 				<CardActionArea to={props.linkTo} component={RouterLink}>
 					<CardHeader
 						title={

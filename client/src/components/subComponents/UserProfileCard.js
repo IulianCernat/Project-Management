@@ -67,7 +67,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UserProfileCard(props) {
 	const classes = useStyles(props);
-	console.log(props);
 	const [openBackdrop, setOpenBackdrop] = useState(false);
 	return (
 		<Card
