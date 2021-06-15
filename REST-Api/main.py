@@ -41,7 +41,7 @@ class FlaskApp(Flask):
         with self.app_context():
             db.create_all()  # Create database tables for our data models
 
-
+        CORS(self)
 
 
 app = FlaskApp(__name__)

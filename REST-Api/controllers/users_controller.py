@@ -4,8 +4,7 @@ from sqlalchemy import literal
 
 
 def create_user(uid, data):
-    name = data.get('fullName')
-    profile = User(uid, name)
+    profile = User(uid, data)
     db.session.add(profile)
     db.session.commit()
 

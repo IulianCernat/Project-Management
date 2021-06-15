@@ -14,7 +14,8 @@ bad_request = api.inherit('Bad request', message, {
 
 user_input = api.model('User input', {
     'fullName': String(required=True, description="User's full name name"),
-    'contact': String(required=False, description="User's contact info (email)")
+    'contact': String(required=False, description="User's contact info (email)"),
+    'avatar_url': String(required=False, description="User's profile picture")
 })
 
 user_output = api.model('User output', {

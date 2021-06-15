@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UserProfileCard(props) {
 	const classes = useStyles(props);
+	console.log(props);
 	const [openBackdrop, setOpenBackdrop] = useState(false);
 	return (
 		<Card
@@ -130,7 +131,7 @@ export default function UserProfileCard(props) {
 						classes={{ root: classes.divider }}
 					/>
 					<Typography className={classes.contact}>
-						{props.contact || "No contact info"}
+						{props.user_profile.contact || "No contact info"}
 					</Typography>
 				</Box>
 			</CardContent>

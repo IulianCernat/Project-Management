@@ -10,11 +10,11 @@ class User(db.Model):
     avatar_url = db.Column(db.String(255))
     contact = db.Column(db.String(255))
 
-    def __init__(self, uid, fullName, avatar_url=None, contact=None):
+    def __init__(self, uid, input_obj):
         self.uid = uid
-        self.fullName = fullName
-        self.avatar_url = avatar_url
-        self.contact = contact
+        self.fullName = input_obj['fullName']
+        self.avatar_url = input_obj.setdefault('avatar_url', None)
+        self.contact = input_obj.setdefault('contact', None)
 
     def __repr_(self):
         return "User {}".format(self.id)
@@ -31,6 +31,7 @@ class Project(db.Model):
     product_owner_profile = db.relationship('User', backref="projects", lazy=True)
 
     def __init__(self, input_obj):
+
         self.name = input_obj['name']
         self.description = input_obj['description']
         self.progress = input_obj.setdefault('progress', None)
