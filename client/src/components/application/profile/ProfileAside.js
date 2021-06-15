@@ -44,55 +44,56 @@ export default function ProfileAside(props) {
 	const classes = useStyles();
 	return (
 		<Paper elevation={5}>
-			<Box p={3} display="flex" direction="column">
-				<Grid container alignItems="center" spacing={2}>
-					<Grid item xs md={12}>
-						<Box className={classes.identity}>
-							<ProfilePageAvatar
-								width="10rem"
-								height="10rem"
-								url={props.additionalUserInfo.avatar_url}
-							/>
+			<Box p={3} display="flex" flexDirection="column">
+				{props.additionalUserInfo && (
+					<Grid container alignItems="center" spacing={2}>
+						<Grid item xs md={12}>
+							<Box className={classes.identity}>
+								<ProfilePageAvatar
+									width="10rem"
+									height="10rem"
+									url={props.additionalUserInfo.avatar_url}
+								/>
 
-							<TextDisplayWrapper paragraph>
-								{props.additionalUserInfo.fullName}
-							</TextDisplayWrapper>
-						</Box>
-						<Hidden mdDown>
-							<Divider />
-						</Hidden>
+								<TextDisplayWrapper paragraph>
+									{props.additionalUserInfo.fullName}
+								</TextDisplayWrapper>
+							</Box>
+							<Hidden mdDown>
+								<Divider />
+							</Hidden>
+						</Grid>
+
+						<Grid
+							item
+							container
+							xs
+							md={12}
+							direction="column"
+							spacing={3}
+							alignItems="flex-start"
+						>
+							<Grid item>
+								<Typography variant="h6">Contact</Typography>
+								<Typography>
+									{props.additionalUserInfo.contact || props.currentUser?.email}
+								</Typography>
+							</Grid>
+						</Grid>
 					</Grid>
-
-					<Grid
-						item
-						container
-						xs
-						md={12}
-						direction="column"
-						spacing={3}
-						alignItems="flex-start"
+				)}
+				<Box mt={2}>
+					<Button
+						fullWidth
+						variant="contained"
+						color="primary"
+						onClick={() => {
+							handleLogout();
+						}}
 					>
-						<Grid item>
-							<Typography variant="h6">Contact</Typography>
-							<Typography>
-								{props.additionalUserInfo.contact || props.currentUser?.email}
-							</Typography>
-						</Grid>
-
-						<Grid item>
-							<Button
-								fullWidth
-								variant="contained"
-								color="primary"
-								onClick={() => {
-									handleLogout();
-								}}
-							>
-								<Typography>Logout</Typography>
-							</Button>
-						</Grid>
-					</Grid>
-				</Grid>
+						<Typography>Logout</Typography>
+					</Button>
+				</Box>
 			</Box>
 		</Paper>
 	);

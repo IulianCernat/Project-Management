@@ -10,6 +10,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from flask_cors import cross_origin
 log = logging.getLogger(__name__)
 
+# For development cors is set to * for every route
 api = Api(version='1.0', title="Projects management API",
           description="A REST api which serves as backend for the client side", decorators=[cross_origin()])
 

@@ -192,39 +192,45 @@ export default function ProfileMain(props) {
 
 	return (
 		<Paper className={classes.main} elevation={3}>
-			<AppBar position="sticky" color="default">
-				<Tabs
-					value={currentTab}
-					onChange={handleTabChange}
-					textColor="primary"
-					indicatorColor="primary"
-					variant="scrollable"
-					scrollButtons="auto"
-				>
-					<Tab label="Product Owner" />
-					<Tab label="Scrum Master" />
-					<Tab label="Developer" />
-				</Tabs>
-			</AppBar>
+			{props.additionalUserInfo ? (
+				<>
+					<AppBar position="sticky" color="default">
+						<Tabs
+							value={currentTab}
+							onChange={handleTabChange}
+							textColor="primary"
+							indicatorColor="primary"
+							variant="scrollable"
+							scrollButtons="auto"
+						>
+							<Tab label="Product Owner" />
+							<Tab label="Scrum Master" />
+							<Tab label="Developer" />
+						</Tabs>
+					</AppBar>
 
-			<TabPanel
-				userId={props.additionalUserInfo.id}
-				value={currentTab}
-				withProjectAdditionForm={true}
-				index={0}
-			/>
-			<TabPanel
-				userId={props.additionalUserInfo.id}
-				value={currentTab}
-				index={1}
-				withProjectAdditionForm={false}
-			/>
-			<TabPanel
-				userId={props.additionalUserInfo.id}
-				value={currentTab}
-				index={2}
-				withProjectAdditionForm={false}
-			/>
+					<TabPanel
+						userId={props.additionalUserInfo.id}
+						value={currentTab}
+						withProjectAdditionForm={true}
+						index={0}
+					/>
+					<TabPanel
+						userId={props.additionalUserInfo.id}
+						value={currentTab}
+						index={1}
+						withProjectAdditionForm={false}
+					/>
+					<TabPanel
+						userId={props.additionalUserInfo.id}
+						value={currentTab}
+						index={2}
+						withProjectAdditionForm={false}
+					/>
+				</>
+			) : (
+				<Alert severity="error">Failed To load any projects</Alert>
+			)}
 		</Paper>
 	);
 }

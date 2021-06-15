@@ -23,7 +23,7 @@ export default function Profile() {
 
 	return (
 		<Container className={classes.container} maxWidth="xl">
-			{additionalUserInfo && currentUser ? (
+			{currentUser ? (
 				<Box>
 					<Grid container justify="center" spacing={2}>
 						<Hidden mdDown>

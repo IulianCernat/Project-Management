@@ -7,6 +7,8 @@ import { Particle } from "jparticles";
 import PrivateRoute from "utils/PrivateRoute";
 import Profile from "components/application/profile/Profile";
 import { useAuth } from "contexts/AuthContext";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const backgroundParticlesStyling = {
 	backgroundColor: "#0F0B11",
@@ -20,17 +22,19 @@ const backgroundParticlesStyling = {
 };
 
 export default function FrontPage() {
+	const theme = useTheme();
+	const matches = useMediaQuery(theme.breakpoints.up("sm"));
 	const { currentUser, additionalUserInfo } = useAuth();
 	useEffect(() => {
 		new Particle("#backgroundParticlesStyling", {
 			range: 0,
-			num: 0.08,
+			num: matches ? 0.08 : 0.05,
 			minSpeed: 0.04,
 			maxSpeed: 0.09,
-			minR: 10,
-			maxR: 50,
+			minR: matches ? 10 : 4,
+			maxR: matches ? 50 : 10,
 		});
-	}, []);
+	}, [matches]);
 	return (
 		<>
 			<div
