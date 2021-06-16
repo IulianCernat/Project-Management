@@ -7,6 +7,7 @@ import {
 	Box,
 	Paper,
 	makeStyles,
+	LinearProgress,
 } from "@material-ui/core";
 
 import { useParams } from "react-router-dom";
@@ -44,6 +45,7 @@ export default function TeamPage() {
 	};
 	return (
 		<>
+			{isLoading && <LinearProgress style={{ width: "100%" }} />}
 			{isRejected ? <Alert severity="error">{error} </Alert> : null}
 			{isResolved ? (
 				<>

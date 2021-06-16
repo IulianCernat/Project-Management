@@ -368,7 +368,7 @@ export default function Sprints() {
 					))}
 				</Box>
 			)}
-			{!isLoadingGetSprints && !getSprintsReceivedData.length && (
+			{!isLoadingGetSprints && !getSprintsReceivedData?.length && (
 				<Typography variant="h5" color="primary">
 					Currently there are no sprints created
 				</Typography>

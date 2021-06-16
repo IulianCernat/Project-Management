@@ -18,15 +18,17 @@ class ProfilesCollection(Resource):
     @api.response(401, 'Authorization failed', message)
     @api.expect(user_input)
     def post(self):
-        # try:
-        #     token_id = request.headers.get('Authorization')
-        #     decoded_token = verify_id_token(token_id)
-        # except AuthorizationFailed as e:
-        #     raise e
+        try:
+            token_id = request.headers.get('Authorization')
+            decoded_token = verify_id_token(token_id)
+        except AuthorizationFailed as e:
+            raise e
 
         user_profile = request.json
 
-        decoded_token = {'uid': f"{user_profile['contact']}{user_profile['fullName']}"}
+        # for when populating database with script
+        # decoded_token = {'uid': f"{user_profile['contact']}{user_profile['fullName']}"}
+
 
         profile_id = create_user(decoded_token['uid'], user_profile)
 

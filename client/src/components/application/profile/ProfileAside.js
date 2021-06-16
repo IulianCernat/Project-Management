@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
 	Box,
 	Typography,
@@ -31,14 +31,14 @@ ProfileAside.propTypes = {
 };
 export default function ProfileAside(props) {
 	const { logout } = useAuth();
-
+	const [logoutError, setLogoutError] = useState();
 	const history = useHistory();
 	async function handleLogout() {
 		try {
 			await logout();
 			history.push("/");
 		} catch (e) {
-			console.log(e);
+			setLogoutError(e.toString());
 		}
 	}
 	const classes = useStyles();
@@ -83,6 +83,7 @@ export default function ProfileAside(props) {
 					</Grid>
 				)}
 				<Box mt={2}>
+					{logoutError ? logoutError : null}
 					<Button
 						fullWidth
 						variant="contained"

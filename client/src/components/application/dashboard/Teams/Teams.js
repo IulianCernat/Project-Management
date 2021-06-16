@@ -5,6 +5,7 @@ import {
 	makeStyles,
 	Button,
 	CircularProgress,
+	LinearProgress,
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import TeamCard from "components/subComponents/TeamCard";
@@ -151,7 +152,7 @@ export default function Teams(props) {
 								}
 							/>
 						) : null}
-						{isLoading ? <CircularProgress /> : null}
+						{isLoading ? <LinearProgress style={{ width: "100%" }} /> : null}
 						{isRejected ? <Alert severity="error">{error} </Alert> : null}
 					</Box>
 				</Route>

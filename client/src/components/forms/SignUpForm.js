@@ -32,8 +32,8 @@ export default function SignUpForm() {
 
 	useEffect(() => {
 		if (isResolved) {
-			history.push("/");
 			logout();
+			history.push("/");
 		}
 	}, [isResolved]);
 	return (

@@ -6,6 +6,7 @@ import {
 	Typography,
 	Divider,
 	Hidden,
+	LinearProgress,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import UserProfileCard from "components/subComponents/UserProfileCard";
@@ -54,148 +55,157 @@ export default function Overview() {
 		}
 	}, [isResolvedGetProject]);
 
-	return !isResolvedGetProject ? null : (
-		<Grid container spacing={2}>
-			<Grid
-				item
-				container
-				justify="space-evenly"
-				alignItems="flex-start"
-				spacing={2}
-			>
-				<Grid item xs={12} md={4} xl={3}>
-					<Paper className={classes.paper}>
-						<Box
-							p={4}
-							height="100%"
-							display="flex"
-							justifyContent="center"
-							alignItems="baseline"
-						>
-							<UserProfileCard
-								width="40ch"
-								user_profile={getProjectReceivedData.product_owner_profile}
-								user_type="productOwner"
-							/>
-						</Box>
-					</Paper>
-				</Grid>
-				<Grid item xs={12} md={8} xl={8}>
-					<Paper className={classes.paper}>
-						<Box p={2} height="100%">
-							<Typography color="primary" gutterBottom variant="h5">
-								Project Name
-							</Typography>
-							<Typography gutterBottom>
-								{getProjectReceivedData.name}
-							</Typography>
-							<Typography
-								align="justify"
-								color="primary"
-								gutterBottom
-								variant="h5"
-							>
-								Project description
-							</Typography>
-							<Typography className={classes.textContent}>
-								{getProjectReceivedData.description}
-							</Typography>
-						</Box>
-					</Paper>
-				</Grid>
-			</Grid>
-
-			<Grid item xs={12}>
-				<Paper>
-					<Box
-						p={2}
-						display="flex"
-						flexWrap="wrap"
-						alignItems="center"
-						justifyContent="space-evenly"
+	return (
+		<>
+			{isLoadingGetProject && <LinearProgress style={{ width: "100%" }} />}
+			{!isResolvedGetProject ? null : (
+				<Grid container spacing={2}>
+					<Grid
+						item
+						container
+						justify="space-evenly"
+						alignItems="flex-start"
+						spacing={2}
 					>
-						<Box>
-							<Typography gutterBottom align="center" variant="h5">
-								Progress
-							</Typography>
-							{projectProgress !== null && (
-								<CircularProgressWithLabel
-									value={projectProgress}
-									size="10rem"
-									label={
-										<Box>
-											<Typography variant="h6" color="textSecondary">
-												{`${projectProgress}%`}
-											</Typography>
-											<Typography variant="h6" color="textSecondary">
-												done
-											</Typography>
-										</Box>
-									}
-								/>
-							)}
-						</Box>
-						<Hidden smDown>
-							<Divider orientation="vertical" flexItem />
-						</Hidden>
+						<Grid item xs={12} md={4} xl={3}>
+							<Paper className={classes.paper}>
+								<Box
+									p={4}
+									height="100%"
+									display="flex"
+									justifyContent="center"
+									alignItems="baseline"
+								>
+									<UserProfileCard
+										width="40ch"
+										user_profile={getProjectReceivedData.product_owner_profile}
+										user_type="productOwner"
+									/>
+								</Box>
+							</Paper>
+						</Grid>
+						<Grid item xs={12} md={8} xl={8}>
+							<Paper className={classes.paper}>
+								<Box p={2} height="100%">
+									<Typography color="primary" gutterBottom variant="h5">
+										Project Name
+									</Typography>
+									<Typography gutterBottom>
+										{getProjectReceivedData.name}
+									</Typography>
+									<Typography
+										align="justify"
+										color="primary"
+										gutterBottom
+										variant="h5"
+									>
+										Project description
+									</Typography>
+									<Typography className={classes.textContent}>
+										{getProjectReceivedData.description}
+									</Typography>
+								</Box>
+							</Paper>
+						</Grid>
+					</Grid>
 
-						<Box display="flex" flexDirection="column" style={{ gap: "1rem" }}>
-							<Box>
-								<Typography
-									className={classes.headlineText}
-									display="inline"
-									variant="h6"
-								>
-									Number of opened issues
-								</Typography>
-								<Typography
-									className={classes.headlineNumber}
-									display="inline"
-									variant="h4"
-								>
-									{getProjectReceivedData.total_nr_of_issues}
-								</Typography>
-							</Box>
+					<Grid item xs={12}>
+						<Paper>
+							<Box
+								p={2}
+								display="flex"
+								flexWrap="wrap"
+								alignItems="center"
+								justifyContent="space-evenly"
+							>
+								<Box>
+									<Typography gutterBottom align="center" variant="h5">
+										Progress
+									</Typography>
+									{projectProgress !== null && (
+										<CircularProgressWithLabel
+											value={projectProgress}
+											size="10rem"
+											label={
+												<Box>
+													<Typography variant="h6" color="textSecondary">
+														{`${projectProgress}%`}
+													</Typography>
+													<Typography variant="h6" color="textSecondary">
+														done
+													</Typography>
+												</Box>
+											}
+										/>
+									)}
+								</Box>
+								<Hidden smDown>
+									<Divider orientation="vertical" flexItem />
+								</Hidden>
 
-							<Box>
-								<Typography
-									className={classes.headlineText}
-									display="inline"
-									variant="h6"
+								<Box
+									display="flex"
+									flexDirection="column"
+									style={{ gap: "1rem" }}
 								>
-									Number of finished issues
-								</Typography>
-								<Typography
-									className={classes.headlineNumber}
-									display="inline"
-									variant="h4"
-								>
-									{getProjectReceivedData.nr_of_finished_issues}
-								</Typography>
+									<Box>
+										<Typography
+											className={classes.headlineText}
+											display="inline"
+											variant="h6"
+										>
+											Number of opened issues
+										</Typography>
+										<Typography
+											className={classes.headlineNumber}
+											display="inline"
+											variant="h4"
+										>
+											{getProjectReceivedData.total_nr_of_issues}
+										</Typography>
+									</Box>
+
+									<Box>
+										<Typography
+											className={classes.headlineText}
+											display="inline"
+											variant="h6"
+										>
+											Number of finished issues
+										</Typography>
+										<Typography
+											className={classes.headlineNumber}
+											display="inline"
+											variant="h4"
+										>
+											{getProjectReceivedData.nr_of_finished_issues}
+										</Typography>
+									</Box>
+								</Box>
+								<Hidden smDown>
+									<Divider orientation="vertical" flexItem />
+								</Hidden>
+								<Box>
+									<Typography
+										className={classes.headlineText}
+										display="inline"
+										variant="h6"
+									>
+										Members
+									</Typography>
+									<Typography
+										className={classes.headlineNumber}
+										display="inline"
+										variant="h4"
+									>
+										{getProjectReceivedData.number_of_members}
+									</Typography>
+								</Box>
 							</Box>
-						</Box>
-						<Hidden smDown>
-							<Divider orientation="vertical" flexItem />
-						</Hidden>
-						<Box>
-							<Typography
-								className={classes.headlineText}
-								display="inline"
-								variant="h6"
-							>
-								Members
-							</Typography>
-							<Typography
-								className={classes.headlineNumber}
-								display="inline"
-								variant="h4"
-							>
-								{getProjectReceivedData.number_of_members}
-							</Typography>
-						</Box>
-					</Box>
-				</Paper>
-			</Grid>
-		</Grid>
+						</Paper>
+					</Grid>
+				</Grid>
+			)}
+		</>
 	);
 }

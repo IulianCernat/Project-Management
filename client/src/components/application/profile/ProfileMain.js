@@ -133,6 +133,12 @@ function TabPanel(props) {
 					alignItems="center"
 					style={{ gap: "1rem" }}
 				>
+					{isLoading ? (
+						<Box>
+							<CircularProgress />
+						</Box>
+					) : null}
+					{isRejected ? <Alert severity="error">{error} </Alert> : null}
 					{props.withProjectAdditionForm && (
 						<Box alignSelf="center" width="100%">
 							<Box display="flex" justifyContent="center">
@@ -165,12 +171,6 @@ function TabPanel(props) {
 							renderProjectsActions={props.withProjectAdditionForm}
 						/>
 					) : null}
-					{isLoading ? (
-						<Box>
-							<CircularProgress />
-						</Box>
-					) : null}
-					{isRejected ? <Alert severity="error">{error} </Alert> : null}
 				</Box>
 			)}
 		</Box>
