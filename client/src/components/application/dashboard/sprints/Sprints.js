@@ -49,7 +49,7 @@ const useStyles = makeStyles({
 		overflow: "hidden",
 	},
 });
-const UIRestrictionForRoles = ["developer", "scrumMaster"];
+const UIRestrictionForRoles = ["developer"];
 
 SprintTable.propTypes = {
 	sprint: PropTypes.object.isRequired,
@@ -181,7 +181,7 @@ function SprintHeader({
 	return (
 		<Box p={1} display="flex" flexWrap="wrap" style={{ gap: "1rem" }}>
 			<Box>
-				<Typography variant="h5">{name}</Typography>
+				<Typography variant="h6">{name}</Typography>
 			</Box>
 			<Box display="flex" style={{ gap: "2rem" }} alignItems="center">
 				<Box>
@@ -238,6 +238,7 @@ function SprintHeader({
 						onClick={() => {
 							handleDeleteSprintClick(id);
 						}}
+						disabled={UIRestrictionForRoles.includes(currentUserRole)}
 					>
 						<Tooltip
 							title={
@@ -268,27 +269,31 @@ function SprintHeader({
 				</Box>
 
 				<Box display="flex" justifyContent="center">
-					{showMoreGoalInfo ? (
-						<Tooltip title="Hide info">
-							<Fab
-								onClick={() => {
-									setShowMoreGoalInfo(false);
-								}}
-							>
-								<KeyboardArrowUp />
-							</Fab>
-						</Tooltip>
-					) : (
-						<Tooltip title="Show more info">
-							<Fab
-								onClick={() => {
-									setShowMoreGoalInfo(true);
-								}}
-							>
-								<KeyboardArrowDown />
-							</Fab>
-						</Tooltip>
-					)}
+					{goal.length > 500 ? (
+						showMoreGoalInfo ? (
+							<Tooltip title="Hide info">
+								<Fab
+									size="small"
+									onClick={() => {
+										setShowMoreGoalInfo(false);
+									}}
+								>
+									<KeyboardArrowUp />
+								</Fab>
+							</Tooltip>
+						) : (
+							<Tooltip title="Show more info">
+								<Fab
+									size="small"
+									onClick={() => {
+										setShowMoreGoalInfo(true);
+									}}
+								>
+									<KeyboardArrowDown />
+								</Fab>
+							</Tooltip>
+						)
+					) : null}
 				</Box>
 			</Box>
 		</Box>

@@ -51,30 +51,35 @@ export default function TrelloBoardAdditionForm(props) {
 						fullWidth
 						margin="normal"
 						id="trello_board_url"
-						label="Trello board link"
+						label="Trello public board link"
 						name="trello_board_url"
 						disabled={isLoading}
 					/>
 					<Box display="flex" style={{ gap: "1rem" }} flexWrap="wrap">
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							color="primary"
-							disabled={isLoading}
-						>
-							<Typography>Add board</Typography>
-						</Button>
-
-						<Button
-							fullWidth
-							variant="contained"
-							color="secondary"
-							disabled={isLoading}
-							onClick={() => props.hideForm()}
-						>
-							<Typography>cancel</Typography>
-						</Button>
+						<Box flex="1 1 auto">
+							<Button
+								size="small"
+								type="submit"
+								fullWidth
+								variant="contained"
+								color="primary"
+								disabled={isLoading}
+							>
+								<Typography>Add board</Typography>
+							</Button>
+						</Box>
+						<Box flex="1 1 auto">
+							<Button
+								size="small"
+								fullWidth
+								variant="contained"
+								color="secondary"
+								disabled={isLoading}
+								onClick={() => props.hideForm()}
+							>
+								<Typography>cancel</Typography>
+							</Button>
+						</Box>
 					</Box>
 
 					{isResolved && (

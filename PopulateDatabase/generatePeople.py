@@ -2,7 +2,8 @@ import requests
 import time
 import json
 
-headers = {'X-API-KEY': '62483D42-6FD54180-A9268C86-1349EB98',
+# your uifaces api key
+headers = {'X-API-KEY': '',
            'Accept': 'application/json',
            'Cache-Control': 'no-cache'}
 base_url = 'https://uifaces.co/api'

@@ -175,6 +175,7 @@ export default function TeamMembers() {
 							}}
 							bgcolor="blueGrey.500"
 							display="flex"
+							justifyContent="flex-start"
 							flexWrap="wrap"
 						>
 							{isResolved && receivedData?.length ? (
