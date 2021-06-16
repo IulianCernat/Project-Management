@@ -7,8 +7,6 @@ from faker.providers import lorem
 faker = Faker()
 faker.add_provider(lorem)
 
-print(faker.paragraph(nb_sentences=50))
-
 # Firebase authorization check must be disabled in code for creating profiles
 api_path_base_url = 'http://192.168.1.3:5000/api'
 
@@ -19,9 +17,10 @@ def create_profiles(profile_list):
     for profile in profile_list:
         post_request_data = {
             'fullName': profile['name'],
-            'avatar_url': profile['photo'],
             'contact': profile['email']
         }
+        if profile['photo']:
+            post_request_data['avatar_url'] = profile['photo']
         response = requests.post(api_path, json=post_request_data)
         created_users_ids.append(int(response.json()['location'].split("/")[-1]))
 
@@ -49,14 +48,15 @@ def create_projects(users_ids):
 
 def create_teams(projects_created_by_users, users_ids):
     api_path = api_path_base_url + "/teams/"
-    created_teams_with_scrum_masters = []
+    projects_with_teams = []
     for projects_by_user in projects_created_by_users:
+
         project_creator_id = projects_by_user['project_creator']
 
         for project_id in projects_by_user['created_projects']:
             already_added_scrum_masters = []
-
-            for _ in range(0, 6):
+            teams_for_project = []
+            for _ in range(6):
                 possible_scrum_masters = list(
                     filter(lambda item: item != project_creator_id and item not in already_added_scrum_masters,
                            users_ids))
@@ -73,57 +73,69 @@ def create_teams(projects_created_by_users, users_ids):
 
                 response_json = response.json()
 
-                created_teams_with_scrum_masters.append(
+                teams_for_project.append(
                     {
-                        'project_id': project_id,
                         'team_id': int(response_json['location'].split("/")[-1]),
                         'scrum_master_id': scrum_master_id,
-                        'product_owner_id': project_creator_id
                     }
                 )
-    return created_teams_with_scrum_masters
+            projects_with_teams.append({'project_id': project_id,
+                                        'product_owner_id': project_creator_id,
+                                        'teams': teams_for_project
+                                        })
+    return projects_with_teams
 
 
-def add_team_members(teams, users_ids):
+def add_team_members(projects_with_teams, users_ids):
     api_path = api_path_base_url + "/teams_members/"
-    for team in teams:
-        possible_team_members = list(
-            filter(lambda user_id: user_id not in [team['scrum_master_id'], team['product_owner_id']], users_ids))
+    for project_with_team in projects_with_teams:
+        already_added_members = []
+        already_added_scrum_masters = [team['scrum_master_id'] for team in project_with_team['teams']]
+        for team in project_with_team['teams']:
+            possible_team_members = list(
+                filter(lambda user_id: user_id != project_with_team['product_owner_id']
+                                       and user_id not in already_added_members
+                                       and user_id not in already_added_scrum_masters,
+                       users_ids))
 
-        team_members_ids = random.sample(possible_team_members, random.randint(1, 10))
-        post_request_data = {
-            'team_members': [{'user_id': team_member_id,
-                              'team_id': team['team_id'],
-                              'user_type': 'developer',
-                              'created_at': "2021-06-15T19:04:58.263Z"} for team_member_id in team_members_ids]
+            team_members_ids = random.sample(possible_team_members, random.randint(1, 8))
 
-        }
+            already_added_members.extend(team_members_ids)
+            post_request_data = {
+                'team_members': [{'user_id': team_member_id,
+                                  'team_id': team['team_id'],
+                                  'user_type': 'developer',
+                                  'created_at': "2021-06-15T19:04:58.263Z"} for team_member_id in team_members_ids]
 
-        response = requests.post(api_path, json=post_request_data)
+            }
+
+            response = requests.post(api_path, json=post_request_data)
 
 
-def generate_issues(teams):
+def generate_issues(projects_with_teams):
     api_path = api_path_base_url + "/issues/"
     created_issues_for_projects = []
-    for team in teams:
-        project_issues = {'project_id': team['project_id'], 'project_scrum_master_id': team['scrum_master_id'],
-                          'issues_ids': []}
-        for _ in range(5):
-            post_request_data = {
-                'title': faker.text()[:255],
-                'description': faker.text(max_nb_chars=1000),
-                'type': random.choice(['story', 'bug', 'task']),
-                'priority': str(random.randint(1, 5)),
-                'created_at': "2021-06-16T09:45:44.633Z",
-                'project_id': team['project_id'],
-                'creator_user_id': team['scrum_master_id']
-            }
-            response = requests.post(api_path, json=post_request_data)
-            response_json = response.json()
-            project_issues['issues_ids'].append(
-                int(response_json['location'].split("/")[-1])
-            )
-        created_issues_for_projects.append(project_issues)
+    for project_with_teams in projects_with_teams:
+        for team in project_with_teams['teams']:
+            project_issues = {'project_id': project_with_teams['project_id'],
+                              'project_scrum_master_id': team['scrum_master_id'],
+                              'issues_ids': []}
+            for _ in range(5):
+                post_request_data = {
+                    'title': faker.text()[:255],
+                    'description': faker.text(max_nb_chars=1000),
+                    'type': random.choice(['story', 'bug', 'task']),
+                    'priority': str(random.randint(1, 5)),
+                    'created_at': "2021-06-16T09:45:44.633Z",
+                    'project_id': project_with_teams['project_id'],
+                    'creator_user_id': team['scrum_master_id']
+                }
+                response = requests.post(api_path, json=post_request_data)
+                response_json = response.json()
+                project_issues['issues_ids'].append(
+                    int(response_json['location'].split("/")[-1])
+                )
+            created_issues_for_projects.append(project_issues)
 
     return created_issues_for_projects
 
@@ -182,11 +194,11 @@ if __name__ == '__main__':
     print("generated profiles")
     projects = create_projects(created_users_ids)
     print("generated projects")
-    teams = create_teams(projects, created_users_ids)
+    projects_with_teams = create_teams(projects, created_users_ids)
     print("generated teams")
-    add_team_members(teams, created_users_ids)
+    add_team_members(projects_with_teams, created_users_ids)
     print("generated team members")
-    issues = generate_issues(teams)
+    issues = generate_issues(projects_with_teams)
     print("generated issues")
     generate_sprints(issues)
     print("generated sprints")

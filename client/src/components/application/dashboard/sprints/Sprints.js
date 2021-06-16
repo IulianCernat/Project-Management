@@ -179,7 +179,13 @@ function SprintHeader({
 	}, [isResolvedUpdate]);
 
 	return (
-		<Box p={1} display="flex" flexWrap="wrap" style={{ gap: "1rem" }}>
+		<Box
+			p={1}
+			display="flex"
+			flexDirection="column"
+			flexWrap="wrap"
+			style={{ gap: "1rem" }}
+		>
 			<Box>
 				<Typography variant="h6">{name}</Typography>
 			</Box>
@@ -345,7 +351,7 @@ export default function Sprints() {
 			{isRejectedGetSprints ? (
 				<Alert severity="error">{getSprintsError} </Alert>
 			) : null}
-			{(isResolvedGetSprints && getSprintsReceivedData.length && (
+			{isResolvedGetSprints && getSprintsReceivedData.length && (
 				<Box
 					display="flex"
 					flexWrap="wrap"
@@ -361,7 +367,12 @@ export default function Sprints() {
 						/>
 					))}
 				</Box>
-			)) || <Typography variant="h5">No sprints</Typography>}
+			)}
+			{!isLoadingGetSprints && !getSprintsReceivedData.length && (
+				<Typography variant="h5" color="primary">
+					Currently there are no sprints created
+				</Typography>
+			)}
 		</>
 	);
 }
