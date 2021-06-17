@@ -86,7 +86,9 @@ export function TextFieldSelectWrapper({
 		>
 			{menuOptions.map((option) => (
 				<MenuItem key={option.label} value={option.value}>
-					{option.label}
+					{option.label.length > 50
+						? option.label.slice(0, 50) + "..."
+						: option.label}
 				</MenuItem>
 			))}
 		</TextField>

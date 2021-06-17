@@ -55,8 +55,16 @@ SprintTable.propTypes = {
 	sprint: PropTypes.object.isRequired,
 	currentUserRole: PropTypes.string.isRequired,
 	handleDeleteSprintClick: PropTypes.func.isRequired,
+	startedSprintId: PropTypes.number.isRequired,
+	setStartedSprintId: PropTypes.func.isRequired,
 };
-function SprintTable({ sprint, currentUserRole, handleDeleteSprintClick }) {
+function SprintTable({
+	sprint,
+	currentUserRole,
+	handleDeleteSprintClick,
+	setStartedSprintId,
+	startedSprintId,
+}) {
 	const classes = useStyles();
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
@@ -98,6 +106,8 @@ function SprintTable({ sprint, currentUserRole, handleDeleteSprintClick }) {
 				isStarted={sprint.start}
 				isCompleted={sprint.completed}
 				id={sprint.id}
+				startedSprintId={startedSprintId}
+				setStartedSprintId={setStartedSprintId}
 			/>
 
 			<Table className={classes.table}>
@@ -145,6 +155,8 @@ function SprintHeader({
 	isStarted,
 	currentUserRole,
 	handleDeleteSprintClick,
+	startedSprintId,
+	setStartedSprintId,
 }) {
 	const [showMoreGoalInfo, setShowMoreGoalInfo] = useState(false);
 	const classes = useStyles();
@@ -170,12 +182,18 @@ function SprintHeader({
 	};
 
 	const handleCompleteSprintClick = () => {
-		setRequesBodyForUpdate(JSON.stringify({ completed: true }));
+		setRequesBodyForUpdate(JSON.stringify({ start: false, completed: true }));
 	};
 	useEffect(() => {
 		if (!isResolvedUpdate) return;
-		if (requestBodyForUpdate.includes("start")) setIsStartedState(true);
-		if (requestBodyForUpdate.includes("completed")) setIsCompletedState(true);
+		if (requestBodyForUpdate.includes("start")) {
+			setIsStartedState(true);
+			setStartedSprintId(id);
+		}
+		if (requestBodyForUpdate.includes("completed")) {
+			setIsCompletedState(true);
+			setStartedSprintId(undefined);
+		}
 	}, [isResolvedUpdate]);
 
 	return (
@@ -217,7 +235,10 @@ function SprintHeader({
 							}}
 							variant="contained"
 							color="primary"
-							disabled={UIRestrictionForRoles.includes(currentUserRole)}
+							disabled={
+								UIRestrictionForRoles.includes(currentUserRole) ||
+								(startedSprintId !== undefined && startedSprintId !== id)
+							}
 						>
 							Start sprint
 						</Button>
@@ -310,6 +331,7 @@ export default function Sprints() {
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
 	const getParams = useRef({ project_id: projectId });
+	const [startedSprintId, setStartedSprintId] = useState();
 	const {
 		status: getSprintsStatus,
 		receivedData: getSprintsReceivedData,
@@ -341,7 +363,12 @@ export default function Sprints() {
 	}, [isResolvedDeleteSprint]);
 
 	useEffect(() => {
-		if (isResolvedGetSprints) setSprintsList(getSprintsReceivedData);
+		if (isResolvedGetSprints) {
+			setSprintsList(getSprintsReceivedData);
+			setStartedSprintId(
+				getSprintsReceivedData.find((item) => item.start === true)?.id
+			);
+		}
 	}, [isResolvedGetSprints, getSprintsReceivedData]);
 	return (
 		<>
@@ -360,6 +387,8 @@ export default function Sprints() {
 				>
 					{sprintsList.map((item) => (
 						<SprintTable
+							startedSprintId={startedSprintId}
+							setStartedSprintId={setStartedSprintId}
 							handleDeleteSprintClick={handleDeleteSprintClick}
 							currentUserRole={currentUserRole}
 							key={item.id}

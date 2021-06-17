@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
 			duration: theme.transitions.duration.leavingScreen,
 		}),
 		width: theme.spacing(7),
+		overflow: "hidden",
 	},
 
 	toolbarSpace: theme.mixins.toolbar,

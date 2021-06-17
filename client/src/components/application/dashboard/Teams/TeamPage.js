@@ -1,14 +1,5 @@
 import { useState } from "react";
-import {
-	AppBar,
-	Tabs,
-	Tab,
-	Typography,
-	Box,
-	Paper,
-	makeStyles,
-	LinearProgress,
-} from "@material-ui/core";
+import { AppBar, Tabs, Tab, Box, LinearProgress } from "@material-ui/core";
 
 import { useParams } from "react-router-dom";
 import { useGetFetch } from "customHooks/useFetch";
@@ -17,7 +8,11 @@ import Board from "./Board";
 import { Alert } from "@material-ui/lab";
 import { useProjectContext } from "contexts/ProjectContext";
 import TeamInfo from "./TeamInfo";
+import { makeStyles } from "@material-ui/core/styles";
 
+const useStyles = makeStyles({
+	board: {},
+});
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -34,6 +29,7 @@ function TabPanel(props) {
 }
 
 export default function TeamPage() {
+	const classes = useStyles();
 	const { currentUserRole } = useProjectContext();
 	let { teamId } = useParams();
 	const [currentTab, setCurrentTab] = useState(0);
@@ -48,7 +44,7 @@ export default function TeamPage() {
 			{isLoading && <LinearProgress style={{ width: "100%" }} />}
 			{isRejected ? <Alert severity="error">{error} </Alert> : null}
 			{isResolved ? (
-				<>
+				<Box style={{ overflow: "hidden", width: "100%" }}>
 					<AppBar position="static" color="default">
 						<Tabs
 							indicatorColor="primary"
@@ -73,7 +69,7 @@ export default function TeamPage() {
 							currentUserRole={currentUserRole}
 						/>
 					</TabPanel>
-					<TabPanel value={currentTab} index={1}>
+					<TabPanel value={currentTab} index={1} className={classes.board}>
 						<Board
 							currentUserRole={currentUserRole}
 							teamId={Number(receivedData.id)}
@@ -83,7 +79,7 @@ export default function TeamPage() {
 					<TabPanel value={currentTab} index={2}>
 						<TeamMembers />
 					</TabPanel>
-				</>
+				</Box>
 			) : null}
 		</>
 	);

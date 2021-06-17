@@ -189,7 +189,7 @@ if __name__ == '__main__':
         profiles = json.load(f)
 
     created_users_ids = create_profiles(profiles)
-    created_users_ids.append(385)
+    created_users_ids.append(2)
     random.shuffle(created_users_ids)
     print("generated profiles")
     projects = create_projects(created_users_ids)

@@ -162,7 +162,7 @@ export default function Board(props) {
 					pb={"6rem"}
 					display="flex"
 					flexWrap="nowrap"
-					style={{ gap: "1rem", width: "100%", overflowX: "auto" }}
+					style={{ gap: "1rem" }}
 				>
 					{getListsReceivedData.map((boardListItem) => {
 						const boardCards = getCardsReceivedData.filter(
