@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+  restapi:
+    build: ./REST-Api
+    depends_on:
+      - database
+    ports:
+      - 5000:5000
+    volumes:
+      - ./REST-Api:/REST-Api
+    environment:
+      FLASK_ENV: development
+      DB_USER: root
+      DB_PASS: root
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_NAME: projectsmanager
+      FLASK_APP: app
+    command: flask run --host=0.0.0.0
+
+  database:
+    image: mariadb:latest
+    volumes:
+      - projectsmanager-mariadb-data:/var/lib/mariadb
+    environment:
+      MARIADB_USER: root
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: projectsmanager
+
+  client:
+    build: ./client
+    depends_on:
+      - restapi
+    ports:
+      - 3000:3000
+    # environment:
+    #   CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./client:/client
+    command: npm start
+
+volumes:
+  projectsmanager-mariadb-data:

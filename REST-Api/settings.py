@@ -1,10 +1,13 @@
 import os
-import json
+import logging
+
+log = logging.getLogger(__name__)
+
 # Flask settings
 # FLASK_SERVER_NAME = 'localhost:3000'
-FLASK_DEBUG = True # Do not use debug mode in production
+FLASK_DEBUG = True  # Do not use debug mode in production
 
-# Flask-Restplus settings
+# Flask-Restx settings
 RESTX_SWAGGER_UI_DOC_EXPANSION = 'list'
 RESTX_VALIDATE = True
 RESTX_MASK_SWAGGER = False
@@ -12,13 +15,32 @@ RESTX_ERROR_404_HELP = False
 
 # SQLAlchemy settings
 # For development
-SQLALCHEMY_DATABASE_URI = os.environ.get('projectsManagerDevDbURI')
+try:
+    SQLALCHEMY_DATABASE_URI = os.environ['projectsManagerDevDbURI']
+except KeyError:
+    try:
+        SQLALCHEMY_DATABASE_URI = f"mariadb+pymysql://{os.environ['DB_USER']}:" \
+                                  f"{os.environ['DB_PASS']}@" \
+                                  f"{os.environ['DB_HOST']}:" \
+                                  f"{os.environ['DB_PORT']}/" \
+                                  f"{os.environ['DB_NAME']}"
+    except KeyError:
+        log.error("Couldn't find any environment\
+                variables for connecting to a database")
 
 # For production
 # SQLALCHEMY_DATABASE_URI = os.environ.get('projectsManagerProductionDbUri')
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
-
 # Firebase
-firebase_google_credentials = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+try:
+    firebase_google_credentials = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+except KeyError:
+    log.error("Missing GOOGLE_APPLICATION_CREDENTIALS environment variable")
+
+# Trello
+try:
+    trello_api_key = os.environ.get('trello_api_key')
+except KeyError:
+    log.error("Missing trello_api_key environment variable")

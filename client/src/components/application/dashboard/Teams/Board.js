@@ -73,7 +73,6 @@ export default function Board(props) {
 		members: true,
 		member_field: "fullName,initials,avatarUrl",
 		fields: "name,members,idList",
-		key: process.env.REACT_APP_TRELLO_KEY,
 	});
 	const {
 		receivedData: getCardsReceivedData,
@@ -92,7 +91,6 @@ export default function Board(props) {
 		members: true,
 		member_field: "fullName,initials,avatarUrl",
 		fields: "name,members",
-		key: process.env.REACT_APP_TRELLO_KEY,
 	});
 	const {
 		receivedData: getListsReceivedData,

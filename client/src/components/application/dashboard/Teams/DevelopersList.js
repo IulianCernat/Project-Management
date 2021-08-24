@@ -46,7 +46,7 @@ export default function DevelopersList(props) {
 	const [developers, setDevelopers] = useState(props.developers);
 	const [developerUriToDelete, setDeveloperUriToDelete] = useState(null);
 	const [devIdTobeDeleted, setDevIdToBeDeleted] = useState(null);
-	const { status, receivedData, error, isLoading, isResolved, isRejected } =
+	const { error, isLoading, isResolved, isRejected } =
 		useDeleteFetch(developerUriToDelete);
 
 	const [openDeleteSucces, setOpenDeleteSuccess] = useState(false);
@@ -106,9 +106,9 @@ export default function DevelopersList(props) {
 			>
 				<Alert
 					onClose={closeDeletionSuccess}
-					severity={isResolved ? "success" : isRejected ? "error" : "info"}
+					severity={isResolved ? "success" : isRejected ? "error" : "error"}
 				>
-					{isResolved ? "Developer deleted" : isRejected ? error : null}
+					{isResolved ? "Developer deleted" : isRejected ? error : error}
 				</Alert>
 			</Snackbar>
 		</>

@@ -29,7 +29,6 @@ class ProfilesCollection(Resource):
         # for when populating database with script
         # decoded_token = {'uid': f"{user_profile['contact']}{user_profile['fullName']}"}
 
-
         profile_id = create_user(decoded_token['uid'], user_profile)
 
         return {"location": f"{api.base_url}{users_namespace.path[1:]}/{profile_id}"}, 201

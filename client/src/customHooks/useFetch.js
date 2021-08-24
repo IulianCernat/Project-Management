@@ -162,7 +162,7 @@ export function useGetFetch(
 		}
 
 		doFetch();
-	}, [url, parameters, start, foreignUrl]);
+	}, [url, parameters, start, foreignUrl, headers]);
 
 	return transformState(state);
 }
@@ -175,7 +175,7 @@ export function useDeleteFetch(url) {
 			dispatch({ type: "started" });
 			let fetchResponse = await doDelete(url);
 			if (fetchResponse.error) {
-				dispatch({ type: "error", error: fetchResponse.error.toString });
+				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;
 			}
 			dispatch({
@@ -208,7 +208,7 @@ export function usePostFetch(url, bodyContent, headers) {
 		}
 
 		doFetch(url, bodyContent);
-	}, [url, bodyContent]);
+	}, [url, bodyContent, headers]);
 
 	return transformState(state);
 }
@@ -232,7 +232,7 @@ export function usePatchFetch(url, bodyContent, headers = null) {
 		}
 
 		doFetch(url, bodyContent);
-	}, [url, bodyContent]);
+	}, [url, bodyContent, headers]);
 
 	return transformState(state);
 }

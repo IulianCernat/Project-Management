@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
-import { Scrollbars } from "react-custom-scrollbars-2";
 import CustomAppBar from "components/subComponents/CustomAppBar";
 import CustomDrawer from "components/subComponents/CustomDrawer";
 import Teams from "./teams/Teams";

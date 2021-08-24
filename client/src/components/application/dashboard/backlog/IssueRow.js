@@ -17,6 +17,7 @@ import {
 	MenuItem,
 	Button,
 	Tooltip,
+	CircularProgress,
 } from "@material-ui/core";
 import {
 	Star,
@@ -83,6 +84,10 @@ IssueRow.propTypes = {
 	handleSelectionClick: PropTypes.func,
 	handleDeleteIssueClick: PropTypes.func,
 	isBacklogIssue: PropTypes.bool.isRequired,
+	/**
+	 * Whether the issue is in the process of being deleted
+	 */
+	isBeingDeleted: PropTypes.bool.isRequired,
 };
 const generatePriorityStars = (priorityNumber) => {
 	let starsArray = [];
@@ -97,7 +102,13 @@ const generatePriorityStars = (priorityNumber) => {
 
 export default function IssueRow(props) {
 	const { currentUserRole } = useProjectContext();
-	const { row, selectedRows, handleSelectionClick, isBacklogIssue } = props;
+	const {
+		row,
+		selectedRows,
+		handleSelectionClick,
+		isBacklogIssue,
+		isBeingDeleted,
+	} = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
 	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
 	const isSelected = selectedRows ? selectedRows.indexOf(row.id) !== -1 : false;
@@ -106,8 +117,6 @@ export default function IssueRow(props) {
 	const [issueStatus, setNewIssueStatus] = useState(row.status);
 
 	const {
-		status: updateStatus,
-		receivedData: updatedReveivedData,
 		error: updateError,
 		isLoading: isLoadingUpdate,
 		isResolved: isResolvedUpdate,
@@ -216,24 +225,30 @@ export default function IssueRow(props) {
 				<TableCell>
 					<IconButton
 						onClick={(event) => props.handleDeleteIssueClick(row.id)}
-						disabled={UIRestrictionForRoles.includes(currentUserRole)}
+						disabled={
+							UIRestrictionForRoles.includes(currentUserRole) || isSelected
+						}
 					>
 						{isBacklogIssue ? (
-							<Tooltip
-								title={
-									<Typography variant="subtitle2">Delete issue</Typography>
-								}
-								arrow
-							>
-								<DeleteForever
-									color={
-										UIRestrictionForRoles.includes(currentUserRole) ||
-										isSelected
-											? "disabled"
-											: "secondary"
+							!isBeingDeleted ? (
+								<Tooltip
+									title={
+										<Typography variant="subtitle2">Delete issue</Typography>
 									}
-								/>
-							</Tooltip>
+									arrow
+								>
+									<DeleteForever
+										color={
+											UIRestrictionForRoles.includes(currentUserRole) ||
+											isSelected
+												? "disabled"
+												: "secondary"
+										}
+									/>
+								</Tooltip>
+							) : (
+								<CircularProgress color="secondary" size={30} />
+							)
 						) : (
 							<Tooltip
 								title={

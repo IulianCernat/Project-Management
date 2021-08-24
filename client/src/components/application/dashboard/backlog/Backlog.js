@@ -14,6 +14,7 @@ import {
 	Toolbar,
 	Button,
 	lighten,
+	Snackbar,
 } from "@material-ui/core";
 import { green, pink, blue } from "@material-ui/core/colors";
 import { Alert } from "@material-ui/lab";
@@ -133,6 +134,7 @@ export default function Backlog() {
 		useState(false);
 
 	const [issuesList, setIssuesList] = useState([]);
+	const [openErrorPopup, setOpenErrorPopup] = useState(false);
 	let {
 		receivedData: getIssuesReceivedData,
 		error: getIssuesError,
@@ -142,7 +144,6 @@ export default function Backlog() {
 	} = useGetFetch("api/issues/", getParams.current);
 
 	let {
-		receivedData: deleteIssueReceivedData,
 		error: deleteIssueError,
 		isLoading: isLoadingDeleteIssue,
 		isResolved: isResolvedDeleteIssue,
@@ -198,17 +199,18 @@ export default function Backlog() {
 	};
 
 	const handleDeleteIssueClick = (issueId) => {
-		setIssueUrlToBeDeleted(`api/issues/${issueId}`);
+		setIssueUrlToBeDeleted(`api/issues/20000`);
 	};
 
 	useEffect(() => {
+		if (isRejectedDeleteIssue) setOpenErrorPopup(true);
 		if (!isResolvedDeleteIssue) return;
 
 		const deletedIssueId = Number(issueUrlToBeDeleted.split("/").pop());
 		setIssuesList((issuesList) =>
 			issuesList.filter((item) => item.id !== deletedIssueId)
 		);
-	}, [isResolvedDeleteIssue]);
+	}, [isResolvedDeleteIssue, isRejectedDeleteIssue, issueUrlToBeDeleted]);
 
 	useEffect(() => {
 		if (!isResolvedGetIssues) return;
@@ -285,6 +287,7 @@ export default function Backlog() {
 							<TableBody>
 								{issuesList.map((item) => (
 									<IssueRow
+										isBeingDeleted={isLoadingDeleteIssue}
 										key={item.id}
 										isBacklogIssue
 										handleSelectionClick={handleSelectionClick}
@@ -298,6 +301,16 @@ export default function Backlog() {
 					) : null}
 				</TableContainer>
 			</Box>
+
+			<Snackbar
+				onClose={() => {
+					setOpenErrorPopup((prev) => !prev);
+				}}
+				open={openErrorPopup}
+				autoHideDuration={6000}
+			>
+				<Alert severity={"error"}>{deleteIssueError}</Alert>
+			</Snackbar>
 		</>
 	);
 }
