@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { AppBar, Tabs, Tab, Box, LinearProgress } from "@material-ui/core";
-
 import { useParams } from "react-router-dom";
 import { useGetFetch } from "customHooks/useFetch";
 import TeamMembers from "./TeamMembers";
