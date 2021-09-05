@@ -79,8 +79,11 @@ function TabPanel(props) {
 		user_id: "",
 		user_type: tabs[props.index],
 	});
-	const { status, receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch("api/projects/", getParams.current, startGetFetch);
+	const { status, receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
+		"api/projects/",
+		getParams.current,
+		startGetFetch
+	);
 
 	const handleProjectDeletion = (projectId) => {
 		setProjectIdToBeDeleted(projectId);
@@ -104,9 +107,7 @@ function TabPanel(props) {
 
 	const insertNewCreatedProject = (newProjectObj) => {
 		handleCancelProjectCreation();
-		setProjectsList((prevProjectList) =>
-			[newProjectObj].concat(prevProjectList)
-		);
+		setProjectsList((prevProjectList) => [newProjectObj].concat(prevProjectList));
 	};
 
 	useEffect(() => {
@@ -142,11 +143,7 @@ function TabPanel(props) {
 					{props.withProjectAdditionForm && (
 						<Box alignSelf="center" width="100%">
 							<Box display="flex" justifyContent="center">
-								<Fab
-									size="small"
-									color="primary"
-									onClick={openProjectCreationForm}
-								>
+								<Fab size="small" color="primary" onClick={openProjectCreationForm}>
 									<AddIcon />
 								</Fab>
 							</Box>

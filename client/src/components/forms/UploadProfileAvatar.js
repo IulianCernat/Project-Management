@@ -11,10 +11,8 @@ export default function UploadProfileAvatar(props) {
 	const { currentUser, setAdditionalUserInfo } = useAuth();
 	const [currentUserIdToken, setCurrentUserIdToken] = useState();
 
-	const [
-		requestBodyForUpdatingCurrentUser,
-		setRequestBodyForUpdatingCurrentUser,
-	] = useState(null);
+	const [requestBodyForUpdatingCurrentUser, setRequestBodyForUpdatingCurrentUser] =
+		useState(null);
 	const {
 		receivedData: userUpdateReceivedData,
 		error: userUpdateError,
@@ -47,9 +45,7 @@ export default function UploadProfileAvatar(props) {
 			complete: () => {
 				props.setUploadingProgress(false);
 				uploadTask.snapshot.ref.getDownloadURL().then((url) => {
-					setRequestBodyForUpdatingCurrentUser(
-						JSON.stringify({ avatar_url: url })
-					);
+					setRequestBodyForUpdatingCurrentUser(JSON.stringify({ avatar_url: url }));
 				});
 			},
 		});

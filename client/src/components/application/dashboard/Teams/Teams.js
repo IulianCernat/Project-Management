@@ -62,8 +62,11 @@ export default function Teams(props) {
 	const [teamsList, setTeamsList] = useState();
 
 	const getParams = useRef({ project_id: projectId });
-	const { receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch("api/teams/", getParams.current, startFetchingTeams);
+	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
+		"api/teams/",
+		getParams.current,
+		startFetchingTeams
+	);
 
 	const { isResolved: isResolvedDeleteTeam } = useDeleteFetch(
 		teamIdToBeDeleted ? `api/teams/${teamIdToBeDeleted}` : null

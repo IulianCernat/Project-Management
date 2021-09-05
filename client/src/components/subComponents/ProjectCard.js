@@ -21,17 +21,12 @@ ProjectCard.propTypes = {
 };
 export default function ProjectCard({ project, handleDelete, renderActions }) {
 	const progressValue = project.total_nr_of_issues
-		? Math.round(
-				(project.nr_of_finished_issues * 100) / project.total_nr_of_issues
-		  )
+		? Math.round((project.nr_of_finished_issues * 100) / project.total_nr_of_issues)
 		: 0;
 
 	return (
 		<Card>
-			<CardActionArea
-				to={`dashboard/project/${project.id}`}
-				component={RouterLink}
-			>
+			<CardActionArea to={`dashboard/project/${project.id}`} component={RouterLink}>
 				<CardHeader
 					title={
 						<Box>

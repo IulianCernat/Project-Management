@@ -19,8 +19,10 @@ TrelloBoardAdditionForm.propTypes = {
 };
 export default function TrelloBoardAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { receivedData, error, isLoading, isRejected, isResolved } =
-		usePatchFetch(`api/teams/${props.teamId}`, requestBody);
+	const { receivedData, error, isLoading, isRejected, isResolved } = usePatchFetch(
+		`api/teams/${props.teamId}`,
+		requestBody
+	);
 	useEffect(() => {
 		if (isResolved) {
 			let addedBoardId = requestBody.split(":").pop();
@@ -37,9 +39,7 @@ export default function TrelloBoardAdditionForm(props) {
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
 					let requestObj = {};
-					requestObj["trello_board_id"] = values.trello_board_url
-						.split("/")
-						.pop();
+					requestObj["trello_board_id"] = values.trello_board_url.split("/").pop();
 					const stringifiedData = JSON.stringify(requestObj);
 					setRequestBody(stringifiedData);
 				}}

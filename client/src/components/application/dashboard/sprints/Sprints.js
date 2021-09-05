@@ -16,18 +16,10 @@ import {
 	Tooltip,
 	Fab,
 } from "@material-ui/core";
-import {
-	DeleteForever,
-	KeyboardArrowDown,
-	KeyboardArrowUp,
-} from "@material-ui/icons";
+import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
-import {
-	useDeleteFetch,
-	useGetFetch,
-	usePatchFetch,
-} from "customHooks/useFetch";
+import { useDeleteFetch, useGetFetch, usePatchFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
 import { Scrollbars } from "react-custom-scrollbars-2";
@@ -77,10 +69,7 @@ function SprintTable({
 		isLoading: isLoadingIssueUpdate,
 		isResolved: isResolvedIssueUpdate,
 		isRejected: isRejectedIssueUpdate,
-	} = usePatchFetch(
-		`api/issues/${issueIdToBeUpdated}`,
-		requestBodyForIssueUpdate
-	);
+	} = usePatchFetch(`api/issues/${issueIdToBeUpdated}`, requestBodyForIssueUpdate);
 
 	const handleDeleteIssueClick = (issueId) => {
 		setIssueIdToBeUpdated(issueId);
@@ -88,9 +77,7 @@ function SprintTable({
 	};
 	useEffect(() => {
 		if (!isResolvedIssueUpdate) return;
-		setSprintIssues(
-			sprintIssues.filter((item) => item.id !== issueIdToBeUpdated)
-		);
+		setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
 	}, [isResolvedIssueUpdate]);
 
 	return (
@@ -197,13 +184,7 @@ function SprintHeader({
 	}, [isResolvedUpdate]);
 
 	return (
-		<Box
-			p={1}
-			display="flex"
-			flexDirection="column"
-			flexWrap="wrap"
-			style={{ gap: "1rem" }}
-		>
+		<Box p={1} display="flex" flexDirection="column" flexWrap="wrap" style={{ gap: "1rem" }}>
 			<Box>
 				<Typography variant="h6">{name}</Typography>
 			</Box>
@@ -288,9 +269,7 @@ function SprintHeader({
 
 				<Box
 					px={2}
-					className={
-						showMoreGoalInfo ? classes.showMoreContent : classes.hideMoreContent
-					}
+					className={showMoreGoalInfo ? classes.showMoreContent : classes.hideMoreContent}
 				>
 					<Typography className={classes.textContent}>{goal}</Typography>
 				</Box>
@@ -346,9 +325,7 @@ export default function Sprints() {
 		isResolved: isResolvedDeleteSprint,
 		isRejected: isRejectedDeleteSprint,
 		isLoading: isLoadingDeleteSprint,
-	} = useDeleteFetch(
-		sprintIdToBeDeleted ? `api/sprints/${sprintIdToBeDeleted}` : null
-	);
+	} = useDeleteFetch(sprintIdToBeDeleted ? `api/sprints/${sprintIdToBeDeleted}` : null);
 
 	const handleDeleteSprintClick = (sprintId) => {
 		setSprintIdToBeDeleted(sprintId);
@@ -365,26 +342,15 @@ export default function Sprints() {
 	useEffect(() => {
 		if (isResolvedGetSprints) {
 			setSprintsList(getSprintsReceivedData);
-			setStartedSprintId(
-				getSprintsReceivedData.find((item) => item.start === true)?.id
-			);
+			setStartedSprintId(getSprintsReceivedData.find((item) => item.start === true)?.id);
 		}
 	}, [isResolvedGetSprints, getSprintsReceivedData]);
 	return (
 		<>
-			{isLoadingGetSprints ? (
-				<LinearProgress style={{ width: "100%" }} />
-			) : null}
-			{isRejectedGetSprints ? (
-				<Alert severity="error">{getSprintsError} </Alert>
-			) : null}
+			{isLoadingGetSprints ? <LinearProgress style={{ width: "100%" }} /> : null}
+			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
 			{isResolvedGetSprints && getSprintsReceivedData.length && (
-				<Box
-					display="flex"
-					flexWrap="wrap"
-					flexDirection="column"
-					style={{ gap: "2rem" }}
-				>
+				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable
 							startedSprintId={startedSprintId}

@@ -8,12 +8,7 @@ export default function Login() {
 			<Paper elevation={3}>
 				<Box mt={8} p={5}>
 					<LoginForm />
-					<Box
-						display="flex"
-						justifyContent="space-between"
-						mt={4}
-						flexWrap="wrap"
-					>
+					<Box display="flex" justifyContent="space-between" mt={4} flexWrap="wrap">
 						<Link component={RouterLink} to="/forgotPassword">
 							<Typography noWrap>Forgot password?</Typography>
 						</Link>

@@ -13,10 +13,7 @@ function App() {
 			<BrowserRouter>
 				<AuthProvider>
 					<Switch>
-						<PrivateRoute
-							path="/dashboard/project/:projectId"
-							component={Dashboard}
-						/>
+						<PrivateRoute path="/dashboard/project/:projectId" component={Dashboard} />
 						<Route path="/" component={FrontPage} />
 					</Switch>
 				</AuthProvider>

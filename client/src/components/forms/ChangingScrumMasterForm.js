@@ -20,12 +20,9 @@ ChangingScrumMasterForm.props = {
 	projectId: PropTypes.number.isRequired,
 };
 export default function ChangingScrumMasterForm(props) {
-	const [requestBodyForAddingScrumMaster, setRequestBodyForAddingScrumMaster] =
+	const [requestBodyForAddingScrumMaster, setRequestBodyForAddingScrumMaster] = useState(null);
+	const [requestBodyForUpdatingCurrentScrumMaster, setRequestBodyForUpdatingCurrentScrumMaster] =
 		useState(null);
-	const [
-		requestBodyForUpdatingCurrentScrumMaster,
-		setRequestBodyForUpdatingCurrentScrumMaster,
-	] = useState(null);
 
 	const {
 		receivedData: scrumMasterChangingReceivedData,
@@ -60,8 +57,7 @@ export default function ChangingScrumMasterForm(props) {
 	}, [requestBodyForAddingScrumMaster]);
 
 	useEffect(() => {
-		if (isResolvedScrumMasterAddition)
-			props.setScrumMasterChangingSuccess(true);
+		if (isResolvedScrumMasterAddition) props.setScrumMasterChangingSuccess(true);
 	}, [isResolvedScrumMasterAddition]);
 
 	return (
@@ -130,9 +126,7 @@ export default function ChangingScrumMasterForm(props) {
 							fullWidth
 							variant="contained"
 							color="primary"
-							disabled={
-								isLoadingScrumMasterChanging || isLoadingScrumMasterAddition
-							}
+							disabled={isLoadingScrumMasterChanging || isLoadingScrumMasterAddition}
 						>
 							<Typography>Change scrum master</Typography>
 						</Button>

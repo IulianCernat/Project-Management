@@ -1,21 +1,8 @@
 import { forwardRef, useMemo } from "react";
-import {
-	Divider,
-	List,
-	ListItem,
-	ListItemIcon,
-	ListItemText,
-	makeStyles,
-} from "@material-ui/core";
+import { Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles } from "@material-ui/core";
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
 
-import {
-	Home,
-	GroupSharp,
-	ViewList,
-	Settings,
-	Dashboard,
-} from "@material-ui/icons";
+import { Home, GroupSharp, ViewList, Settings, Dashboard } from "@material-ui/icons";
 import { SiAffinitydesigner } from "react-icons/si";
 import { GiSprint } from "react-icons/gi";
 
@@ -33,10 +20,7 @@ function ListItemLink(props) {
 	const { icon, primary, to } = props;
 
 	const CustomLink = useMemo(
-		() =>
-			forwardRef((linkProps, ref) => (
-				<RouterLink ref={ref} to={to} {...linkProps} />
-			)),
+		() => forwardRef((linkProps, ref) => <RouterLink ref={ref} to={to} {...linkProps} />),
 		[to]
 	);
 
@@ -58,16 +42,14 @@ export default function DrawerListItems() {
 
 			<Divider />
 			<List>
-				{["Overview", "Teams", "Product Backlog", "Sprints"].map(
-					(text, index) => (
-						<ListItemLink
-							key={text}
-							primary={text}
-							icon={iconArray[index]}
-							to={`${match.url}/${pageNames[index]}`}
-						/>
-					)
-				)}
+				{["Overview", "Teams", "Product Backlog", "Sprints"].map((text, index) => (
+					<ListItemLink
+						key={text}
+						primary={text}
+						icon={iconArray[index]}
+						to={`${match.url}/${pageNames[index]}`}
+					/>
+				))}
 			</List>
 		</>
 	);

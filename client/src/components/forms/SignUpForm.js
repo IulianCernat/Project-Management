@@ -27,8 +27,11 @@ export default function SignUpForm() {
 	const headers = useRef({
 		Authorization: "",
 	});
-	const { receivedData, error, isLoading, isRejected, isResolved } =
-		usePostFetch("api/users/", requestBody, headers.current);
+	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
+		"api/users/",
+		requestBody,
+		headers.current
+	);
 
 	useEffect(() => {
 		if (isResolved) {

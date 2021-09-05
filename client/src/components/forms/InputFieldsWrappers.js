@@ -9,13 +9,7 @@ TextFieldWrapper.propTypes = {
 	label: PropTypes.string.isRequired,
 	maxTextWidth: PropTypes.number,
 };
-export function TextFieldWrapper({
-	label,
-	maxTextWidth,
-	children,
-	value,
-	...props
-}) {
+export function TextFieldWrapper({ label, maxTextWidth, children, value, ...props }) {
 	const [field, meta] = useField(props);
 	const currentText = useRef(null);
 	return (
@@ -24,15 +18,11 @@ export function TextFieldWrapper({
 			{...props}
 			label={label}
 			inputRef={currentText}
-			value={
-				value ? value : currentText.current ? currentText.current.value : ""
-			}
+			value={value ? value : currentText.current ? currentText.current.value : ""}
 			error={meta.touched && Boolean(meta.error)}
 			helperText={
 				<Box component="span" display="flex" justifyContent="space-between">
-					{meta.touched && Boolean(meta.error) ? (
-						<span>{meta.error}</span>
-					) : null}
+					{meta.touched && Boolean(meta.error) ? <span>{meta.error}</span> : null}
 					{maxTextWidth ? (
 						<span>
 							{currentText.current ? currentText.current.value.length : 0}/
@@ -62,12 +52,7 @@ export function DatetimePickerWrapper({ runChangeEffect, ...props }) {
 	);
 }
 
-export function TextFieldSelectWrapper({
-	label,
-	menuOptions,
-	runChangeEffect,
-	...props
-}) {
+export function TextFieldSelectWrapper({ label, menuOptions, runChangeEffect, ...props }) {
 	const [field, meta] = useField(props);
 
 	return (
@@ -77,18 +62,14 @@ export function TextFieldSelectWrapper({
 			select
 			label={label}
 			error={meta.touched && Boolean(meta.error)}
-			helperText={
-				meta.touched && Boolean(meta.error) ? <span>{meta.error}</span> : ""
-			}
+			helperText={meta.touched && Boolean(meta.error) ? <span>{meta.error}</span> : ""}
 			onChange={(event) => {
 				runChangeEffect(event.target.value);
 			}}
 		>
 			{menuOptions.map((option) => (
 				<MenuItem key={option.label} value={option.value}>
-					{option.label.length > 50
-						? option.label.slice(0, 50) + "..."
-						: option.label}
+					{option.label.length > 50 ? option.label.slice(0, 50) + "..." : option.label}
 				</MenuItem>
 			))}
 		</TextField>

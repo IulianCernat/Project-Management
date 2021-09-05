@@ -16,12 +16,7 @@ function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
 	return (
-		<Box
-			role="tabpanel"
-			hidden={value !== index}
-			id={`nav-tabpanel-${index}`}
-			{...other}
-		>
+		<Box role="tabpanel" hidden={value !== index} id={`nav-tabpanel-${index}`} {...other}>
 			{value === index && <Box p={3}>{children}</Box>}
 		</Box>
 	);
@@ -32,8 +27,9 @@ export default function TeamPage() {
 	const { currentUserRole } = useProjectContext();
 	let { teamId } = useParams();
 	const [currentTab, setCurrentTab] = useState(0);
-	const { receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch(`api/teams/${teamId}`);
+	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
+		`api/teams/${teamId}`
+	);
 
 	const handleTabChange = (event, newValue) => {
 		setCurrentTab(newValue);

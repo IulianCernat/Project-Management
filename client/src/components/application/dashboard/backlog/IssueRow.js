@@ -91,8 +91,7 @@ IssueRow.propTypes = {
 };
 const generatePriorityStars = (priorityNumber) => {
 	let starsArray = [];
-	for (let i = 0; i < priorityNumber; i++)
-		starsArray.push(<Star key={`star${i}`} />);
+	for (let i = 0; i < priorityNumber; i++) starsArray.push(<Star key={`star${i}`} />);
 
 	for (let i = 0; i < 5 - priorityNumber; i++)
 		starsArray.push(<StarOutline key={`emptyStar${i}`} />);
@@ -102,13 +101,7 @@ const generatePriorityStars = (priorityNumber) => {
 
 export default function IssueRow(props) {
 	const { currentUserRole } = useProjectContext();
-	const {
-		row,
-		selectedRows,
-		handleSelectionClick,
-		isBacklogIssue,
-		isBeingDeleted,
-	} = props;
+	const { row, selectedRows, handleSelectionClick, isBacklogIssue, isBeingDeleted } = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
 	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
 	const isSelected = selectedRows ? selectedRows.indexOf(row.id) !== -1 : false;
@@ -219,15 +212,11 @@ export default function IssueRow(props) {
 						</TextField>
 					</TableCell>
 				) : null}
-				<TableCell align="center">
-					{generatePriorityStars(row.priority)}
-				</TableCell>
+				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>
 				<TableCell>
 					<IconButton
 						onClick={(event) => props.handleDeleteIssueClick(row.id)}
-						disabled={
-							UIRestrictionForRoles.includes(currentUserRole) || isSelected
-						}
+						disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
 					>
 						{isBacklogIssue ? (
 							!isBeingDeleted ? (
@@ -251,9 +240,7 @@ export default function IssueRow(props) {
 							)
 						) : (
 							<Tooltip
-								title={
-									<Typography variant="subtitle2">Move to backlog</Typography>
-								}
+								title={<Typography variant="subtitle2">Move to backlog</Typography>}
 								arrow
 							>
 								<OpenWith

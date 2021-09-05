@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, CircularProgress } from "@material-ui/core";
-import {
-	Switch,
-	Route,
-	useRouteMatch,
-	useParams,
-	Redirect,
-} from "react-router-dom";
+import { Switch, Route, useRouteMatch, useParams, Redirect } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomAppBar from "components/subComponents/CustomAppBar";
@@ -51,7 +45,7 @@ export default function Dashboard() {
 			setGetRoleHeaders({ Authorization: idToken });
 			setStartGetRoleFetch(true);
 		});
-	}, []);
+	}, [currentUser]);
 
 	const {
 		receivedData: getRoleReceivedData,
@@ -80,9 +74,7 @@ export default function Dashboard() {
 	}
 	return (
 		<>
-			{isRejectedGetProject && (
-				<Alert severity="error">{getProjectError}</Alert>
-			)}
+			{isRejectedGetProject && <Alert severity="error">{getProjectError}</Alert>}
 			{isRejectedGetRole && <Alert severity="error">{getRoleError}</Alert>}
 			{(isLoadingGetProject || isLoadingGetRole) && (
 				<Box

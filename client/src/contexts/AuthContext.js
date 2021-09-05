@@ -40,7 +40,9 @@ export function AuthProvider({ children }) {
 						"api/users/loggedUser",
 						null,
 						false,
-						{ Authorization: userIdToken }
+						{
+							Authorization: userIdToken,
+						}
 					);
 					setAdditionalUserInfo(profile);
 				} catch (err) {
@@ -62,9 +64,5 @@ export function AuthProvider({ children }) {
 		resetPassword,
 	};
 
-	return (
-		<AuthContext.Provider value={value}>
-			{!loading && children}
-		</AuthContext.Provider>
-	);
+	return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }

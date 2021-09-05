@@ -71,8 +71,7 @@ export default function CreateSprintForm(props) {
 	);
 
 	useEffect(() => {
-		if (postFetchIsResolved)
-			history.push(`${match.url.replace("backlog", "sprints")}`);
+		if (postFetchIsResolved) history.push(`${match.url.replace("backlog", "sprints")}`);
 	}, [postFetchIsResolved]);
 
 	return (

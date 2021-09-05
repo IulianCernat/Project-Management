@@ -26,8 +26,7 @@ export default function VersioningSystemAdditionForm(props) {
 	useEffect(() => {
 		if (!isResolved) return;
 		const addedUrl = requestBody.match(/http.*[^}"]/);
-		if (addedUrl)
-			props.setAddedVersionControlUrl(requestBody.match(/http.*[^}"]/)[0]);
+		if (addedUrl) props.setAddedVersionControlUrl(requestBody.match(/http.*[^}"]/)[0]);
 		else props.setAddedVersionControlUrl("");
 
 		props.hideForm();

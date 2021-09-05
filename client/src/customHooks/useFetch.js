@@ -100,12 +100,7 @@ export async function doPatch(url, stringifiedData, headers = null) {
 	}
 }
 
-export async function doGet(
-	url,
-	parameters = null,
-	foreignUrl = false,
-	headers = null
-) {
+export async function doGet(url, parameters = null, foreignUrl = false, headers = null) {
 	try {
 		if (!foreignUrl) url = process.env.REACT_APP_API_URI + "/" + url;
 		if (parameters) url += "?" + new URLSearchParams(parameters).toString();

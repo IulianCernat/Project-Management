@@ -55,6 +55,24 @@
     },
     "devDependencies": {
         "chokidar": "^3.5.2",
-        "eslint-plugin-react-hooks": "^4.2.0"
+        "eslint-plugin-react-hooks": "^4.2.0",
+        "husky": "^7.0.2",
+        "lint-staged": "^11.1.2",
+        "prettier": "^2.3.2"
+    },
+    "prettier": {
+        "printWidth": 100,
+        "useTabs": true,
+        "tabWidth": 4
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,json,css,md}": [
+            "prettier --write"
+        ]
     }
 }

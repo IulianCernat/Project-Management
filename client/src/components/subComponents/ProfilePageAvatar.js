@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-	makeStyles,
-	Backdrop,
-	Box,
-	Avatar,
-	CircularProgress,
-} from "@material-ui/core";
+import { makeStyles, Backdrop, Box, Avatar, CircularProgress } from "@material-ui/core";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadProfileAvatar from "components/forms/UploadProfileAvatar";
 import PropTypes from "prop-types";
@@ -60,10 +54,7 @@ export default function ProfilePageAvatar(props) {
 			<Avatar variant="circular" className={classes.avatar} src={props.url} />
 
 			<label htmlFor="uploadButton">
-				<Backdrop
-					className={classes.backdrop}
-					open={openBackdrop || uploadingFile}
-				>
+				<Backdrop className={classes.backdrop} open={openBackdrop || uploadingFile}>
 					<Box display="flex" alignItems="center" justifyContent="center">
 						{uploadingFile ? (
 							<CircularProgress color="secondary" />

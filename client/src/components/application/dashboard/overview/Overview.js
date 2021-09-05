@@ -1,13 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-	Grid,
-	Box,
-	Paper,
-	Typography,
-	Divider,
-	Hidden,
-	LinearProgress,
-} from "@material-ui/core";
+import { Grid, Box, Paper, Typography, Divider, Hidden, LinearProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import UserProfileCard from "components/subComponents/UserProfileCard";
 import CircularProgressWithLabel from "components/subComponents/Progress";
@@ -60,13 +52,7 @@ export default function Overview() {
 			{isLoadingGetProject && <LinearProgress style={{ width: "100%" }} />}
 			{!isResolvedGetProject ? null : (
 				<Grid container spacing={2}>
-					<Grid
-						item
-						container
-						justify="space-evenly"
-						alignItems="flex-start"
-						spacing={2}
-					>
+					<Grid item container justify="space-evenly" alignItems="flex-start" spacing={2}>
 						<Grid item xs={12} md={4} xl={3}>
 							<Paper className={classes.paper}>
 								<Box
@@ -143,11 +129,7 @@ export default function Overview() {
 									<Divider orientation="vertical" flexItem />
 								</Hidden>
 
-								<Box
-									display="flex"
-									flexDirection="column"
-									style={{ gap: "1rem" }}
-								>
+								<Box display="flex" flexDirection="column" style={{ gap: "1rem" }}>
 									<Box>
 										<Typography
 											className={classes.headlineText}

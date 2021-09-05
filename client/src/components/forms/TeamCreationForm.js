@@ -27,8 +27,10 @@ TeamCreationForm.propTypes = {
 };
 export default function TeamCreationForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { receivedData, error, isLoading, isRejected, isResolved } =
-		usePostFetch("api/teams/", requestBody);
+	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
+		"api/teams/",
+		requestBody
+	);
 
 	useEffect(() => {
 		if (isResolved) props.setTeamCreationSuccess(true);

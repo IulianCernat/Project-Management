@@ -1,11 +1,4 @@
-import {
-	AppBar,
-	Toolbar,
-	Box,
-	Hidden,
-	IconButton,
-	Typography,
-} from "@material-ui/core";
+import { AppBar, Toolbar, Box, Hidden, IconButton, Typography } from "@material-ui/core";
 import { Menu } from "@material-ui/icons";
 import PropTypes from "prop-types";
 import AppMenuNav from "./AppMenuNav";
@@ -43,20 +36,11 @@ export default function CustomAppBar(props) {
 	const classes = useStyles({ drawerWidth: props.drawerWidth });
 	return (
 		<AppBar
-			className={
-				props.minimizedDrawer
-					? classes.appBarForMinimizedDrawer
-					: classes.appBar
-			}
+			className={props.minimizedDrawer ? classes.appBarForMinimizedDrawer : classes.appBar}
 			position="fixed"
 		>
 			<Toolbar>
-				<Box
-					width="100%"
-					display="flex"
-					alignItems="center"
-					justifyContent="space-between"
-				>
+				<Box width="100%" display="flex" alignItems="center" justifyContent="space-between">
 					<Box>
 						<Hidden mdUp>
 							<IconButton color="inherit" onClick={props.handleDrawerToggle}>

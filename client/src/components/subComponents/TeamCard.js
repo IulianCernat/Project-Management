@@ -91,12 +91,7 @@ export default function TeamCard(props) {
 								? props.description.slice(0, 200) + "..."
 								: props.description}
 						</TextDisplayWrapper>
-						<Box
-							display="flex"
-							justifyContent="center"
-							alignItems="center"
-							p={1}
-						>
+						<Box display="flex" justifyContent="center" alignItems="center" p={1}>
 							<Box mr={1}>
 								<Avatar
 									className={styles.avatar}

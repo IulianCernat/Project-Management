@@ -19,6 +19,7 @@ const backgroundParticlesStyling = {
 	bottom: 0,
 	right: 0,
 	zIndex: -1,
+	overflow: "hidden",
 };
 
 export default function FrontPage() {
@@ -37,10 +38,7 @@ export default function FrontPage() {
 	}, [matches]);
 	return (
 		<>
-			<div
-				id="backgroundParticlesStyling"
-				style={backgroundParticlesStyling}
-			></div>
+			<div id="backgroundParticlesStyling" style={backgroundParticlesStyling}></div>
 			<Switch>
 				<PrivateRoute exact path="/" component={Profile} />
 				<Route
@@ -52,11 +50,7 @@ export default function FrontPage() {
 				<Route
 					path="/signup"
 					render={() => {
-						return currentUser && additionalUserInfo ? (
-							<Redirect to="/" />
-						) : (
-							<SignUp />
-						);
+						return currentUser && additionalUserInfo ? <Redirect to="/" /> : <SignUp />;
 					}}
 					component={SignUp}
 				/>

@@ -26,10 +26,7 @@ CircularProgressWithLabel.propTypes = {
 	value: PropTypes.number.isRequired,
 	label: PropTypes.any.isRequired,
 };
-export default function CircularProgressWithLabel({
-	label: LabelComponent,
-	...props
-}) {
+export default function CircularProgressWithLabel({ label: LabelComponent, ...props }) {
 	const classes = useStyles();
 
 	return (

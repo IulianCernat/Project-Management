@@ -1,12 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import {
-	Typography,
-	Button,
-	Box,
-	Paper,
-	makeStyles,
-	LinearProgress,
-} from "@material-ui/core";
+import { Typography, Button, Box, Paper, makeStyles, LinearProgress } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { useGetFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
@@ -34,17 +27,18 @@ export default function TeamMembers() {
 	const { additionalUserInfo } = useAuth();
 	const { projectId, currentUserRole } = useProjectContext();
 	const { teamId } = useParams();
-	const [scrumMasterChangingSuccess, setScrumMasterChangingSuccess] =
-		useState(false);
+	const [scrumMasterChangingSuccess, setScrumMasterChangingSuccess] = useState(false);
 	const [devAdditionSuccess, setDevAdditionSuccess] = useState(false);
 	const [startFetchingDevs, setStartFetchingDevs] = useState(true);
 	const classes = useStyles();
 	const [openDevAddition, setOpenDevAddition] = useState(false);
-	const [openScrumMasterChangingFrom, setOpenScrumMasterChangingFrom] =
-		useState(false);
+	const [openScrumMasterChangingFrom, setOpenScrumMasterChangingFrom] = useState(false);
 	const getParams = useRef({ team_id: teamId });
-	const { receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch(`api/teams_members/`, getParams.current, startFetchingDevs);
+	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
+		`api/teams_members/`,
+		getParams.current,
+		startFetchingDevs
+	);
 
 	function openDevsAdditionForm() {
 		setOpenDevAddition(true);

@@ -16,13 +16,7 @@ DialogForm.propTypes = {
 	onClose: PropTypes.func.isRequired,
 	children: PropTypes.any,
 };
-export default function DialogForm({
-	title,
-	onClose,
-	children,
-	open,
-	...other
-}) {
+export default function DialogForm({ title, onClose, children, open, ...other }) {
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -36,12 +30,7 @@ export default function DialogForm({
 			disableBackdropClick
 			{...other}
 		>
-			<Box
-				display="flex"
-				flexWrap="wrap"
-				justifyContent="space-between"
-				alignItems="center"
-			>
+			<Box display="flex" flexWrap="wrap" justifyContent="space-between" alignItems="center">
 				<DialogTitle id="dialog-title">{title}</DialogTitle>
 				<IconButton onClick={onClose}>
 					<CancelIcon />

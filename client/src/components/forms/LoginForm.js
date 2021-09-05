@@ -4,10 +4,7 @@ import { Box, Typography, Button } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import {
-	emailValidationSchema,
-	passwordValidationSchema,
-} from "utils/validationSchemas";
+import { emailValidationSchema, passwordValidationSchema } from "utils/validationSchemas";
 import { useAuth } from "contexts/AuthContext";
 
 const validationSchema = Yup.object({

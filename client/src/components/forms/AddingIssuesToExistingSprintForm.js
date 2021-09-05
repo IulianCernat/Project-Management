@@ -50,8 +50,7 @@ export default function AddingIssuesToExistingSprintForm(props) {
 	}, [isResolvedGetSprints, getSprintsReceivedData]);
 
 	useEffect(() => {
-		if (isResolvedUpdateIssues)
-			history.push(`${match.url.replace("backlog", "sprints")}`);
+		if (isResolvedUpdateIssues) history.push(`${match.url.replace("backlog", "sprints")}`);
 	}, [isResolvedUpdateIssues]);
 
 	return (

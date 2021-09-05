@@ -55,8 +55,11 @@ export function SearchField({
 	const [startFetching, setStartFetching] = useState(false);
 	const getParams = useRef({ search: "", part_of_project_id: partOfProjectId });
 
-	const { receivedData, error, isLoading, isResolved, isRejected } =
-		useGetFetch(fetchUrl, getParams.current, startFetching);
+	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
+		fetchUrl,
+		getParams.current,
+		startFetching
+	);
 
 	useEffect(() => {
 		setOptions((prev) => (receivedData ? receivedData : []));

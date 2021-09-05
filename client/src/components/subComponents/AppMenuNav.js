@@ -37,26 +37,15 @@ export default function AppMenuNav() {
 			<ClickAwayListener onClickAway={handleClickAway}>
 				<Box display="flex" alignItems="center">
 					<Box display="flex" style={{ gap: "4px" }} alignItems="center">
-						<Typography variant="subtitle2">
-							{additionalUserInfo.fullName}
-						</Typography>
+						<Typography variant="subtitle2">{additionalUserInfo.fullName}</Typography>
 						<IconButton onClick={handleClick}>
 							<Avatar src={additionalUserInfo.avatar_url} />
 						</IconButton>
 					</Box>
 					<Box>
-						<Slide
-							direction="left"
-							in={openAppbardOptions}
-							mountOnEnter
-							unmountOnExit
-						>
+						<Slide direction="left" in={openAppbardOptions} mountOnEnter unmountOnExit>
 							<Box>
-								<Button
-									variant="contained"
-									color="primary"
-									onClick={handleLogout}
-								>
+								<Button variant="contained" color="primary" onClick={handleLogout}>
 									Logout
 								</Button>
 							</Box>

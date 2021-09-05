@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import {
-	Box,
-	Paper,
-	Grid,
-	Button,
-	Avatar,
-	Typography,
-} from "@material-ui/core";
+import { Box, Paper, Grid, Button, Avatar, Typography } from "@material-ui/core";
 import VersionSystemAdditionForm from "components/forms/VersioningSystemAdditionForm";
 import TextDisplayWrapper from "components/subComponents/TextDisplayWrapper";
 import { makeStyles } from "@material-ui/core/styles";
@@ -32,20 +25,23 @@ TeamInfo.propTypes = {
 };
 export default function TeamInfo(props) {
 	const classes = useStyles();
-	const [hideVersionControlAdditionForm, setHideVersionControlAdditionForm] =
-		useState(true);
+	const [hideVersionControlAdditionForm, setHideVersionControlAdditionForm] = useState(true);
 	const [addedVersionControlUrl, setAddedVersionControlUrl] = useState(
 		props.version_control_link
 	);
+
 	const handleFormAdditionClick = () => {
 		setHideVersionControlAdditionForm(false);
 	};
+
 	const hideFormAddition = () => {
 		setHideVersionControlAdditionForm(true);
 	};
+
 	const openVersionControlLink = () => {
 		window.open(addedVersionControlUrl);
 	};
+
 	useEffect(() => {
 		if (addedVersionControlUrl) {
 			setHideVersionControlAdditionForm(true);
@@ -89,11 +85,7 @@ export default function TeamInfo(props) {
 									className={classes.linkButton}
 									variant="contained"
 								>
-									<Box
-										display="flex"
-										style={{ gap: "1rem" }}
-										alignItems="center"
-									>
+									<Box display="flex" style={{ gap: "1rem" }} alignItems="center">
 										<Avatar
 											src={
 												addedVersionControlUrl
@@ -102,7 +94,8 @@ export default function TeamInfo(props) {
 																addedVersionControlUrl.match(
 																	/https:\/\/.*?\/+/
 																);
-															if (baseUrl) return baseUrl + "favicon.ico";
+															if (baseUrl)
+																return baseUrl + "favicon.ico";
 															return "";
 													  })()
 													: null

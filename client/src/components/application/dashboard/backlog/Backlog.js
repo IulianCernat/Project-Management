@@ -130,8 +130,7 @@ export default function Backlog() {
 	const [selectedIssues, setSelectedIssues] = useState([]);
 	const [openIssueCreationForm, setOpenIssueCreationForm] = useState(false);
 	const [openSprintCreationForm, setOpenSprintCreationForm] = useState(false);
-	const [openTransferIssuesToSprintForm, setOpenTransferIssuesToSprintForm] =
-		useState(false);
+	const [openTransferIssuesToSprintForm, setOpenTransferIssuesToSprintForm] = useState(false);
 
 	const [issuesList, setIssuesList] = useState([]);
 	const [openErrorPopup, setOpenErrorPopup] = useState(false);
@@ -207,9 +206,7 @@ export default function Backlog() {
 		if (!isResolvedDeleteIssue) return;
 
 		const deletedIssueId = Number(issueUrlToBeDeleted.split("/").pop());
-		setIssuesList((issuesList) =>
-			issuesList.filter((item) => item.id !== deletedIssueId)
-		);
+		setIssuesList((issuesList) => issuesList.filter((item) => item.id !== deletedIssueId));
 	}, [isResolvedDeleteIssue, isRejectedDeleteIssue, issueUrlToBeDeleted]);
 
 	useEffect(() => {
@@ -251,12 +248,8 @@ export default function Backlog() {
 			</DialogForm>
 
 			<Box>
-				{isLoadingGetIssues ? (
-					<LinearProgress style={{ width: "100%" }} />
-				) : null}
-				{isRejectedGetIssues ? (
-					<Alert severity="error">{getIssuesError} </Alert>
-				) : null}
+				{isLoadingGetIssues ? <LinearProgress style={{ width: "100%" }} /> : null}
+				{isRejectedGetIssues ? <Alert severity="error">{getIssuesError} </Alert> : null}
 
 				<TableContainer component={Paper}>
 					<TableToolbar

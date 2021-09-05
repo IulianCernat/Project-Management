@@ -46,8 +46,7 @@ export default function DevelopersList(props) {
 	const [developers, setDevelopers] = useState(props.developers);
 	const [developerUriToDelete, setDeveloperUriToDelete] = useState(null);
 	const [devIdTobeDeleted, setDevIdToBeDeleted] = useState(null);
-	const { error, isLoading, isResolved, isRejected } =
-		useDeleteFetch(developerUriToDelete);
+	const { error, isLoading, isResolved, isRejected } = useDeleteFetch(developerUriToDelete);
 
 	const [openDeleteSucces, setOpenDeleteSuccess] = useState(false);
 

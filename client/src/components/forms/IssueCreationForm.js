@@ -3,10 +3,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, Box, makeStyles } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
-import {
-	TextFieldWrapper,
-	TextFieldSelectWrapper,
-} from "./InputFieldsWrappers";
+import { TextFieldWrapper, TextFieldSelectWrapper } from "./InputFieldsWrappers";
 import {
 	issueDescriptionValidSchema,
 	issuePriorityValidSchema,
@@ -54,17 +51,12 @@ IssueCreationForm.propTypes = {
 	insertCreation: PropTypes.func,
 	projectId: PropTypes.number.isRequired,
 };
-export default function IssueCreationForm({
-	onClose,
-	insertCreation,
-	projectId,
-}) {
+export default function IssueCreationForm({ onClose, insertCreation, projectId }) {
 	const { additionalUserInfo } = useAuth();
 
 	const [requestBody, setRequestBody] = useState(null);
 	const [newIssueId, setNewIssueId] = useState(null);
-	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] =
-		useState(false);
+	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] = useState(false);
 	const {
 		receivedData: postFetchReceivedData,
 		error: postFetchError,
@@ -79,11 +71,7 @@ export default function IssueCreationForm({
 		isLoading: fetchedNewCreatedResourceIsLoading,
 		isRejected: fetchedNewCreatedResourceIsRejected,
 		isResolved: fetchedNewCreatedResourceIsResolved,
-	} = useGetFetch(
-		`api/issues/${newIssueId}`,
-		null,
-		startFetchingNewCreatedResource
-	);
+	} = useGetFetch(`api/issues/${newIssueId}`, null, startFetchingNewCreatedResource);
 
 	useEffect(() => {
 		if (postFetchIsResolved) {

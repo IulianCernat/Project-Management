@@ -4,10 +4,7 @@ import * as Yup from "yup";
 import { Button, Typography } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
-import {
-	projectNameValidSchema,
-	projectDescriptionValidSchema,
-} from "utils/validationSchemas";
+import { projectNameValidSchema, projectDescriptionValidSchema } from "utils/validationSchemas";
 import { usePostFetch, useGetFetch } from "customHooks/useFetch.js";
 import PropTypes from "prop-types";
 import { maxProjectDescriptionLen } from "utils/validationSchemas";
@@ -24,8 +21,7 @@ projectDescriptionValidSchema.propTypes = {
 export default function ProjectCreationForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
 	const [createdProjectId, setCreateProjectId] = useState();
-	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] =
-		useState(false);
+	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] = useState(false);
 
 	const {
 		receivedData: projectCreationReceivedData,
@@ -40,11 +36,7 @@ export default function ProjectCreationForm(props) {
 		isLoading: fetchedNewCreatedResourceIsLoading,
 		isRejected: fetchedNewCreatedResourceIsRejected,
 		isResolved: fetchedNewCreatedResourceIsResolved,
-	} = useGetFetch(
-		`api/projects/${createdProjectId}`,
-		null,
-		startFetchingNewCreatedResource
-	);
+	} = useGetFetch(`api/projects/${createdProjectId}`, null, startFetchingNewCreatedResource);
 	useEffect(() => {
 		if (!isResolvedProjectCreation) return;
 		setCreateProjectId(projectCreationReceivedData.split("/").pop());

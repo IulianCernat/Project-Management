@@ -1,14 +1,6 @@
 import { cloneElement, useState } from "react";
 
-import {
-	Avatar,
-	Card,
-	CardContent,
-	makeStyles,
-	Typography,
-	Box,
-	Divider,
-} from "@material-ui/core";
+import { Avatar, Card, CardContent, makeStyles, Typography, Box, Divider } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { deepPurple, blueGrey, grey } from "@material-ui/core/colors";
 import { FaChessPawn, FaChessRook, FaChessKing } from "react-icons/fa";
@@ -82,9 +74,7 @@ export default function UserProfileCard(props) {
 			className={classes.root}
 			elevation={4}
 		>
-			{props.backdrop
-				? cloneElement(props.backdrop, { open: openBackdrop })
-				: null}
+			{props.backdrop ? cloneElement(props.backdrop, { open: openBackdrop }) : null}
 			<IconContext.Provider
 				value={{
 					size: "2rem",
@@ -99,10 +89,7 @@ export default function UserProfileCard(props) {
 			<CardContent>
 				<Box display="flex" alignItems="center" flexDirection="column">
 					<Box display="flex">
-						<Avatar
-							className={classes.avatar}
-							src={props.user_profile.avatar_url}
-						>
+						<Avatar className={classes.avatar} src={props.user_profile.avatar_url}>
 							<Typography className={classes.avatarText}>
 								{props.user_profile.fullName.slice(0, 2)}
 							</Typography>
@@ -124,11 +111,7 @@ export default function UserProfileCard(props) {
 								(props.user_type === "productOwner" && "Product Owner")}
 						</Typography>
 					</Box>
-					<Divider
-						variant="fullWidth"
-						flexItem
-						classes={{ root: classes.divider }}
-					/>
+					<Divider variant="fullWidth" flexItem classes={{ root: classes.divider }} />
 					<Typography className={classes.contact}>
 						{props.user_profile.contact || "No contact info"}
 					</Typography>

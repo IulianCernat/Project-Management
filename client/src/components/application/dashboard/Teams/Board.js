@@ -155,13 +155,7 @@ export default function Board(props) {
 				<LinearProgress style={{ width: "100%" }} />
 			) : null}
 			{isResolvedGetCards && isResolvedGetLists ? (
-				<Box
-					mt={4}
-					pb={"6rem"}
-					display="flex"
-					flexWrap="nowrap"
-					style={{ gap: "1rem" }}
-				>
+				<Box mt={4} pb={"6rem"} display="flex" flexWrap="nowrap" style={{ gap: "1rem" }}>
 					{getListsReceivedData.map((boardListItem) => {
 						const boardCards = getCardsReceivedData.filter(
 							(cardItem) => cardItem.idList === boardListItem.id
