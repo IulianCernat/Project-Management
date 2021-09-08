@@ -17,13 +17,6 @@ import { Switch, Route, useRouteMatch } from "react-router-dom";
 import TeamPage from "./TeamPage";
 import { useProjectContext } from "contexts/ProjectContext";
 
-const useStyles = makeStyles((theme) => ({
-	root: {
-		minWidth: "15rem",
-	},
-	toolbar: theme.mixins.toolbar,
-}));
-
 const UIRestrictionForRoles = ["developer", "scrumMaster"];
 
 TeamComponentList.propTypes = {

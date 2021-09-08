@@ -8,11 +8,12 @@ import { useGetFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles((theme) => ({
-	paper: { height: "100%" },
+	paper: {
+		height: "100%",
+	},
 	headlineText: {
 		marginRight: theme.spacing(1),
 	},
-
 	headlineNumber: {
 		color: purple[900],
 	},

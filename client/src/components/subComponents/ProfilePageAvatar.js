@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { makeStyles, Backdrop, Box, Avatar, CircularProgress } from "@material-ui/core";
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadProfileAvatar from "components/forms/UploadProfileAvatar";
@@ -35,7 +35,9 @@ export default function ProfilePageAvatar(props) {
 	const classes = useStyles({ width: props.width, height: props.height });
 	const [openBackdrop, setOpenBackdrop] = useState(false);
 	const [uploadingFile, setUploadingFile] = useState(false);
-
+	useEffect(() => {
+		console.log("profile page avatar runned");
+	});
 	return (
 		<Box
 			position="relative"

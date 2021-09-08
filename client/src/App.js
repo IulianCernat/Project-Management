@@ -1,4 +1,3 @@
-import "fontsource-roboto";
 import { CssBaseline } from "@material-ui/core";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";

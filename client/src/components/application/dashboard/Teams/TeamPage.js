@@ -7,11 +7,7 @@ import Board from "./Board";
 import { Alert } from "@material-ui/lab";
 import { useProjectContext } from "contexts/ProjectContext";
 import TeamInfo from "./TeamInfo";
-import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles({
-	board: {},
-});
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -23,7 +19,6 @@ function TabPanel(props) {
 }
 
 export default function TeamPage() {
-	const classes = useStyles();
 	const { currentUserRole } = useProjectContext();
 	let { teamId } = useParams();
 	const [currentTab, setCurrentTab] = useState(0);
@@ -64,7 +59,7 @@ export default function TeamPage() {
 							currentUserRole={currentUserRole}
 						/>
 					</TabPanel>
-					<TabPanel value={currentTab} index={1} className={classes.board}>
+					<TabPanel value={currentTab} index={1}>
 						<Board
 							currentUserRole={currentUserRole}
 							teamId={Number(receivedData.id)}

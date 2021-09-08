@@ -210,7 +210,6 @@ export function usePostFetch(url, bodyContent, headers) {
 
 export function usePatchFetch(url, bodyContent, headers = null) {
 	const [state, dispatch] = useReducer(reducer, initialState);
-
 	useEffect(() => {
 		async function doFetch() {
 			if (!bodyContent) {

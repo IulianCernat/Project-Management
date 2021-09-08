@@ -22,7 +22,6 @@ import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
-import { Scrollbars } from "react-custom-scrollbars-2";
 
 import { useProjectContext } from "contexts/ProjectContext";
 

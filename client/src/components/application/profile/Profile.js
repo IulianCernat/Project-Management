@@ -2,7 +2,6 @@ import { Box, Grid, makeStyles, Container, Hidden, Typography } from "@material-
 import ProfileAside from "./ProfileAside";
 import ProfileMain from "./ProfileMain";
 import { useAuth } from "contexts/AuthContext";
-import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles({
 	container: {

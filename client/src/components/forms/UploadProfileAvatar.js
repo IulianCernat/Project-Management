@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { storage } from "utils/firebase";
 import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
@@ -7,10 +7,9 @@ UploadProfileAvatar.propTypes = {
 	uploadButtonLabel: PropTypes.string.isRequired,
 	setUploadingProgress: PropTypes.func.isRequired,
 };
-export default function UploadProfileAvatar(props) {
+export default function UploadProfileAvatar({ uploadButtonLabel, setUploadingProgress }) {
 	const { currentUser, setAdditionalUserInfo } = useAuth();
-	const [currentUserIdToken, setCurrentUserIdToken] = useState();
-
+	const requestHeaders = useRef(null);
 	const [requestBodyForUpdatingCurrentUser, setRequestBodyForUpdatingCurrentUser] =
 		useState(null);
 	const {
@@ -19,13 +18,13 @@ export default function UploadProfileAvatar(props) {
 		isLoading: isLoadingUserUpdate,
 		isRejected: isRejectedUserUpdate,
 		isResolved: isResolvedUserUpdate,
-	} = usePatchFetch("api/users/loggedUser", requestBodyForUpdatingCurrentUser, {
-		Authorization: currentUserIdToken,
-	});
+	} = usePatchFetch("api/users/loggedUser", requestBodyForUpdatingCurrentUser, requestHeaders);
 
 	useEffect(() => {
 		currentUser.getIdToken().then((idToken) => {
-			setCurrentUserIdToken(idToken);
+			requestHeaders.current = {
+				Authorization: idToken,
+			};
 		});
 	}, []);
 
@@ -40,10 +39,10 @@ export default function UploadProfileAvatar(props) {
 		const file = event.target.files[0];
 		if (!file) return;
 		const uploadTask = storage.ref(`profiles/${currentUser.uid}`).put(file);
-		props.setUploadingProgress(true);
+		setUploadingProgress(true);
 		uploadTask.on("state_changed", {
 			complete: () => {
-				props.setUploadingProgress(false);
+				setUploadingProgress(false);
 				uploadTask.snapshot.ref.getDownloadURL().then((url) => {
 					setRequestBodyForUpdatingCurrentUser(JSON.stringify({ avatar_url: url }));
 				});
@@ -56,7 +55,7 @@ export default function UploadProfileAvatar(props) {
 				onChange={handleUpload}
 				accept="image/*"
 				style={{ display: "none" }}
-				id={props.uploadButtonLabel}
+				id={uploadButtonLabel}
 				multiple
 				type="file"
 			/>

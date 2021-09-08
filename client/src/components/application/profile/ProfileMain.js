@@ -79,7 +79,7 @@ function TabPanel(props) {
 		user_id: "",
 		user_type: tabs[props.index],
 	});
-	const { status, receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
+	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
 		"api/projects/",
 		getParams.current,
 		startGetFetch

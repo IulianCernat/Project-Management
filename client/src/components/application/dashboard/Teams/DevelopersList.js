@@ -72,7 +72,7 @@ export default function DevelopersList(props) {
 	return (
 		<>
 			{developers.map((item) => (
-				<Box className={classes.profileCard}>
+				<Box key={item.id} className={classes.profileCard}>
 					<UserProfileCard
 						width={"30ch"}
 						{...item}
