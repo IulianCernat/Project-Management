@@ -12,7 +12,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const backgroundParticlesStyling = {
 	backgroundColor: "#0F0B11",
-	height: "100%",
+	height: "auto",
 	position: "absolute",
 	top: 0,
 	left: 0,

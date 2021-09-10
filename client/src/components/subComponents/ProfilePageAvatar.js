@@ -3,7 +3,7 @@ import { makeStyles, Backdrop, Box, Avatar, CircularProgress } from "@material-u
 import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadProfileAvatar from "components/forms/UploadProfileAvatar";
 import PropTypes from "prop-types";
-
+import { Alert, AlertTitle } from "@material-ui/lab";
 const useStyles = makeStyles((theme) => ({
 	avatar: {
 		width: (props) => props.width,
@@ -35,42 +35,49 @@ export default function ProfilePageAvatar(props) {
 	const classes = useStyles({ width: props.width, height: props.height });
 	const [openBackdrop, setOpenBackdrop] = useState(false);
 	const [uploadingFile, setUploadingFile] = useState(false);
-	useEffect(() => {
-		console.log("profile page avatar runned");
-	});
+	const [uploadingFileError, setUploadingFileError] = useState(null);
 	return (
-		<Box
-			position="relative"
-			width={props.width}
-			height={props.height}
-			onMouseEnter={() => {
-				setOpenBackdrop(true);
-			}}
-			onMouseLeave={() => {
-				setOpenBackdrop(false);
-			}}
-			display="flex"
-			alignItems="center"
-			justifyContent="center"
-		>
-			<Avatar variant="circular" className={classes.avatar} src={props.url} />
+		<>
+			<Box
+				position="relative"
+				width={props.width}
+				height={props.height}
+				onMouseEnter={() => {
+					setOpenBackdrop(true);
+				}}
+				onMouseLeave={() => {
+					setOpenBackdrop(false);
+				}}
+				display="flex"
+				alignItems="center"
+				justifyContent="center"
+			>
+				<Avatar variant="circular" className={classes.avatar} src={props.url} />
 
-			<label htmlFor="uploadButton">
-				<Backdrop className={classes.backdrop} open={openBackdrop || uploadingFile}>
-					<Box display="flex" alignItems="center" justifyContent="center">
-						{uploadingFile ? (
-							<CircularProgress color="secondary" />
-						) : (
-							<AddAPhotoIcon color="secondary" />
-						)}
-					</Box>
-				</Backdrop>
-			</label>
+				<label htmlFor="uploadButton">
+					<Backdrop className={classes.backdrop} open={openBackdrop || uploadingFile}>
+						<Box display="flex" alignItems="center" justifyContent="center">
+							{uploadingFile ? (
+								<CircularProgress color="secondary" />
+							) : (
+								<AddAPhotoIcon color="secondary" />
+							)}
+						</Box>
+					</Backdrop>
+				</label>
 
-			<UploadProfileAvatar
-				setUploadingProgress={setUploadingFile}
-				uploadButtonLabel="uploadButton"
-			/>
-		</Box>
+				<UploadProfileAvatar
+					setUploadingProgress={setUploadingFile}
+					uploadButtonLabel="uploadButton"
+					setUploadingFileError={setUploadingFileError}
+				/>
+			</Box>
+			{!uploadingFileError ? null : (
+				<Alert severity="error" style={{ display: "block" }}>
+					<AlertTitle>Failed to change profile pic</AlertTitle>
+					{uploadingFileError}
+				</Alert>
+			)}
+		</>
 	);
 }

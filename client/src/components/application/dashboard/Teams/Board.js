@@ -46,21 +46,17 @@ function BoardCard(props) {
 }
 function BoardList(props) {
 	return (
-		<Paper>
-			<Box
-				p={2}
-				display="flex"
-				flexDirection="column"
-				flexWrap="nowrap"
-				style={{ gap: "1rem", width: "40ch" }}
-			>
-				<Typography variant="h6">{props.name}</Typography>
+		<Box flex="0 0 40ch">
+			<Paper>
+				<Box p={2} display="flex" flexDirection="column" style={{ gap: "1rem" }}>
+					<Typography variant="h6">{props.name}</Typography>
 
-				{props.boardCards.map((item) => (
-					<BoardCard key={item.id} {...item} />
-				))}
-			</Box>
-		</Paper>
+					{props.boardCards.map((item) => (
+						<BoardCard key={item.id} {...item} />
+					))}
+				</Box>
+			</Paper>
+		</Box>
 	);
 }
 
@@ -155,7 +151,17 @@ export default function Board(props) {
 				<LinearProgress style={{ width: "100%" }} />
 			) : null}
 			{isResolvedGetCards && isResolvedGetLists ? (
-				<Box mt={4} pb={"6rem"} display="flex" flexWrap="nowrap" style={{ gap: "1rem" }}>
+				<Box
+					mt={4}
+					pb={"6rem"}
+					display="flex"
+					flexWrap="nowrap"
+					style={{
+						gap: "1rem",
+						overflowX: "auto",
+						cursor: "grab",
+					}}
+				>
 					{getListsReceivedData.map((boardListItem) => {
 						const boardCards = getCardsReceivedData.filter(
 							(cardItem) => cardItem.idList === boardListItem.id

@@ -13,7 +13,7 @@ function TabPanel(props) {
 
 	return (
 		<Box role="tabpanel" hidden={value !== index} id={`nav-tabpanel-${index}`} {...other}>
-			{value === index && <Box p={3}>{children}</Box>}
+			{value === index && <Box pt={3}>{children}</Box>}
 		</Box>
 	);
 }
@@ -34,7 +34,7 @@ export default function TeamPage() {
 			{isLoading && <LinearProgress style={{ width: "100%" }} />}
 			{isRejected ? <Alert severity="error">{error} </Alert> : null}
 			{isResolved ? (
-				<Box style={{ overflow: "hidden", width: "100%" }}>
+				<>
 					<AppBar position="static" color="default">
 						<Tabs
 							indicatorColor="primary"
@@ -69,7 +69,7 @@ export default function TeamPage() {
 					<TabPanel value={currentTab} index={2}>
 						<TeamMembers />
 					</TabPanel>
-				</Box>
+				</>
 			) : null}
 		</>
 	);

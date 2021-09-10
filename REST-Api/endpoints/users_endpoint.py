@@ -7,7 +7,8 @@ from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, user_filtering_args
 from utils.custom_exceptions import AuthorizationFailed
 
-users_namespace = api.namespace('users', description='Operations related to user profiles')
+users_namespace = api.namespace(
+    'users', description='Operations related to user profiles')
 
 
 @users_namespace.route('/')
@@ -80,6 +81,7 @@ class LoggedUser(Resource):
     def patch(self):
         input_data = request.json
         try:
+
             token_id = request.headers.get('Authorization')
             decoded_token = verify_id_token(token_id)
         except AuthorizationFailed as e:

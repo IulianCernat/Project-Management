@@ -57,7 +57,7 @@ export default function TeamInfo(props) {
 						display="flex"
 						flexDirection="column"
 						alignItems="center"
-						style={{ gap: "2rem" }}
+						style={{ gap: "1rem" }}
 					>
 						{hideVersionControlAdditionForm ? (
 							<Button
@@ -85,7 +85,12 @@ export default function TeamInfo(props) {
 									className={classes.linkButton}
 									variant="contained"
 								>
-									<Box display="flex" style={{ gap: "1rem" }} alignItems="center">
+									<Box
+										display="flex"
+										flexWrap="wrap"
+										style={{ gap: "1rem", wordBreak: "break-all" }}
+										alignItems="center"
+									>
 										<Avatar
 											src={
 												addedVersionControlUrl
@@ -101,7 +106,7 @@ export default function TeamInfo(props) {
 													: null
 											}
 										/>
-										<Typography variant="h6" color="primary">
+										<Typography variant="subtitle2" color="primary">
 											{addedVersionControlUrl.match(/(https:\/\/)(.*)/)[2]}
 										</Typography>
 									</Box>

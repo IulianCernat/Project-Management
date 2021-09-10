@@ -17,6 +17,7 @@ const drawerWidth = "18rem";
 
 const useStyles = makeStyles((theme) => ({
 	content: {
+		backgroundColor: "#BDDAF2",
 		width: "100%",
 		[theme.breakpoints.up("md")]: {
 			padding: theme.spacing(4),

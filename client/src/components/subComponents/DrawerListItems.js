@@ -25,7 +25,7 @@ function ListItemLink(props) {
 	);
 
 	return (
-		<ListItem button component={CustomLink}>
+		<ListItem button component={CustomLink} style={{ whiteSpace: "nowrap" }}>
 			<ListItemIcon>{icon}</ListItemIcon>
 			<ListItemText primary={primary} />
 		</ListItem>

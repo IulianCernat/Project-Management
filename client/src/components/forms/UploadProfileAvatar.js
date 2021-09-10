@@ -3,22 +3,32 @@ import { storage } from "utils/firebase";
 import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
 import { useAuth } from "contexts/AuthContext";
+import { Alert } from "@material-ui/lab";
+
 UploadProfileAvatar.propTypes = {
 	uploadButtonLabel: PropTypes.string.isRequired,
 	setUploadingProgress: PropTypes.func.isRequired,
+	setUploadingFileError: PropTypes.func.isRequired,
 };
-export default function UploadProfileAvatar({ uploadButtonLabel, setUploadingProgress }) {
+export default function UploadProfileAvatar({
+	uploadButtonLabel,
+	setUploadingProgress,
+	setUploadingFileError,
+}) {
 	const { currentUser, setAdditionalUserInfo } = useAuth();
 	const requestHeaders = useRef(null);
 	const [requestBodyForUpdatingCurrentUser, setRequestBodyForUpdatingCurrentUser] =
 		useState(null);
 	const {
-		receivedData: userUpdateReceivedData,
 		error: userUpdateError,
 		isLoading: isLoadingUserUpdate,
 		isRejected: isRejectedUserUpdate,
 		isResolved: isResolvedUserUpdate,
-	} = usePatchFetch("api/users/loggedUser", requestBodyForUpdatingCurrentUser, requestHeaders);
+	} = usePatchFetch(
+		"api/users/loggedUser",
+		requestBodyForUpdatingCurrentUser,
+		requestHeaders.current
+	);
 
 	useEffect(() => {
 		currentUser.getIdToken().then((idToken) => {
@@ -26,14 +36,22 @@ export default function UploadProfileAvatar({ uploadButtonLabel, setUploadingPro
 				Authorization: idToken,
 			};
 		});
-	}, []);
+	}, [currentUser]);
 
 	useEffect(() => {
 		if (isResolvedUserUpdate) {
 			const newUrl = requestBodyForUpdatingCurrentUser.match(/https.*\w/);
 			setAdditionalUserInfo((prev) => ({ ...prev, avatar_url: newUrl }));
-		}
+		} // eslint-disable-next-line
 	}, [isResolvedUserUpdate]);
+
+	useEffect(() => {
+		setUploadingProgress(isLoadingUserUpdate);
+	}, [isLoadingUserUpdate]);
+
+	useEffect(() => {
+		if (isRejectedUserUpdate) setUploadingFileError(userUpdateError);
+	}, [isRejectedUserUpdate]);
 
 	const handleUpload = (event) => {
 		const file = event.target.files[0];
