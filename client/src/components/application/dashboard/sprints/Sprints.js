@@ -22,7 +22,6 @@ import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import IssueRow from "../backlog/IssueRow";
-
 import { useProjectContext } from "contexts/ProjectContext";
 
 const useStyles = makeStyles({
@@ -33,9 +32,12 @@ const useStyles = makeStyles({
 		whiteSpace: "pre-wrap",
 	},
 	showMoreContent: {
-		maxHeight: "auto",
+		transition: "max-height 0.15s",
+		maxHeight: "600px",
 	},
+
 	hideMoreContent: {
+		transition: "max-height 0.15s",
 		maxHeight: "20ch",
 		overflow: "hidden",
 	},
@@ -269,10 +271,21 @@ function SprintHeader({
 				<Box
 					px={2}
 					className={showMoreGoalInfo ? classes.showMoreContent : classes.hideMoreContent}
+					position="relative"
 				>
 					<Typography className={classes.textContent}>{goal}</Typography>
 				</Box>
-
+				<div
+					style={{
+						transition: "height 0.25s linear",
+						width: "100%",
+						position: "sticky",
+						transform: "translate(0, -100%)",
+						height: !showMoreGoalInfo ? "6rem" : "0rem",
+						backgroundImage:
+							"linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 100))",
+					}}
+				></div>
 				<Box display="flex" justifyContent="center">
 					{goal.length > 500 ? (
 						showMoreGoalInfo ? (
