@@ -279,9 +279,9 @@ function SprintHeader({
 					style={{
 						transition: "height 0.25s linear",
 						width: "100%",
-						position: "sticky",
+						position: "absolute",
 						transform: "translate(0, -100%)",
-						height: !showMoreGoalInfo ? "6rem" : "0rem",
+						height: !showMoreGoalInfo && goal.length > 500 ? "6rem" : "0rem",
 						backgroundImage:
 							"linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 100))",
 					}}
