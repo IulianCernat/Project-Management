@@ -1,0 +1,49 @@
+.gears {
+    width: 14rem;
+    height: 14rem;
+}
+
+@keyframes gearAnimationRight {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes gearAnimationLeft {
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+#bigGear,
+#mediumGear,
+#smallGear {
+
+    transform-origin: center;
+    transform-box: fill-box;
+
+    animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+}
+
+#bigGear {
+    animation-name: gearAnimationRight;
+}
+
+#mediumGear {
+    animation-name: gearAnimationLeft;
+}
+
+#smallGear {
+    animation-name: gearAnimationRight;
+}

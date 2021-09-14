@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, CircularProgress } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import { Switch, Route, useRouteMatch, useParams, Redirect } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
@@ -12,6 +12,8 @@ import Overview from "./overview/Overview";
 import { ProjectProvider } from "contexts/ProjectContext";
 import { useGetFetch } from "customHooks/useFetch";
 import { useAuth } from "contexts/AuthContext";
+import { ReactComponent as GearsSVG } from "images/gears.svg";
+import gearsAnimation from "styles/gearsAnimation.css";
 
 const drawerWidth = "18rem";
 
@@ -90,7 +92,7 @@ export default function Dashboard() {
 						transform: "translate(-50%, -50%)",
 					}}
 				>
-					<CircularProgress />
+					<GearsSVG className="gears" />
 				</Box>
 			)}
 			{isResolvedGetRole && isResolvedGetProject && (
