@@ -170,7 +170,7 @@ function SprintHeader({
 	};
 
 	const handleCompleteSprintClick = () => {
-		setRequesBodyForUpdate(JSON.stringify({ start: false, completed: true }));
+		setRequesBodyForUpdate(JSON.stringify({ completed: true }));
 	};
 	useEffect(() => {
 		if (!isResolvedUpdate) return;
@@ -354,7 +354,9 @@ export default function Sprints() {
 	useEffect(() => {
 		if (isResolvedGetSprints) {
 			setSprintsList(getSprintsReceivedData);
-			setStartedSprintId(getSprintsReceivedData.find((item) => item.start === true)?.id);
+			setStartedSprintId(
+				getSprintsReceivedData.find((item) => item.start && !item.completed)?.id
+			);
 		}
 	}, [isResolvedGetSprints, getSprintsReceivedData]);
 	return (
