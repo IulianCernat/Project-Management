@@ -33,7 +33,7 @@ const useStyles = makeStyles({
 	},
 	showMoreContent: {
 		transition: "max-height 0.15s",
-		maxHeight: "600px",
+		maxHeight: "1000px",
 	},
 
 	hideMoreContent: {
@@ -263,7 +263,7 @@ function SprintHeader({
 				</Box>
 			</Box>
 
-			<Box>
+			<Box width="100%" position="relative">
 				<Typography color="primary" variant="h6">
 					Sprint Goal
 				</Typography>
@@ -278,7 +278,8 @@ function SprintHeader({
 				<div
 					style={{
 						transition: "height 0.25s linear",
-						width: "100%",
+						left: 0,
+						right: 0,
 						position: "absolute",
 						transform: "translate(0, -100%)",
 						height: !showMoreGoalInfo && goal.length > 500 ? "6rem" : "0rem",

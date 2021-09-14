@@ -66,7 +66,7 @@ async function processResponse(response) {
 
 export async function doPost(url, stringifiedData, headers = null) {
 	try {
-		url = process.env.REACT_APP_API_URI + "/" + url;
+		url = process.env.REACT_APP_API_URL + "/" + url;
 		let response = await fetch(url, {
 			method: "POST",
 			headers: {
@@ -84,7 +84,7 @@ export async function doPost(url, stringifiedData, headers = null) {
 
 export async function doPatch(url, stringifiedData, headers = null) {
 	try {
-		url = process.env.REACT_APP_API_URI + "/" + url;
+		url = process.env.REACT_APP_API_URL + "/" + url;
 		let response = await fetch(url, {
 			method: "PATCH",
 			headers: {
@@ -102,7 +102,7 @@ export async function doPatch(url, stringifiedData, headers = null) {
 
 export async function doGet(url, parameters = null, foreignUrl = false, headers = null) {
 	try {
-		if (!foreignUrl) url = process.env.REACT_APP_API_URI + "/" + url;
+		if (!foreignUrl) url = process.env.REACT_APP_API_URL + "/" + url;
 		if (parameters) url += "?" + new URLSearchParams(parameters).toString();
 
 		let response = await fetch(url, {
@@ -119,7 +119,7 @@ export async function doGet(url, parameters = null, foreignUrl = false, headers 
 
 async function doDelete(url) {
 	try {
-		url = process.env.REACT_APP_API_URI + "/" + url;
+		url = process.env.REACT_APP_API_URL + "/" + url;
 
 		let response = await fetch(url, {
 			method: "DELETE",

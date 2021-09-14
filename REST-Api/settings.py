@@ -35,12 +35,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # Firebase
 try:
-    firebase_google_credentials = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+    firebase_google_credentials = os.environ.get(
+        'GOOGLE_APPLICATION_CREDENTIALS')
 except KeyError:
     log.error("Missing GOOGLE_APPLICATION_CREDENTIALS environment variable")
-
-# Trello
-try:
-    trello_api_key = os.environ.get('trello_api_key')
-except KeyError:
-    log.error("Missing trello_api_key environment variable")
