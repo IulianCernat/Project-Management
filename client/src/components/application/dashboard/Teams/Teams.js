@@ -31,13 +31,15 @@ function TeamComponentList({ teamList, handleDelete, renderTeamCardActions }) {
 			{teamList.length
 				? teamList.map((item) => {
 						return (
-							<TeamCard
-								linkTo={`${match.path}/${item.id}`}
-								key={item.id}
-								{...item}
-								renderActions={renderTeamCardActions}
-								handleDelete={handleDelete}
-							/>
+							<Box maxWidth="50ch" flex="1 1 40ch">
+								<TeamCard
+									linkTo={`${match.path}/${item.id}`}
+									key={item.id}
+									{...item}
+									renderActions={renderTeamCardActions}
+									handleDelete={handleDelete}
+								/>
+							</Box>
 						);
 				  })
 				: null}
@@ -131,13 +133,13 @@ export default function Teams(props) {
 					</DialogForm>
 
 					<Box
+						maxWidth="100%"
+						p={3}
 						display="flex"
-						justifyContent="flex-start"
 						flexWrap="wrap"
-						alignItems="flex-start"
-						alignContent="center"
+						justifyContent="center"
+						alignItems="center"
 						style={{ gap: "1rem" }}
-						p={1}
 					>
 						{isResolved && teamsList ? (
 							<TeamComponentList

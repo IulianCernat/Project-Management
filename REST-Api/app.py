@@ -38,8 +38,8 @@ class FlaskApp(Flask):
         db.init_app(self)
         self.app_context().push()
 
-        # with self.app_context():
-        #     db.create_all()  # Create database tables for our data models
+        with self.app_context():
+            db.create_all()  # Create database tables for our data models
 
         CORS(self)
 

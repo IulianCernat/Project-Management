@@ -8,7 +8,7 @@ faker = Faker()
 faker.add_provider(lorem)
 
 # Firebase authorization check must be disabled in code for creating profiles
-api_path_base_url = 'http://192.168.1.3:5000/api'
+api_path_base_url = 'http://127.0.0.1:5000/api'
 
 
 def create_profiles(profile_list):
@@ -22,7 +22,8 @@ def create_profiles(profile_list):
         if profile['photo']:
             post_request_data['avatar_url'] = profile['photo']
         response = requests.post(api_path, json=post_request_data)
-        created_users_ids.append(int(response.json()['location'].split("/")[-1]))
+        created_users_ids.append(
+            int(response.json()['location'].split("/")[-1]))
 
     return created_users_ids
 
@@ -40,8 +41,10 @@ def create_projects(users_ids):
                 'product_owner_id': user_id
             }
             response = requests.post(api_path, json=post_request_data)
-            created_projects_ids.append(int(response.json()['location'].split("/")[-1]))
-        projects_created_by_users.append({'project_creator': user_id, 'created_projects': created_projects_ids})
+            created_projects_ids.append(
+                int(response.json()['location'].split("/")[-1]))
+        projects_created_by_users.append(
+            {'project_creator': user_id, 'created_projects': created_projects_ids})
 
     return projects_created_by_users
 
@@ -90,15 +93,17 @@ def add_team_members(projects_with_teams, users_ids):
     api_path = api_path_base_url + "/teams_members/"
     for project_with_team in projects_with_teams:
         already_added_members = []
-        already_added_scrum_masters = [team['scrum_master_id'] for team in project_with_team['teams']]
+        already_added_scrum_masters = [
+            team['scrum_master_id'] for team in project_with_team['teams']]
         for team in project_with_team['teams']:
             possible_team_members = list(
                 filter(lambda user_id: user_id != project_with_team['product_owner_id']
-                                       and user_id not in already_added_members
-                                       and user_id not in already_added_scrum_masters,
+                       and user_id not in already_added_members
+                       and user_id not in already_added_scrum_masters,
                        users_ids))
 
-            team_members_ids = random.sample(possible_team_members, random.randint(1, 8))
+            team_members_ids = random.sample(
+                possible_team_members, random.randint(1, 8))
 
             already_added_members.extend(team_members_ids)
             post_request_data = {
@@ -150,8 +155,10 @@ def generate_sprints(projects_issues):
                 filter(lambda item: next(iter(item.keys())) == project_with_issues['project_id'], projects))
             project_id_key = next(iter(found_project.keys()))
 
-            found_project[project_id_key]['scrum_masters'].append(project_with_issues['project_scrum_master_id'])
-            found_project[project_id_key]['issues_ids'].extend(project_with_issues['issues_ids'])
+            found_project[project_id_key]['scrum_masters'].append(
+                project_with_issues['project_scrum_master_id'])
+            found_project[project_id_key]['issues_ids'].extend(
+                project_with_issues['issues_ids'])
         except StopIteration:
             projects.append({project_with_issues['project_id']: {
                 'scrum_masters': [project_with_issues['project_scrum_master_id']],
@@ -165,8 +172,10 @@ def generate_sprints(projects_issues):
                 if len(project[project_id_key]['issues_ids']) < 6:
                     break
 
-                chosen_scrum_master = random.choice(project[project_id_key]['scrum_masters'])
-                chosen_issues = random.choices(project[project_id_key]['issues_ids'], k=random.randint(4, 8))
+                chosen_scrum_master = random.choice(
+                    project[project_id_key]['scrum_masters'])
+                chosen_issues = random.choices(
+                    project[project_id_key]['issues_ids'], k=random.randint(4, 8))
                 post_request_data = {
                     'name': faker.text()[:255],
                     'start_date': "2021-06-16T10:31:06.035Z",
@@ -189,7 +198,7 @@ if __name__ == '__main__':
         profiles = json.load(f)
 
     created_users_ids = create_profiles(profiles)
-    created_users_ids.append(2)
+    created_users_ids.append(1)
     random.shuffle(created_users_ids)
     print("generated profiles")
     projects = create_projects(created_users_ids)

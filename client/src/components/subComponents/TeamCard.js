@@ -22,11 +22,6 @@ import { useAuth } from "contexts/AuthContext";
 import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
-	root: {
-		minWidth: "20ch",
-		maxWidth: "60ch",
-		flex: "1 1 auto",
-	},
 	paper: {
 		border: "5px dashed red",
 	},
@@ -56,76 +51,71 @@ export default function TeamCard(props) {
 	const nrOfTeammates = props.team_members.length;
 
 	return (
-		<Paper elevation={2}>
-			<Card
-				className={clsx(
-					styles.root,
-					additionalUserInfo.id === scrumMasterProfile.id ||
-						props.team_members.find(
-							(item) => item.user_profile.id === additionalUserInfo.id
-						)
-						? styles.paperHighlight
-						: ""
-				)}
-				variant="outlined"
-			>
-				<CardActionArea to={props.linkTo} component={RouterLink}>
-					<CardHeader
-						title={
-							<Box display="flex" justifyContent="space-between">
-								<Typography color="primary" variant="h6">
-									{props.name.length > 70
-										? props.name.slice(0, 70) + "..."
-										: props.name}
-								</Typography>
-								<Badge badgeContent={nrOfTeammates} color="primary" showZero>
-									<People fontSize="large" />
-								</Badge>
-							</Box>
-						}
-						subheader={format(new Date(props.created_at), "dd/MM/yyyy")}
-					/>
-					<CardContent>
-						<TextDisplayWrapper gutterBottom>
-							{props.description.length > 200
-								? props.description.slice(0, 200) + "..."
-								: props.description}
-						</TextDisplayWrapper>
-						<Box display="flex" justifyContent="center" alignItems="center" p={1}>
-							<Box mr={1}>
-								<Avatar
-									className={styles.avatar}
-									src={scrumMasterProfile.avatar_url}
-								/>
-							</Box>
-							<Box>
-								<Typography align="center" variant="h6">
-									Scrum master
-								</Typography>
-								<Typography align="center">
-									{scrumMasterProfile
-										? scrumMasterProfile.fullName
-										: "No scrum master"}
-								</Typography>
-							</Box>
+		<Card
+			className={clsx(
+				styles.root,
+				additionalUserInfo.id === scrumMasterProfile.id ||
+					props.team_members.find(
+						(item) => item.user_profile.id === additionalUserInfo.id
+					)
+					? styles.paperHighlight
+					: ""
+			)}
+			variant="outlined"
+		>
+			<CardActionArea to={props.linkTo} component={RouterLink}>
+				<CardHeader
+					title={
+						<Box display="flex" justifyContent="space-between">
+							<Typography color="primary" variant="h6">
+								{props.name.length > 70
+									? props.name.slice(0, 70) + "..."
+									: props.name}
+							</Typography>
+							<Badge badgeContent={nrOfTeammates} color="primary" showZero>
+								<People fontSize="large" />
+							</Badge>
 						</Box>
-					</CardContent>
-				</CardActionArea>
-				{!props.renderActions ? null : (
-					<CardActions>
-						<Button
-							size="small"
-							color="secondary"
-							variant="outlined"
-							onClick={() => {
-								props.handleDelete(props.id);
-							}}
-						>
-							delete
-						</Button>
-					</CardActions>
-				)}
-			</Card>
-		</Paper>
+					}
+					subheader={format(new Date(props.created_at), "dd/MM/yyyy")}
+				/>
+				<CardContent>
+					<TextDisplayWrapper gutterBottom>
+						{props.description.length > 200
+							? props.description.slice(0, 200) + "..."
+							: props.description}
+					</TextDisplayWrapper>
+					<Box display="flex" justifyContent="center" alignItems="center" p={1}>
+						<Box mr={1}>
+							<Avatar className={styles.avatar} src={scrumMasterProfile.avatar_url} />
+						</Box>
+						<Box>
+							<Typography align="center" variant="h6">
+								Scrum master
+							</Typography>
+							<Typography align="center">
+								{scrumMasterProfile
+									? scrumMasterProfile.fullName
+									: "No scrum master"}
+							</Typography>
+						</Box>
+					</Box>
+				</CardContent>
+			</CardActionArea>
+			{!props.renderActions ? null : (
+				<CardActions>
+					<Button
+						size="small"
+						color="secondary"
+						variant="outlined"
+						onClick={() => {
+							props.handleDelete(props.id);
+						}}
+					>
+						delete
+					</Button>
+				</CardActions>
+			)}
+		</Card>
 	);
 }

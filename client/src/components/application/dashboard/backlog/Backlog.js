@@ -198,7 +198,7 @@ export default function Backlog() {
 	};
 
 	const handleDeleteIssueClick = (issueId) => {
-		setIssueUrlToBeDeleted(`api/issues/20000`);
+		setIssueUrlToBeDeleted(`api/issues/${issueId}`);
 	};
 
 	useEffect(() => {

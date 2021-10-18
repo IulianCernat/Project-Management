@@ -28,7 +28,8 @@ class ProfilesCollection(Resource):
         user_profile = request.json
 
         # for when populating database with script
-        # decoded_token = {'uid': f"{user_profile['contact']}{user_profile['fullName']}"}
+        # decoded_token = {
+        #     'uid': f"{user_profile['contact']}{user_profile['fullName']}"}
 
         profile_id = create_user(decoded_token['uid'], user_profile)
 
