@@ -1,13 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import {
 	TableContainer,
-	TableRow,
-	TableHead,
-	TableBody,
-	TableCell,
 	Paper,
 	Typography,
-	Table,
 	makeStyles,
 	Box,
 	LinearProgress,
@@ -21,9 +16,9 @@ import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
-import IssueRow from "../backlog/IssueRow";
-import { useProjectContext } from "contexts/ProjectContext";
 
+import { useProjectContext } from "contexts/ProjectContext";
+import IssuesTable from "../backlog/IssuesTable";
 const useStyles = makeStyles({
 	table: {
 		width: "100%",
@@ -72,7 +67,7 @@ function SprintTable({
 		isRejected: isRejectedIssueUpdate,
 	} = usePatchFetch(`api/issues/${issueIdToBeUpdated}`, requestBodyForIssueUpdate);
 
-	const handleDeleteIssueClick = (issueId) => {
+	const handleMoveIssueClick = (issueId) => {
 		setIssueIdToBeUpdated(issueId);
 		setRequestBodyForIssueUpdate(JSON.stringify({ sprint_id: 0 }));
 	};
@@ -97,37 +92,10 @@ function SprintTable({
 				startedSprintId={startedSprintId}
 				setStartedSprintId={setStartedSprintId}
 			/>
-
-			<Table className={classes.table}>
-				<TableHead>
-					<TableRow>
-						<TableCell />
-						<TableCell>
-							<Typography align="center">Type</Typography>
-						</TableCell>
-						<TableCell align="left">
-							<Typography>Title</Typography>
-						</TableCell>
-						<TableCell align="left">
-							<Typography>Status</Typography>
-						</TableCell>
-						<TableCell align="center">
-							<Typography>Priority</Typography>
-						</TableCell>
-						<TableCell />
-					</TableRow>
-				</TableHead>
-				<TableBody>
-					{sprintIssues.map((item) => (
-						<IssueRow
-							handleDeleteIssueClick={handleDeleteIssueClick}
-							isBacklogIssue={false}
-							row={item}
-							key={item.id}
-						/>
-					))}
-				</TableBody>
-			</Table>
+			<IssuesTable
+				isSprintIssuesTable
+				issuesTableProps={{ handleMoveIssueClick, issuesList: sprintIssues }}
+			/>
 		</TableContainer>
 	);
 }

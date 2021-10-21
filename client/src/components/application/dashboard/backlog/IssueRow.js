@@ -126,6 +126,7 @@ export default function IssueRow(props) {
 
 		setNewIssueStatus(futureIssueState.current.futureState);
 	}, [isResolvedUpdate]);
+
 	return (
 		<>
 			<TableRow classes={{ root: classes.rowTop }} selected={isSelected}>
@@ -215,7 +216,11 @@ export default function IssueRow(props) {
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>
 				<TableCell>
 					<IconButton
-						onClick={(event) => props.handleDeleteIssueClick(row.id)}
+						onClick={(event) =>
+							isBacklogIssue
+								? props.handleDeleteIssueClick(row.id)
+								: props.handleMoveIssueClick(row.id)
+						}
 						disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
 					>
 						{isBacklogIssue ? (

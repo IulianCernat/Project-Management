@@ -17,21 +17,27 @@ import gearsAnimation from "styles/gearsAnimation.css";
 
 const drawerWidth = "18rem";
 
-const useStyles = makeStyles((theme) => ({
-	content: {
-		backgroundColor: "#BDDAF2",
-		width: "100%",
-		[theme.breakpoints.up("md")]: {
-			padding: theme.spacing(4),
+const useStyles = makeStyles((theme) => {
+	return {
+		content: {
+			backgroundColor: "#BDDAF2",
+			width: "100%",
+			[theme.breakpoints.up("md")]: {
+				padding: theme.spacing(4),
+				overflowY: "auto",
+				maxHeight: `100vh`,
+			},
+			[theme.breakpoints.down("md")]: {
+				paddingLeft: "1px",
+				paddingRight: "1px",
+				paddingTop: theme.spacing(1),
+				overflowY: "auto",
+				maxHeight: `100vh`,
+			},
 		},
-		[theme.breakpoints.down("md")]: {
-			paddingLeft: "1px",
-			paddingRight: "1px",
-			paddingTop: theme.spacing(1),
-		},
-	},
-	toolbar: theme.mixins.toolbar,
-}));
+		toolbar: theme.mixins.toolbar,
+	};
+});
 
 export default function Dashboard() {
 	const { currentUser } = useAuth();
@@ -110,9 +116,8 @@ export default function Dashboard() {
 						setMinimizedDrawer={setMinimizedDrawer}
 					/>
 
-					<Box className={classes.content} bgcolor="grey.200" minHeight="100vh">
+					<Box className={classes.content} bgcolor="grey.200">
 						<div className={classes.toolbar} />
-
 						<ProjectProvider
 							projectId={Number(projectId)}
 							currentUserRole={getRoleReceivedData.user_role}

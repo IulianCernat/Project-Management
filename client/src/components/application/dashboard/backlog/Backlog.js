@@ -1,25 +1,7 @@
 import { useRef, useState, useEffect } from "react";
-import {
-	TableContainer,
-	TableRow,
-	TableHead,
-	TableBody,
-	TableCell,
-	Paper,
-	Typography,
-	Table,
-	makeStyles,
-	Box,
-	LinearProgress,
-	Toolbar,
-	Button,
-	lighten,
-	Snackbar,
-} from "@material-ui/core";
-import { green, pink, blue } from "@material-ui/core/colors";
+import { makeStyles, Box, LinearProgress, lighten, Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import PropTypes from "prop-types";
-import IssueRow from "./IssueRow";
+import IssuesTable from "./IssuesTable";
 import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import IssueCreationForm from "components/forms/IssueCreationForm";
 import CreateSprintForm from "components/forms/CreateSprintForm";
@@ -28,102 +10,7 @@ import DialogForm from "components/subComponents/DialogForm";
 
 import { useProjectContext } from "contexts/ProjectContext";
 
-const useStyles = makeStyles((theme) => ({
-	table: {
-		width: "100%",
-	},
-	taskColor: {
-		backgroundColor: blue[500],
-	},
-	bugColor: {
-		backgroundColor: pink[500],
-	},
-	storyColor: {
-		backgroundColor: green[500],
-	},
-
-	rowTop: {
-		borderTop: "none",
-		borderBottom: "none",
-	},
-	rowBottom: {
-		borderTop: "none",
-		borderBottom: "none",
-	},
-	tableRow: {
-		"& > *": {
-			borderBottom: "unset",
-		},
-	},
-	toolbarHighlight: {
-		color: theme.palette.secondary.main,
-		backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-	},
-}));
-const UIRestrictionForRoles = ["developer"];
-
-TableToolbar.propTypes = {
-	numIssuesSelected: PropTypes.number.isRequired,
-	openIssueCreationDialog: PropTypes.func.isRequired,
-	openSprintCreationDialog: PropTypes.func.isRequired,
-	openTransferIssuesToSprintDialog: PropTypes.func.isRequired,
-	currentUserRole: PropTypes.string.isRequired,
-};
-function TableToolbar(props) {
-	const { numIssuesSelected, openIssueCreationDialog } = props;
-	const classes = useStyles();
-
-	return (
-		<>
-			<Toolbar className={numIssuesSelected ? classes.toolbarHighlight : ""}>
-				<Box display="flex" style={{ gap: "1rem" }} alignItems="center">
-					{numIssuesSelected ? (
-						<>
-							<Typography>{numIssuesSelected} selected</Typography>
-							<Button
-								variant="contained"
-								color="secondary"
-								onClick={() => {
-									props.openSprintCreationDialog();
-								}}
-								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
-							>
-								<Typography>Create sprint</Typography>
-							</Button>
-							<Button
-								variant="contained"
-								color="secondary"
-								onClick={() => {
-									props.openTransferIssuesToSprintDialog();
-								}}
-								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
-							>
-								<Typography>Move to sprint</Typography>
-							</Button>
-						</>
-					) : (
-						<>
-							<Typography variant="h6">Issues</Typography>
-							<Button
-								onClick={(event) => {
-									openIssueCreationDialog();
-								}}
-								variant="contained"
-								color="primary"
-								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
-							>
-								<Typography>Create issue</Typography>
-							</Button>
-						</>
-					)}
-				</Box>
-			</Toolbar>
-		</>
-	);
-}
-
 export default function Backlog() {
-	const classes = useStyles();
 	const { projectId, currentUserRole } = useProjectContext();
 	const getParams = useRef({ project_id: projectId });
 	const [issueUrlToBeDeleted, setIssueUrlToBeDeleted] = useState(null);
@@ -159,6 +46,7 @@ export default function Backlog() {
 	function openSprintCreationDialog() {
 		setOpenSprintCreationForm(true);
 	}
+
 	function handleCancelSprintCreation() {
 		setOpenSprintCreationForm(false);
 	}
@@ -170,26 +58,6 @@ export default function Backlog() {
 	function handleCancelTransferIssuesToSprint() {
 		setOpenTransferIssuesToSprintForm(false);
 	}
-
-	const handleSelectionClick = (issueId) => {
-		const selectedIndex = selectedIssues.indexOf(issueId);
-		let newSelectedIssues = [];
-
-		if (selectedIndex === -1) {
-			newSelectedIssues = newSelectedIssues.concat(selectedIssues, issueId);
-		} else if (selectedIndex === 0) {
-			newSelectedIssues = newSelectedIssues.concat(selectedIssues.slice(1));
-		} else if (selectedIndex === selectedIssues.length - 1) {
-			newSelectedIssues = newSelectedIssues.concat(selectedIssues.slice(0, -1));
-		} else if (selectedIndex > 0) {
-			newSelectedIssues = newSelectedIssues.concat(
-				selectedIssues.slice(0, selectedIndex),
-				selectedIssues.slice(selectedIndex + 1)
-			);
-		}
-
-		setSelectedIssues(newSelectedIssues);
-	};
 
 	const insertNewIssues = (newIssueObj) => {
 		issuesList.unshift(newIssueObj);
@@ -250,49 +118,21 @@ export default function Backlog() {
 			<Box>
 				{isLoadingGetIssues ? <LinearProgress style={{ width: "100%" }} /> : null}
 				{isRejectedGetIssues ? <Alert severity="error">{getIssuesError} </Alert> : null}
-
-				<TableContainer component={Paper}>
-					<TableToolbar
-						openIssueCreationDialog={openIssueCreationDialog}
-						openSprintCreationDialog={openSprintCreationDialog}
-						openTransferIssuesToSprintDialog={openTransferIssuesToSprintDialog}
-						numIssuesSelected={selectedIssues.length}
-						currentUserRole={currentUserRole}
+				{!isResolvedGetIssues ? null : (
+					<IssuesTable
+						isSprintIssuesTable={false}
+						issuesTableProps={{
+							openIssueCreationDialog,
+							openSprintCreationDialog,
+							openTransferIssuesToSprintDialog,
+							setSelectedIssues,
+							handleDeleteIssueClick,
+							isLoadingDeleteIssue,
+							issuesList,
+							selectedIssues,
+						}}
 					/>
-					{getIssuesReceivedData?.length ? (
-						<Table className={classes.table}>
-							<TableHead>
-								<TableRow>
-									<TableCell />
-									<TableCell />
-									<TableCell>
-										<Typography align="center">Type</Typography>
-									</TableCell>
-									<TableCell align="left">
-										<Typography>Title</Typography>
-									</TableCell>
-									<TableCell align="center">
-										<Typography>Priority</Typography>
-									</TableCell>
-									<TableCell />
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{issuesList.map((item) => (
-									<IssueRow
-										isBeingDeleted={isLoadingDeleteIssue}
-										key={item.id}
-										isBacklogIssue
-										handleSelectionClick={handleSelectionClick}
-										handleDeleteIssueClick={handleDeleteIssueClick}
-										selectedRows={selectedIssues}
-										row={item}
-									/>
-								))}
-							</TableBody>
-						</Table>
-					) : null}
-				</TableContainer>
+				)}
 			</Box>
 
 			<Snackbar
