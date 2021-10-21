@@ -199,7 +199,8 @@ export default function IssuesTable(props) {
 						<TableHead>
 							<TableRow>
 								<TableCell />
-								<TableCell />
+								{!isSprintIssuesTable && <TableCell />}
+
 								<TableCell>
 									<Typography align="center">Type</Typography>
 								</TableCell>
