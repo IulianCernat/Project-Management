@@ -10,21 +10,22 @@ import {
 	Table,
 	makeStyles,
 	Box,
-	LinearProgress,
 	Toolbar,
 	Button,
 	lighten,
-	Snackbar,
+	IconButton,
+	Popover,
+	Divider,
+	ListItem,
+	List,
+	ListSubheader,
+	MenuItem,
 } from "@material-ui/core";
+
 import { green, pink, blue } from "@material-ui/core/colors";
-import { Alert } from "@material-ui/lab";
 import PropTypes from "prop-types";
 import IssueRow from "./IssueRow";
-import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
-import IssueCreationForm from "components/forms/IssueCreationForm";
-import CreateSprintForm from "components/forms/CreateSprintForm";
-import AddingIssuesToExistingSprintForm from "components/forms/AddingIssuesToExistingSprintForm";
-import DialogForm from "components/subComponents/DialogForm";
+import { ArrowDownward, ArrowUpward, MoreVert, FilterList } from "@material-ui/icons";
 import { useProjectContext } from "contexts/ProjectContext";
 import clsx from "clsx";
 const UIRestrictionForRoles = ["developer"];
@@ -127,11 +128,145 @@ function TableToolbar(props) {
 	);
 }
 
+function ColumnFilter({
+	anchorEl,
+	open,
+	onClose,
+	filterOptions,
+	filterHandler,
+	columnName,
+	setFilteredColumnValue,
+}) {
+	const handleSelectFilter = (event, index) => {
+		filterHandler(columnName, filterOptions[index]);
+		setFilteredColumnValue(filterOptions[index]);
+		onClose();
+	};
+	return (
+		<Popover
+			anchorEl={anchorEl}
+			open={open}
+			onClose={onClose}
+			anchorOrigin={{
+				vertical: "bottom",
+				horizontal: "left",
+			}}
+			transformOrigin={{
+				vertical: "top",
+				horizontal: "right",
+			}}
+		>
+			<List
+				subheader={
+					<ListSubheader component="div" id="nested-list-subheader">
+						Display only
+					</ListSubheader>
+				}
+			>
+				{filterOptions.map((filter, index) => (
+					<ListItem button onClick={(event) => handleSelectFilter(event, index)}>
+						{filter}
+					</ListItem>
+				))}
+			</List>
+		</Popover>
+	);
+}
+
+TableHeaderColumn.propTypes = {
+	columnName: PropTypes.string.isRequired,
+	sortHandler: PropTypes.func.isRequired,
+	filterHandler: PropTypes.func.isRequired,
+	currentSortOrder: PropTypes.oneOf(["asc", "desc"]).isRequired,
+	sortByString: PropTypes.bool.isRequired,
+	clearFilter: PropTypes.func.isRequired,
+	v: PropTypes.array.isRequired,
+};
+function TableHeaderColumn({
+	columnName,
+	sortHandler,
+	filterHandler,
+	currentSortOrder,
+	filterOptions,
+	clearFilter,
+	currentFilteredColumnNames,
+}) {
+	const [filterColumnAchorEl, setFilterColumnAchorEl] = useState(null);
+	const [filteredColumnValue, setFilteredColumnValue] = useState(null);
+	const openFilterOptions = Boolean(filterColumnAchorEl);
+
+	const handleOpenFilterClick = (event) => {
+		setFilterColumnAchorEl(event.target);
+	};
+
+	const handleCloseFilterClick = () => {
+		setFilterColumnAchorEl(null);
+	};
+
+	return (
+		<Box display="flex" alignItems="center" justifyContent="center">
+			{currentSortOrder === "desc" ? (
+				<IconButton
+					size="small"
+					onClick={() => {
+						sortHandler(columnName, true, "asc");
+					}}
+				>
+					<ArrowDownward fontSize="small" color="action" />
+				</IconButton>
+			) : currentSortOrder === "asc" ? (
+				<IconButton
+					size="small"
+					onClick={() => {
+						sortHandler(columnName, true, "desc");
+					}}
+				>
+					<ArrowUpward fontSize="small" color="action" />
+				</IconButton>
+			) : (
+				<IconButton
+					size="small"
+					onClick={() => {
+						sortHandler(columnName, true, "asc");
+					}}
+				>
+					<ArrowUpward fontSize="small" color="disabled" />
+				</IconButton>
+			)}
+			<Typography variant="button" align="center">
+				{columnName}
+			</Typography>
+			{currentFilteredColumnNames.includes(columnName) && (
+				<IconButton
+					onClick={() => {
+						clearFilter(columnName, filteredColumnValue);
+					}}
+				>
+					<FilterList fontSize="small" />
+				</IconButton>
+			)}
+			<IconButton size="small" onClick={handleOpenFilterClick}>
+				<MoreVert fontSize="small" color="action" />
+			</IconButton>
+			<ColumnFilter
+				anchorEl={filterColumnAchorEl}
+				open={openFilterOptions}
+				onClose={handleCloseFilterClick}
+				filterHandler={filterHandler}
+				filterOptions={filterOptions}
+				columnName={columnName}
+				setFilteredColumnValue={setFilteredColumnValue}
+			/>
+		</Box>
+	);
+}
+
 IssuesTable.propTypes = {
 	isSprintIssuesTable: PropTypes.bool.isRequired,
 	issuesTableProps: PropTypes.oneOfType([
 		PropTypes.exact({
 			handleMoveIssueClick: PropTypes.func.isRequired,
+			issuesList: PropTypes.array.isRequired,
 		}),
 
 		PropTypes.exact({
@@ -150,17 +285,82 @@ export default function IssuesTable(props) {
 	const classes = useStyles();
 	const isSprintIssuesTable = props.isSprintIssuesTable;
 	const {
-		openIssueCreationDialog = null,
-		openSprintCreationDialog = null,
-		openTransferIssuesToSprintDialog = null,
-		setSelectedIssues = null,
-		selectedIssues = null,
-		handleDeleteIssueClick = null,
-		isLoadingDeleteIssue = null,
-		issuesList = null,
-		handleMoveIssueClick = null,
+		openIssueCreationDialog,
+		openSprintCreationDialog,
+		openTransferIssuesToSprintDialog,
+		setSelectedIssues,
+		selectedIssues,
+		handleDeleteIssueClick,
+		isLoadingDeleteIssue,
+		issuesList,
+		handleMoveIssueClick,
 	} = props.issuesTableProps;
+	const [tableIssues, setTableIssues] = useState([...issuesList]);
+	const [currentSortOrder, setCurrentSortOrder] = useState();
+	const [currentSortedColumnName, setCurrentSortedColumnName] = useState();
+	const [currentFilteredColumnNames, setCurrentFilteredColumnNames] = useState([]);
 	const { currentUserRole } = useProjectContext();
+
+	const sortByColumn = (columnName, isContentString, sortingType) => {
+		switch (sortingType) {
+			case "asc": {
+				if (isContentString)
+					setTableIssues([
+						...tableIssues.sort((firstItem, secondItem) =>
+							firstItem[columnName].localeCompare(secondItem[columnName])
+						),
+					]);
+				else
+					tableIssues.sort(
+						(firstItem, secondItem) => firstItem[columnName] - secondItem[columnName]
+					);
+				setCurrentSortOrder("asc");
+
+				break;
+			}
+			case "desc": {
+				if (isContentString)
+					tableIssues.sort((firstItem, secondItem) =>
+						secondItem[columnName].localeCompare(firstItem[columnName])
+					);
+				else
+					tableIssues.sort(
+						(firstItem, secondItem) => secondItem[columnName] - firstItem[columnName]
+					);
+				setCurrentSortOrder("desc");
+				break;
+			}
+			default:
+				break;
+		}
+		setCurrentSortedColumnName(columnName);
+	};
+
+	const filterByColumn = (columnName, value) => {
+		setTableIssues(
+			tableIssues.map((issue) => {
+				if (issue[columnName] === value) issue["filteredColumns"].add(columnName);
+
+				return issue;
+			})
+		);
+		if (!currentFilteredColumnNames.includes(columnName))
+			setCurrentFilteredColumnNames([...currentFilteredColumnNames, columnName]);
+	};
+
+	const clearColumnFilter = (columnName, value) => {
+		setTableIssues(
+			tableIssues.map((issue) => {
+				if (issue[columnName] === value && value)
+					issue["filteredColumns"].delete(columnName);
+				return issue;
+			})
+		);
+
+		setCurrentFilteredColumnNames([
+			...currentFilteredColumnNames.filter((item) => item !== columnName),
+		]);
+	};
 
 	const handleSelectionClick = (issueId) => {
 		const selectedIndex = selectedIssues.indexOf(issueId);
@@ -182,6 +382,15 @@ export default function IssuesTable(props) {
 		setSelectedIssues(newSelectedIssues);
 	};
 
+	useEffect(() => {
+		setTableIssues([
+			...issuesList.map((issue) => {
+				issue["filteredColumns"] = new Set();
+				return issue;
+			}),
+		]);
+	}, [issuesList]);
+
 	return (
 		<Paper>
 			{!isSprintIssuesTable && (
@@ -201,36 +410,85 @@ export default function IssuesTable(props) {
 								<TableCell />
 								{!isSprintIssuesTable && <TableCell />}
 
-								<TableCell>
-									<Typography align="center">Type</Typography>
+								<TableCell align="center">
+									<TableHeaderColumn
+										columnName="type"
+										sortHandler={sortByColumn}
+										filterHandler={filterByColumn}
+										currentSortOrder={
+											currentSortedColumnName === "type"
+												? currentSortOrder
+												: "null"
+										}
+										sortByString={true}
+										filterOptions={["bug", "task", "story"]}
+										clearFilter={clearColumnFilter}
+										currentFilteredColumnNames={currentFilteredColumnNames}
+									/>
 								</TableCell>
 								<TableCell align="left">
-									<Typography>Title</Typography>
+									<Typography variant="button">Title</Typography>
 								</TableCell>
 								{isSprintIssuesTable && (
 									<TableCell align="left">
-										<Typography>Status</Typography>
+										<TableHeaderColumn
+											columnName="status"
+											sortHandler={sortByColumn}
+											currentSortOrder={
+												currentSortedColumnName === "status"
+													? currentSortOrder
+													: "null"
+											}
+											sortByString={true}
+											filterOptions={["pending", "inProgress", "done"]}
+											filterHandler={filterByColumn}
+											clearFilter={clearColumnFilter}
+											currentFilteredColumnNames={currentFilteredColumnNames}
+										/>
 									</TableCell>
 								)}
 								<TableCell align="center">
-									<Typography>Priority</Typography>
+									<TableHeaderColumn
+										columnName="priority"
+										filterHandler={filterByColumn}
+										sortHandler={sortByColumn}
+										currentSortOrder={
+											currentSortedColumnName === "priority"
+												? currentSortOrder
+												: "null"
+										}
+										sortByString={true}
+										filterOptions={Array.from(
+											{ length: 5 },
+											(item, index) => `${index}`
+										).slice(1)}
+										clearFilter={clearColumnFilter}
+										currentFilteredColumnNames={currentFilteredColumnNames}
+									/>
 								</TableCell>
 								<TableCell />
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{issuesList.map((item) => (
-								<IssueRow
-									handleMoveIssueClick={handleMoveIssueClick}
-									isBeingDeleted={isLoadingDeleteIssue}
-									key={item.id}
-									isBacklogIssue={!isSprintIssuesTable}
-									handleSelectionClick={handleSelectionClick}
-									handleDeleteIssueClick={handleDeleteIssueClick}
-									selectedRows={selectedIssues}
-									row={item}
-								/>
-							))}
+							{tableIssues
+								.filter(
+									(item) =>
+										Object.keys(item).some((key) =>
+											item["filteredColumns"].has(key)
+										) || currentFilteredColumnNames.length === 0
+								)
+								.map((item) => (
+									<IssueRow
+										handleMoveIssueClick={handleMoveIssueClick}
+										isBeingDeleted={isLoadingDeleteIssue}
+										key={item.id}
+										isBacklogIssue={!isSprintIssuesTable}
+										handleSelectionClick={handleSelectionClick}
+										handleDeleteIssueClick={handleDeleteIssueClick}
+										selectedRows={selectedIssues}
+										row={item}
+									/>
+								))}
 						</TableBody>
 					</Table>
 				) : null}

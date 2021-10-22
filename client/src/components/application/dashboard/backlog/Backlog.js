@@ -79,6 +79,7 @@ export default function Backlog() {
 
 	useEffect(() => {
 		if (!isResolvedGetIssues) return;
+
 		setIssuesList(getIssuesReceivedData);
 	}, [isResolvedGetIssues, getIssuesReceivedData]);
 

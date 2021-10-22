@@ -22,20 +22,22 @@ const useStyles = makeStyles((theme) => {
 		content: {
 			backgroundColor: "#BDDAF2",
 			width: "100%",
+			maxHeight: "100vh",
+			minHeight: "100vh",
+			overflowY: "auto",
 			[theme.breakpoints.up("md")]: {
 				padding: theme.spacing(4),
-				overflowY: "auto",
-				maxHeight: `100vh`,
 			},
 			[theme.breakpoints.down("md")]: {
 				paddingLeft: "1px",
 				paddingRight: "1px",
 				paddingTop: theme.spacing(1),
-				overflowY: "auto",
-				maxHeight: `100vh`,
 			},
 		},
-		toolbar: theme.mixins.toolbar,
+		toolbar: {
+			...theme.mixins.toolbar,
+			width: "100%",
+		},
 	};
 });
 
@@ -118,6 +120,7 @@ export default function Dashboard() {
 
 					<Box className={classes.content} bgcolor="grey.200">
 						<div className={classes.toolbar} />
+
 						<ProjectProvider
 							projectId={Number(projectId)}
 							currentUserRole={getRoleReceivedData.user_role}

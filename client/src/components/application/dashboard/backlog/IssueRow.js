@@ -219,7 +219,7 @@ export default function IssueRow(props) {
 						onClick={(event) =>
 							isBacklogIssue
 								? props.handleDeleteIssueClick(row.id)
-								: props.handleMoveIssueClick(row.id)
+								: props.handleMoveIssueClick
 						}
 						disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
 					>
