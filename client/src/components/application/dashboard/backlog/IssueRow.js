@@ -99,6 +99,44 @@ const generatePriorityStars = (priorityNumber) => {
 	return starsArray;
 };
 
+IssueTypesChip.propTypes = {
+	type: PropTypes.oneOf(["story", "task", "bug"]),
+};
+export function IssueTypesChip({ type, ...chipProps }) {
+	const classes = useStyles();
+	switch (type) {
+		case "task":
+			return (
+				<Chip
+					color="primary"
+					classes={{ colorPrimary: classes.taskColor }}
+					label="task"
+					{...chipProps}
+				/>
+			);
+		case "story":
+			return (
+				<Chip
+					color="primary"
+					classes={{ colorPrimary: classes.storyColor }}
+					label="story"
+					{...chipProps}
+				/>
+			);
+		case "bug":
+			return (
+				<Chip
+					color="primary"
+					classes={{ colorPrimary: classes.bugColor }}
+					label="bug"
+					{...chipProps}
+				/>
+			);
+		default:
+			return null;
+	}
+}
+
 export default function IssueRow(props) {
 	const { currentUserRole } = useProjectContext();
 	const { row, selectedRows, handleSelectionClick, isBacklogIssue, isBeingDeleted } = props;
@@ -152,36 +190,13 @@ export default function IssueRow(props) {
 				</TableCell>
 
 				<TableCell align="center">
-					{(function () {
-						switch (row.type) {
-							case "task":
-								return (
-									<Chip
-										color="primary"
-										classes={{ colorPrimary: classes.taskColor }}
-										label="task"
-									/>
-								);
-							case "story":
-								return (
-									<Chip
-										color="primary"
-										classes={{ colorPrimary: classes.storyColor }}
-										label="story"
-									/>
-								);
-							case "bug":
-								return (
-									<Chip
-										color="primary"
-										classes={{ colorPrimary: classes.bugColor }}
-										label="bug"
-									/>
-								);
-							default:
-								return null;
-						}
-					})()}
+					{row.type === "task" ? (
+						<IssueTypesChip type="task" />
+					) : row.type === "story " ? (
+						<IssueTypesChip type="story" />
+					) : (
+						<IssueTypesChip type="bug" />
+					)}
 				</TableCell>
 				<TableCell style={{ width: "100ch" }} align="left">
 					{row.title}

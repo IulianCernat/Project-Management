@@ -16,6 +16,7 @@ import {
 	IconButton,
 	Popover,
 	Divider,
+	Chip,
 	ListItem,
 	List,
 	ListSubheader,
@@ -24,8 +25,8 @@ import {
 
 import { green, pink, blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
-import IssueRow from "./IssueRow";
-import { ArrowDownward, ArrowUpward, MoreVert, FilterList } from "@material-ui/icons";
+import IssueRow, { IssueTypesChip } from "./IssueRow";
+import { ArrowDownward, ArrowUpward, MoreVert, FilterList, Star } from "@material-ui/icons";
 import { useProjectContext } from "contexts/ProjectContext";
 import clsx from "clsx";
 const UIRestrictionForRoles = ["developer"];
@@ -60,9 +61,6 @@ const useStyles = makeStyles((theme) => ({
 	toolbarHighlight: {
 		color: theme.palette.secondary.main,
 		backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-	},
-	toolbar: {
-		position: "sticky",
 	},
 }));
 
@@ -138,7 +136,7 @@ function ColumnFilter({
 	setFilteredColumnValue,
 }) {
 	const handleSelectFilter = (event, index) => {
-		filterHandler(columnName, filterOptions[index]);
+		filterHandler(columnName, Object.keys(filterOptions)[index]);
 		setFilteredColumnValue(filterOptions[index]);
 		onClose();
 	};
@@ -149,7 +147,7 @@ function ColumnFilter({
 			onClose={onClose}
 			anchorOrigin={{
 				vertical: "bottom",
-				horizontal: "left",
+				horizontal: "right",
 			}}
 			transformOrigin={{
 				vertical: "top",
@@ -163,13 +161,15 @@ function ColumnFilter({
 					</ListSubheader>
 				}
 			>
-				{filterOptions.map((filter, index) => (
+				{Object.entries(filterOptions).map((filter, index) => (
 					<ListItem
+						alignItems="center"
+						dense
 						key={index}
 						button
 						onClick={(event) => handleSelectFilter(event, index)}
 					>
-						{filter}
+						<Box m="auto">{filter[1]}</Box>
 					</ListItem>
 				))}
 			</List>
@@ -208,7 +208,7 @@ function TableHeaderColumn({
 	};
 
 	return (
-		<Box display="flex" alignItems="center" justifyContent="center">
+		<Box flexDirection="row" display="flex" alignItems="center" justifyContent="center">
 			{currentSortOrder === "desc" ? (
 				<IconButton
 					size="small"
@@ -242,6 +242,7 @@ function TableHeaderColumn({
 			</Typography>
 			{currentFilteredColumnNames.includes(columnName) && (
 				<IconButton
+					size="small"
 					onClick={() => {
 						clearFilter(columnName, filteredColumnValue);
 					}}
@@ -409,13 +410,13 @@ export default function IssuesTable(props) {
 			)}
 			<TableContainer>
 				{issuesList?.length ? (
-					<Table className={classes.table} stickyHeader={true}>
+					<Table className={classes.table}>
 						<TableHead>
 							<TableRow>
 								<TableCell />
 								{!isSprintIssuesTable && <TableCell />}
 
-								<TableCell align="center">
+								<TableCell padding="none" align="center">
 									<TableHeaderColumn
 										columnName="type"
 										sortHandler={sortByColumn}
@@ -426,7 +427,11 @@ export default function IssuesTable(props) {
 												: "null"
 										}
 										sortByString={true}
-										filterOptions={["bug", "task", "story"]}
+										filterOptions={{
+											bug: <IssueTypesChip type="bug" />,
+											task: <IssueTypesChip type="task" />,
+											story: <IssueTypesChip type="story" />,
+										}}
 										clearFilter={clearColumnFilter}
 										currentFilteredColumnNames={currentFilteredColumnNames}
 									/>
@@ -463,10 +468,21 @@ export default function IssuesTable(props) {
 												: "null"
 										}
 										sortByString={true}
-										filterOptions={Array.from(
-											{ length: 5 },
-											(item, index) => `${index}`
-										).slice(1)}
+										filterOptions={Object.fromEntries(
+											Array.from({ length: 6 }, (item, index) => `${index}`)
+												.slice(1)
+												.map((item) => [
+													item,
+													<Box
+														display="flex"
+														alignItems="center"
+														style={{ gap: "2px" }}
+													>
+														<Typography>{item}</Typography>
+														<Star fontSize="small" />
+													</Box>,
+												])
+										)}
 										clearFilter={clearColumnFilter}
 										currentFilteredColumnNames={currentFilteredColumnNames}
 									/>
