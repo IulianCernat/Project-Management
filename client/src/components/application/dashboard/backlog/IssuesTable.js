@@ -164,7 +164,11 @@ function ColumnFilter({
 				}
 			>
 				{filterOptions.map((filter, index) => (
-					<ListItem button onClick={(event) => handleSelectFilter(event, index)}>
+					<ListItem
+						key={index}
+						button
+						onClick={(event) => handleSelectFilter(event, index)}
+					>
 						{filter}
 					</ListItem>
 				))}
@@ -177,10 +181,10 @@ TableHeaderColumn.propTypes = {
 	columnName: PropTypes.string.isRequired,
 	sortHandler: PropTypes.func.isRequired,
 	filterHandler: PropTypes.func.isRequired,
-	currentSortOrder: PropTypes.oneOf(["asc", "desc"]).isRequired,
+	currentSortOrder: PropTypes.oneOf(["asc", "desc", "null"]).isRequired,
 	sortByString: PropTypes.bool.isRequired,
 	clearFilter: PropTypes.func.isRequired,
-	v: PropTypes.array.isRequired,
+	currentFilteredColumnNames: PropTypes.array.isRequired,
 };
 function TableHeaderColumn({
 	columnName,
@@ -340,6 +344,7 @@ export default function IssuesTable(props) {
 		setTableIssues(
 			tableIssues.map((issue) => {
 				if (issue[columnName] === value) issue["filteredColumns"].add(columnName);
+				else issue["filteredColumns"].delete(columnName);
 
 				return issue;
 			})
@@ -466,17 +471,23 @@ export default function IssuesTable(props) {
 										currentFilteredColumnNames={currentFilteredColumnNames}
 									/>
 								</TableCell>
+								<TableCell align="left">
+									<Typography>Created at</Typography>
+								</TableCell>
 								<TableCell />
 							</TableRow>
 						</TableHead>
 						<TableBody>
 							{tableIssues
-								.filter(
-									(item) =>
-										Object.keys(item).some((key) =>
-											item["filteredColumns"].has(key)
-										) || currentFilteredColumnNames.length === 0
-								)
+								.filter((item) => {
+									if (currentFilteredColumnNames.length === 0) return true;
+
+									if (!item["filteredColumns"].size) return false;
+
+									return currentFilteredColumnNames.every((filteredColumnName) =>
+										item["filteredColumns"].has(filteredColumnName)
+									);
+								})
 								.map((item) => (
 									<IssueRow
 										handleMoveIssueClick={handleMoveIssueClick}

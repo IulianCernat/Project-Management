@@ -215,6 +215,9 @@ export default function IssueRow(props) {
 				) : null}
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>
 				<TableCell>
+					<Typography>{format(new Date(row.created_at), "dd/MM/yyyy")}</Typography>
+				</TableCell>
+				<TableCell>
 					<IconButton
 						onClick={(event) =>
 							isBacklogIssue
@@ -275,9 +278,6 @@ export default function IssueRow(props) {
 										<TableCell align="left">
 											<Typography>Created by</Typography>
 										</TableCell>
-										<TableCell align="left">
-											<Typography>Created at</Typography>
-										</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -296,11 +296,6 @@ export default function IssueRow(props) {
 												}
 												label={row.creator_user_profile.fullName}
 											/>
-										</TableCell>
-										<TableCell>
-											<Typography>
-												{format(new Date(row.created_at), "dd/MM/yyyy")}
-											</Typography>
 										</TableCell>
 									</TableRow>
 								</TableBody>
