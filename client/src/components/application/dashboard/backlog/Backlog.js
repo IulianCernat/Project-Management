@@ -60,8 +60,7 @@ export default function Backlog() {
 	}
 
 	const insertNewIssues = (newIssueObj) => {
-		issuesList.unshift(newIssueObj);
-		setIssuesList(issuesList);
+		setIssuesList([newIssueObj, ...issuesList]);
 		handleCancelIssueCreation();
 	};
 

@@ -220,7 +220,7 @@ export default function IssueRow(props) {
 				<TableCell align="center">
 					{row.type === "task" ? (
 						<IssueTypesChip type="task" />
-					) : row.type === "story " ? (
+					) : row.type === "story" ? (
 						<IssueTypesChip type="story" />
 					) : (
 						<IssueTypesChip type="bug" />
@@ -265,7 +265,7 @@ export default function IssueRow(props) {
 						onClick={(event) =>
 							isBacklogIssue
 								? props.handleDeleteIssueClick(row.id)
-								: props.handleMoveIssueClick
+								: props.handleMoveIssueClick(row.id)
 						}
 						disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
 					>

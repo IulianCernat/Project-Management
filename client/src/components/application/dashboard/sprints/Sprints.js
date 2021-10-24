@@ -10,8 +10,9 @@ import {
 	IconButton,
 	Tooltip,
 	Fab,
+	Snackbar,
 } from "@material-ui/core";
-import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
+import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp, Close } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch, doTrelloApiFetch } from "customHooks/useFetch";
@@ -39,75 +40,6 @@ const useStyles = makeStyles({
 	},
 });
 const UIRestrictionForRoles = ["developer"];
-
-SprintTable.propTypes = {
-	sprint: PropTypes.object.isRequired,
-	currentUserRole: PropTypes.string.isRequired,
-	handleDeleteSprintClick: PropTypes.func.isRequired,
-	startedSprintId: PropTypes.number.isRequired,
-	setStartedSprintId: PropTypes.func.isRequired,
-	trelloBoardId: PropTypes.string.isRequired,
-};
-function SprintTable({
-	sprint,
-	currentUserRole,
-	handleDeleteSprintClick,
-	setStartedSprintId,
-	startedSprintId,
-	trelloBoardId,
-}) {
-	const classes = useStyles();
-	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
-	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
-	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
-
-	const {
-		status: updateIssueStatus,
-		receivedData: updatedIssueReveivedData,
-		error: updateIssueError,
-		isLoading: isLoadingIssueUpdate,
-		isResolved: isResolvedIssueUpdate,
-		isRejected: isRejectedIssueUpdate,
-	} = usePatchFetch(`api/issues/${issueIdToBeUpdated}`, requestBodyForIssueUpdate);
-
-	const handleMoveIssueClick = (issueId) => {
-		setIssueIdToBeUpdated(issueId);
-		setRequestBodyForIssueUpdate(JSON.stringify({ sprint_id: 0 }));
-	};
-
-	const handleCopyIssueToTrelloClick = (currentIssue) => {};
-	useEffect(() => {
-		if (!isResolvedIssueUpdate) return;
-		setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
-	}, [isResolvedIssueUpdate]);
-
-	return (
-		<TableContainer component={Paper} style={{ padding: "1rem" }}>
-			<SprintHeader
-				handleDeleteSprintClick={handleDeleteSprintClick}
-				currentUserRole={currentUserRole}
-				name={sprint.name}
-				startDate={sprint.start_date}
-				duration={sprint.duration}
-				endDate={sprint.end_date}
-				goal={sprint.goal}
-				isStarted={sprint.start}
-				isCompleted={sprint.completed}
-				id={sprint.id}
-				startedSprintId={startedSprintId}
-				setStartedSprintId={setStartedSprintId}
-			/>
-			<IssuesTable
-				isSprintIssuesTable
-				issuesTableProps={{
-					handleCopyIssueToTrelloClick,
-					handleMoveIssueClick,
-					issuesList: sprintIssues,
-				}}
-			/>
-		</TableContainer>
-	);
-}
 
 function SprintHeader({
 	id,
@@ -296,12 +228,120 @@ function SprintHeader({
 		</Box>
 	);
 }
+
+SprintTable.propTypes = {
+	sprint: PropTypes.object.isRequired,
+	currentUserRole: PropTypes.string.isRequired,
+	handleDeleteSprintClick: PropTypes.func.isRequired,
+	startedSprintId: PropTypes.number.isRequired,
+	setStartedSprintId: PropTypes.func.isRequired,
+	trelloBoardId: PropTypes.string.isRequired,
+	firstTrelloBoardListId: PropTypes.string.isRequired,
+	trelloLabelsList: PropTypes.arrayOf(PropTypes.obj).isRequired,
+};
+function SprintTable({
+	sprint,
+	currentUserRole,
+	handleDeleteSprintClick,
+	setStartedSprintId,
+	startedSprintId,
+	trelloBoardId,
+	firstTrelloBoardListId,
+	trelloLabelsList,
+}) {
+	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
+	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
+	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
+	const [trelloFetchError, setTrelloFetchError] = useState();
+	const updateType = useRef(); //delete, copy
+	const {
+		status: updateIssueStatus,
+		receivedData: updatedIssueReveivedData,
+		error: updateIssueError,
+		isLoading: isLoadingIssueUpdate,
+		isResolved: isResolvedIssueUpdate,
+		isRejected: isRejectedIssueUpdate,
+	} = usePatchFetch(`api/issues/${issueIdToBeUpdated}`, requestBodyForIssueUpdate);
+
+	const handleMoveIssueClick = (issueId) => {
+		updateType.current = "delete";
+		setIssueIdToBeUpdated(issueId);
+		setRequestBodyForIssueUpdate(JSON.stringify({ sprint_id: 0 }));
+	};
+
+	const handleCopyIssueToTrelloClick = (currentIssue) => {
+		doTrelloApiFetch({
+			method: "POST",
+			apiUri: "cards",
+			apiParams: {
+				name: currentIssue.title,
+				desc: currentIssue.description,
+				idList: firstTrelloBoardListId,
+				idLabels: [trelloLabelsList.find((label) => label.name === currentIssue.type).id],
+			},
+			successHandler: (newTrelloIssue) => {
+				setIssueIdToBeUpdated(currentIssue.id);
+				setRequestBodyForIssueUpdate(JSON.stringify({ trello_card_id: newTrelloIssue.id }));
+				updateType.current = "copy";
+			},
+			errorHandler: setTrelloFetchError,
+		});
+	};
+	useEffect(() => {
+		console.log("in effect");
+		if (!isResolvedIssueUpdate) return;
+		console.log(updateType.current);
+		switch (updateType.current) {
+			case "delete": {
+				console.log("deleted");
+				setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
+				break;
+			}
+			case "copy":
+				break;
+			default:
+				break;
+		}
+	}, [isResolvedIssueUpdate, issueIdToBeUpdated]);
+
+	return (
+		<TableContainer component={Paper} style={{ padding: "1rem" }}>
+			<SprintHeader
+				handleDeleteSprintClick={handleDeleteSprintClick}
+				currentUserRole={currentUserRole}
+				name={sprint.name}
+				startDate={sprint.start_date}
+				duration={sprint.duration}
+				endDate={sprint.end_date}
+				goal={sprint.goal}
+				isStarted={sprint.start}
+				isCompleted={sprint.completed}
+				id={sprint.id}
+				startedSprintId={startedSprintId}
+				setStartedSprintId={setStartedSprintId}
+			/>
+			<IssuesTable
+				isSprintIssuesTable
+				issuesTableProps={{
+					handleCopyIssueToTrelloClick,
+					handleMoveIssueClick,
+					issuesList: sprintIssues,
+				}}
+			/>
+		</TableContainer>
+	);
+}
+
 export default function Sprints() {
 	const { projectId, currentUserRole, trelloBoardId } = useProjectContext();
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
 	const getParams = useRef({ project_id: projectId });
 	const [startedSprintId, setStartedSprintId] = useState();
+	const [trelloBoards, setTrelloBoards] = useState([]);
+	const [trelloBoardsFetchError, setTrelloFetchError] = useState();
+	const [trelloLabels, setTrelloLabels] = useState([]);
+
 	const {
 		status: getSprintsStatus,
 		receivedData: getSprintsReceivedData,
@@ -331,18 +371,42 @@ export default function Sprints() {
 	}, [isResolvedDeleteSprint]);
 
 	useEffect(() => {
-		if (isResolvedGetSprints) {
-			setSprintsList(getSprintsReceivedData);
-			setStartedSprintId(
-				getSprintsReceivedData.find((item) => item.start && !item.completed)?.id
-			);
-		}
-	}, [isResolvedGetSprints, getSprintsReceivedData]);
+		if (!isResolvedGetSprints || trelloBoards?.length) return;
+
+		setSprintsList(getSprintsReceivedData);
+		setStartedSprintId(
+			getSprintsReceivedData.find((item) => item.start && !item.completed)?.id
+		);
+		if (!trelloBoardId) return;
+		doTrelloApiFetch({
+			method: "GET",
+			apiUri: `boards/${trelloBoardId}/lists`,
+			apiParams: {
+				cards: "all",
+				fields: "id,name,labelNames",
+				card_fields: "id,name",
+			},
+			successHandler: setTrelloBoards,
+			errorHandler: setTrelloFetchError,
+		});
+		doTrelloApiFetch({
+			method: "GET",
+			apiUri: `boards/${trelloBoardId}/labels`,
+			successHandler: setTrelloLabels,
+			errorHandler: setTrelloFetchError,
+		});
+	}, [isResolvedGetSprints, getSprintsReceivedData, trelloBoardId]);
+
 	return (
 		<>
+			{trelloBoardsFetchError ? (
+				<Alert severity="error">{trelloBoardsFetchError}</Alert>
+			) : null}
 			{isLoadingGetSprints ? <LinearProgress style={{ width: "100%" }} /> : null}
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
-			{isResolvedGetSprints && getSprintsReceivedData.length && (
+			{isResolvedGetSprints &&
+			getSprintsReceivedData.length &&
+			((trelloBoards.length && trelloLabels.length) || !trelloBoardId) ? (
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable
@@ -353,10 +417,14 @@ export default function Sprints() {
 							key={item.id}
 							sprint={item}
 							trelloBoardId={trelloBoardId}
+							firstTrelloBoardListId={trelloBoardId ? trelloBoards[0].id : null}
+							trelloLabelsList={
+								trelloBoardId ? trelloLabels.filter((label) => label.name) : null
+							}
 						/>
 					))}
 				</Box>
-			)}
+			) : null}
 			{!isLoadingGetSprints && !getSprintsReceivedData?.length && (
 				<Typography variant="h5" color="primary">
 					Currently there are no sprints created

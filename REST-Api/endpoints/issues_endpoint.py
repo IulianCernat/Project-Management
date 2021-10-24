@@ -33,6 +33,7 @@ class IssuesCollection(Resource):
     @api.expect(multiple_issues_update_input)
     def patch(self):
         input_data = request.json
+
         update_issues(input_data)
         return {'message': f"Issues successfully updated"}, 200
 

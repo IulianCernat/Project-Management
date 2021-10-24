@@ -113,6 +113,7 @@ issue_input = api.model('Issue input', {
 
 })
 issue_update_input = api.model('Issue input for updating', {
+    'trello_card_id': String(description="The new Trello card's id which contains this issue"),
     'status': String(enum=['pending', 'inProgress', 'done'], description="The current situation of issue"),
     'sprint_id': Integer(description="The id of new sprint, 0 if you want issues to go back to backlog")
 })
@@ -127,6 +128,7 @@ multiple_issues_update_input = api.model('List of issues', {
 
 issue_output = api.inherit('Issue output', issue_input, {
     'id': Integer(required=True, description="The issue database id"),
+    'trello_card_id': String(required=True, description="Trello card's id which contains this issue"),
     'status': String(required=True, enum=['pending', 'inProgress', 'done'],
                      description="The current situation of issue"),
     'sprint_id': Integer(required=True, description="The sprint id when this issue is added to a sprint"),

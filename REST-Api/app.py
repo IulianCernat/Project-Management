@@ -38,8 +38,8 @@ class FlaskApp(Flask):
         db.init_app(self)
         self.app_context().push()
 
-        with self.app_context():
-            db.create_all()  # Create database tables for our data models
+        # with self.app_context():
+        #     db.create_all()  # Create database tables for our data models
 
         CORS(self)
 
@@ -47,4 +47,4 @@ class FlaskApp(Flask):
 app = FlaskApp(__name__)
 
 if __name__ == "__main__":
-    app.run(debug=settings.FLASK_DEBUG, host="0.0.0.0")
+    app.run(debug=settings.FLASK_DEBUG, host="localhost")

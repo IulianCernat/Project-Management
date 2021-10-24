@@ -127,7 +127,7 @@ export default function Dashboard() {
 							trelloBoardId={
 								additionalUserInfo.trello_boards_ids.find(
 									(item) => item.project_id === Number(projectId)
-								).trello_board_id
+								)?.trello_board_id
 							}
 						>
 							<Switch>

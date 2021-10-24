@@ -94,6 +94,8 @@ class Issue(db.Model):
     sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id', ondelete='cascade'), nullable=True)
     status = db.Column(db.Enum("pending", "done", "inProgress"), default="pending", nullable=False)
 
+    trello_card_id = db.Column(db.String(24), nullable=True)
+
     def __init__(self, input_obj):
         self.type = input_obj['type']
         self.title = input_obj['title']
@@ -102,6 +104,7 @@ class Issue(db.Model):
         self.created_at = zulu.parse(input_obj['created_at']).datetime
         self.project_id = input_obj['project_id']
         self.creator_user_id = input_obj['creator_user_id']
+
 
 
 class Sprint(db.Model):
