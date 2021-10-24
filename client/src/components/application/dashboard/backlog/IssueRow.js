@@ -147,7 +147,6 @@ export default function IssueRow(props) {
 		handleMoveIssueClick,
 		handleCopyIssueToTrelloClick,
 		handleDeleteIssueClick,
-		trello_issue_card_status,
 	} = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
 	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
@@ -191,7 +190,10 @@ export default function IssueRow(props) {
 					<TableCell padding="checkbox">
 						<IconButton
 							onClick={(event) => handleCopyIssueToTrelloClick(row)}
-							disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
+							disabled={
+								UIRestrictionForRoles.includes(currentUserRole) ||
+								row.trello_issue_card_status !== "Unknown"
+							}
 						>
 							<Tooltip
 								arrow
@@ -201,7 +203,15 @@ export default function IssueRow(props) {
 									</Typography>
 								}
 							>
-								<Launch fontSize="small" color="primary" />
+								<Launch
+									fontSize="small"
+									color={
+										UIRestrictionForRoles.includes(currentUserRole) ||
+										row.trello_issue_card_status !== "Unknown"
+											? "disabled"
+											: "secondary"
+									}
+								/>
 							</Tooltip>
 						</IconButton>
 					</TableCell>
@@ -230,14 +240,7 @@ export default function IssueRow(props) {
 				</TableCell>
 				{!isBacklogIssue ? (
 					<TableCell align="center">
-						<Chip
-							color="primary"
-							label={
-								row.trello_issue_card_status
-									? row.trello_issue_card_status
-									: "Unknown"
-							}
-						/>
+						<Chip color="primary" label={row.trello_issue_card_status} />
 					</TableCell>
 				) : null}
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>

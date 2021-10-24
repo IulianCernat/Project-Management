@@ -246,6 +246,7 @@ function SprintTable({
 	startedSprintId,
 	trelloBoardId,
 	firstTrelloBoardListId,
+	firstTrelloBoardListName,
 	trelloLabelsList,
 }) {
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
@@ -292,11 +293,18 @@ function SprintTable({
 		console.log(updateType.current);
 		switch (updateType.current) {
 			case "delete": {
-				console.log("deleted");
 				setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
 				break;
 			}
 			case "copy":
+				sprintIssues.filter((item) => {
+					if (item.id === issueIdToBeUpdated) {
+						item["trello_issue_card_status"] = firstTrelloBoardListName;
+						return true;
+					}
+					return false;
+				});
+				setSprintIssues([...sprintIssues]);
 				break;
 			default:
 				break;
@@ -436,6 +444,7 @@ export default function Sprints() {
 							sprint={item}
 							trelloBoardId={trelloBoardId}
 							firstTrelloBoardListId={trelloBoardId ? trelloBoards[0].id : null}
+							firstTrelloBoardListName={trelloBoardId ? trelloBoards[0].name : null}
 							trelloLabelsList={
 								trelloBoardId ? trelloLabels.filter((label) => label.name) : null
 							}
