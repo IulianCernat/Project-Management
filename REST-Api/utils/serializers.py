@@ -18,12 +18,18 @@ user_input = api.model('User input', {
     'avatar_url': String(required=False, description="User's profile picture")
 })
 
+trello_board_id = api.model('Trello board id', {
+    'project_id': Integer(required=True, description="The id of the project in which the trello board sits"),
+    'trello_board_id': String(required=True, description="The trello effective id")
+})
+
 user_output = api.model('User output', {
     'id': Integer(required=True, description="User's database id"),
     'fullName': String(required=True, description="User's full name"),
     'avatar_url': String(required=True, description="User's avatar url"),
     'contact': String(required=True, description="User's contact information (email)"),
-    'is_part_of_project': Boolean(required=False, description="Whether user is part of specified project id")
+    'is_part_of_project': Boolean(required=False, description="Whether user is part of specified project id"),
+    'trello_boards_ids': List(Nested(trello_board_id), description="The ids of the Trello boards on which the user is a member")
 })
 
 user_update = api.model('User update', {

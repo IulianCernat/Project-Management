@@ -27,6 +27,7 @@
         "react-icons": "^4.2.0",
         "react-router-dom": "^5.2.0",
         "react-scripts": "4.0.3",
+        "react-trello-client": "^1.1.6",
         "web-vitals": "^1.1.1",
         "yup": "^0.32.9"
     },

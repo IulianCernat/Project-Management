@@ -16,9 +16,10 @@ import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
-
 import { useProjectContext } from "contexts/ProjectContext";
 import IssuesTable from "../backlog/IssuesTable";
+import TrelloClient, { Trello } from "react-trello-client";
+
 const useStyles = makeStyles({
 	table: {
 		width: "100%",
@@ -71,6 +72,42 @@ function SprintTable({
 		setIssueIdToBeUpdated(issueId);
 		setRequestBodyForIssueUpdate(JSON.stringify({ sprint_id: 0 }));
 	};
+
+	const handleCopyIssueToTrelloClick = (currentIssue) => {
+		let boards;
+
+		const errorHandler = () => {
+			console.log("Fetch failed");
+		};
+
+		fetch(
+			`https://api.trello.com/1/cards?${new URLSearchParams({
+				key: "a0a407637169f78d6d0a9144b9be43fb",
+				idList: "6174035a63240976db7eabda",
+				token: "3c52cbde981f997f3cfd6f067d70e63ab10407d6bf08851f03942f8915c664aa",
+				name: currentIssue.title,
+			}).toString()}`,
+			{
+				method: "POST",
+			}
+		);
+
+		// const boardsJson = boards.json();
+		// console.log(boardsJson);
+		// const createdCard = Trello.post(
+		// 	"cards",
+		// 	{
+		// 		name: currentIssue.title,
+		// 		desc: currentIssue.description,
+		// 		idList: "pending",
+		// 		idLabels: [currentIssue.type],
+		// 	},
+		// 	successHandler,
+		// 	errorHandler
+		// ).json();
+
+		// console.log(createdCard);
+	};
 	useEffect(() => {
 		if (!isResolvedIssueUpdate) return;
 		setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
@@ -94,7 +131,11 @@ function SprintTable({
 			/>
 			<IssuesTable
 				isSprintIssuesTable
-				issuesTableProps={{ handleMoveIssueClick, issuesList: sprintIssues }}
+				issuesTableProps={{
+					handleCopyIssueToTrelloClick,
+					handleMoveIssueClick,
+					issuesList: sprintIssues,
+				}}
 			/>
 		</TableContainer>
 	);

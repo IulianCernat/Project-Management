@@ -14,7 +14,7 @@ import ProfilePageAvatar from "components/subComponents/ProfilePageAvatar";
 import TextDisplayWrapper from "../../subComponents/TextDisplayWrapper";
 import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
-
+import TrelloAuthorization from "components/subComponents/TrelloAuthorization";
 const useStyles = makeStyles((theme) => ({
 	identity: {
 		display: "flex",
@@ -82,8 +82,10 @@ export default function ProfileAside(props) {
 						</Grid>
 					</Grid>
 				)}
+				<Box mt={2} display="flex" justifyContent="center">
+					<TrelloAuthorization />
+				</Box>
 				<Box mt={2}>
-					{logoutError ? logoutError : null}
 					<Button
 						fullWidth
 						variant="contained"
@@ -93,6 +95,7 @@ export default function ProfileAside(props) {
 						}}
 					>
 						<Typography>Logout</Typography>
+						{logoutError ? logoutError : null}
 					</Button>
 				</Box>
 			</Box>

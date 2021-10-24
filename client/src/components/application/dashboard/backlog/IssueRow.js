@@ -26,6 +26,7 @@ import {
 	KeyboardArrowDown,
 	DeleteForever,
 	OpenWith,
+	Launch,
 } from "@material-ui/icons";
 
 import { green, pink, blue } from "@material-ui/core/colors";
@@ -33,6 +34,7 @@ import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
 import { format } from "date-fns";
+import TrelloClient, { Trello } from "react-trello-client";
 
 const useStyles = makeStyles({
 	table: {
@@ -139,7 +141,15 @@ export function IssueTypesChip({ type, ...chipProps }) {
 
 export default function IssueRow(props) {
 	const { currentUserRole } = useProjectContext();
-	const { row, selectedRows, handleSelectionClick, isBacklogIssue, isBeingDeleted } = props;
+	const {
+		row,
+		selectedRows,
+		handleSelectionClick,
+		isBacklogIssue,
+		isBeingDeleted,
+		handleMoveIssueClick,
+		handleCopyIssueToTrelloClick,
+	} = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
 	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
 	const isSelected = selectedRows ? selectedRows.indexOf(row.id) !== -1 : false;
@@ -178,7 +188,25 @@ export default function IssueRow(props) {
 							disabled={UIRestrictionForRoles.includes(currentUserRole)}
 						/>
 					</TableCell>
-				) : null}
+				) : (
+					<TableCell padding="checkbox">
+						<IconButton
+							onClick={(event) => handleCopyIssueToTrelloClick(row)}
+							disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
+						>
+							<Tooltip
+								arrow
+								title={
+									<Typography variant="subtitle2">
+										Copy issue to Trello
+									</Typography>
+								}
+							>
+								<Launch fontSize="small" color="primary" />
+							</Tooltip>
+						</IconButton>
+					</TableCell>
+				)}
 				<TableCell align="center" padding="none">
 					<IconButton
 						align="center"

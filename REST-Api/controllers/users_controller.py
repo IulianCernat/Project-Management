@@ -18,7 +18,8 @@ def get_other_user(user_id):
 
 
 def get_users_by_filters(keyword, part_of_project_id=None):
-    keyword_filtered_users = User.query.filter(User.fullName.contains(keyword)).all()
+    keyword_filtered_users = User.query.filter(
+        User.fullName.contains(keyword)).all()
 
     if part_of_project_id is None:
         return keyword_filtered_users
@@ -27,14 +28,17 @@ def get_users_by_filters(keyword, part_of_project_id=None):
         is_team_member = TeamMember.query.join(Team).filter(TeamMember.user_id == user.id,
                                                             Team.project_id == part_of_project_id,
                                                             )
-        is_team_member = bool(db.session.query(literal(True)).filter(is_team_member.exists()).scalar())
+        is_team_member = bool(db.session.query(
+            literal(True)).filter(is_team_member.exists()).scalar())
 
         if is_team_member:
             setattr(user, 'is_part_of_project', is_team_member)
             continue
 
-        is_product_owner = Project.query.filter(Project.id == part_of_project_id, Project.product_owner_id == user.id)
-        is_product_owner = bool(db.session.query(literal(True)).filter(is_product_owner.exists()).scalar())
+        is_product_owner = Project.query.filter(
+            Project.id == part_of_project_id, Project.product_owner_id == user.id)
+        is_product_owner = bool(db.session.query(
+            literal(True)).filter(is_product_owner.exists()).scalar())
 
         setattr(user, 'is_part_of_project', is_product_owner)
 
@@ -43,8 +47,14 @@ def get_users_by_filters(keyword, part_of_project_id=None):
 
 def get_self(uid):
     user = User.query.filter(User.uid == uid).one()
-
+    setattr(user, 'trello_boards_ids', get_user_trello_board_id(user.id))
     return user
+
+
+def get_user_trello_board_id(user_id):
+    teams = Team.query.join(TeamMember, Team.id == TeamMember.team_id).filter(
+        TeamMember.user_id == user_id, Team.trello_board_id != None)
+    return [{'project_id': team.project_id, 'trello_board_id': team.trello_board_id} for team in teams]
 
 
 def get_user_id(uid):

@@ -271,6 +271,7 @@ IssuesTable.propTypes = {
 	issuesTableProps: PropTypes.oneOfType([
 		PropTypes.exact({
 			handleMoveIssueClick: PropTypes.func.isRequired,
+			handleCopyIssueToTrelloClick: PropTypes.func.isRequired,
 			issuesList: PropTypes.array.isRequired,
 		}),
 
@@ -299,6 +300,7 @@ export default function IssuesTable(props) {
 		isLoadingDeleteIssue,
 		issuesList,
 		handleMoveIssueClick,
+		handleCopyIssueToTrelloClick,
 	} = props.issuesTableProps;
 	const [tableIssues, setTableIssues] = useState([...issuesList]);
 	const [currentSortOrder, setCurrentSortOrder] = useState();
@@ -414,8 +416,7 @@ export default function IssuesTable(props) {
 						<TableHead>
 							<TableRow>
 								<TableCell />
-								{!isSprintIssuesTable && <TableCell />}
-
+								<TableCell />
 								<TableCell padding="none" align="center">
 									<TableHeaderColumn
 										columnName="type"
@@ -507,6 +508,7 @@ export default function IssuesTable(props) {
 								.map((item) => (
 									<IssueRow
 										handleMoveIssueClick={handleMoveIssueClick}
+										handleCopyIssueToTrelloClick={handleCopyIssueToTrelloClick}
 										isBeingDeleted={isLoadingDeleteIssue}
 										key={item.id}
 										isBacklogIssue={!isSprintIssuesTable}
