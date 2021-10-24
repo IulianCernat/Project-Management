@@ -13,9 +13,6 @@ import {
 	IconButton,
 	Avatar,
 	Checkbox,
-	TextField,
-	MenuItem,
-	Button,
 	Tooltip,
 	CircularProgress,
 } from "@material-ui/core";
@@ -149,6 +146,8 @@ export default function IssueRow(props) {
 		isBeingDeleted,
 		handleMoveIssueClick,
 		handleCopyIssueToTrelloClick,
+		handleDeleteIssueClick,
+		trello_issue_card_status,
 	} = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
 	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
@@ -230,30 +229,15 @@ export default function IssueRow(props) {
 					{row.title}
 				</TableCell>
 				{!isBacklogIssue ? (
-					<TableCell>
-						<TextField
-							InputProps={{ disableUnderline: true }}
-							select
-							value={issueStatus}
-							onChange={handleChangeStatusClick}
-							disabled={UIRestrictionForRoles.includes(currentUserRole)}
-						>
-							<MenuItem value="done">
-								<Button variant="outlined" color="primary">
-									done
-								</Button>
-							</MenuItem>
-							<MenuItem value="pending">
-								<Button variant="outlined" color="primary">
-									pending
-								</Button>
-							</MenuItem>
-							<MenuItem value="inProgress">
-								<Button variant="outlined" color="primary">
-									In Progress
-								</Button>
-							</MenuItem>
-						</TextField>
+					<TableCell align="center">
+						<Chip
+							color="primary"
+							label={
+								row.trello_issue_card_status
+									? row.trello_issue_card_status
+									: "Unknown"
+							}
+						/>
 					</TableCell>
 				) : null}
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>
@@ -264,8 +248,8 @@ export default function IssueRow(props) {
 					<IconButton
 						onClick={(event) =>
 							isBacklogIssue
-								? props.handleDeleteIssueClick(row.id)
-								: props.handleMoveIssueClick(row.id)
+								? handleDeleteIssueClick(row.id)
+								: handleMoveIssueClick(row.id)
 						}
 						disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
 					>

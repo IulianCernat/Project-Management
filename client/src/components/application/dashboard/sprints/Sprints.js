@@ -235,7 +235,6 @@ SprintTable.propTypes = {
 	handleDeleteSprintClick: PropTypes.func.isRequired,
 	startedSprintId: PropTypes.number.isRequired,
 	setStartedSprintId: PropTypes.func.isRequired,
-	trelloBoardId: PropTypes.string.isRequired,
 	firstTrelloBoardListId: PropTypes.string.isRequired,
 	trelloLabelsList: PropTypes.arrayOf(PropTypes.obj).isRequired,
 };
@@ -378,6 +377,7 @@ export default function Sprints() {
 			getSprintsReceivedData.find((item) => item.start && !item.completed)?.id
 		);
 		if (!trelloBoardId) return;
+
 		doTrelloApiFetch({
 			method: "GET",
 			apiUri: `boards/${trelloBoardId}/lists`,
@@ -397,6 +397,24 @@ export default function Sprints() {
 		});
 	}, [isResolvedGetSprints, getSprintsReceivedData, trelloBoardId]);
 
+	useEffect(() => {
+		if (!(trelloLabels && trelloBoards)) return;
+		trelloBoards.forEach((board) => {
+			sprintsList.find((sprint) =>
+				sprint.issues.find((issue) =>
+					board.cards.find((card) => {
+						if (card.id === issue.trello_card_id) {
+							issue["trello_issue_card_status"] = board.name;
+							return true;
+						}
+						return false;
+					})
+				)
+			);
+		});
+
+		setSprintsList(sprintsList);
+	}, [trelloLabels, trelloBoards]);
 	return (
 		<>
 			{trelloBoardsFetchError ? (
