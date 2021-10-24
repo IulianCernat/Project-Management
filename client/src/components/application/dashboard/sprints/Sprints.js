@@ -14,11 +14,11 @@ import {
 import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
-import { useDeleteFetch, useGetFetch, usePatchFetch } from "customHooks/useFetch";
+import { useDeleteFetch, useGetFetch, usePatchFetch, doTrelloApiFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import { useProjectContext } from "contexts/ProjectContext";
+import { useAuth } from "contexts/AuthContext";
 import IssuesTable from "../backlog/IssuesTable";
-import TrelloClient, { Trello } from "react-trello-client";
 
 const useStyles = makeStyles({
 	table: {
@@ -46,6 +46,7 @@ SprintTable.propTypes = {
 	handleDeleteSprintClick: PropTypes.func.isRequired,
 	startedSprintId: PropTypes.number.isRequired,
 	setStartedSprintId: PropTypes.func.isRequired,
+	trelloBoardId: PropTypes.string.isRequired,
 };
 function SprintTable({
 	sprint,
@@ -53,6 +54,7 @@ function SprintTable({
 	handleDeleteSprintClick,
 	setStartedSprintId,
 	startedSprintId,
+	trelloBoardId,
 }) {
 	const classes = useStyles();
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
@@ -73,41 +75,7 @@ function SprintTable({
 		setRequestBodyForIssueUpdate(JSON.stringify({ sprint_id: 0 }));
 	};
 
-	const handleCopyIssueToTrelloClick = (currentIssue) => {
-		let boards;
-
-		const errorHandler = () => {
-			console.log("Fetch failed");
-		};
-
-		fetch(
-			`https://api.trello.com/1/cards?${new URLSearchParams({
-				key: "a0a407637169f78d6d0a9144b9be43fb",
-				idList: "6174035a63240976db7eabda",
-				token: "3c52cbde981f997f3cfd6f067d70e63ab10407d6bf08851f03942f8915c664aa",
-				name: currentIssue.title,
-			}).toString()}`,
-			{
-				method: "POST",
-			}
-		);
-
-		// const boardsJson = boards.json();
-		// console.log(boardsJson);
-		// const createdCard = Trello.post(
-		// 	"cards",
-		// 	{
-		// 		name: currentIssue.title,
-		// 		desc: currentIssue.description,
-		// 		idList: "pending",
-		// 		idLabels: [currentIssue.type],
-		// 	},
-		// 	successHandler,
-		// 	errorHandler
-		// ).json();
-
-		// console.log(createdCard);
-	};
+	const handleCopyIssueToTrelloClick = (currentIssue) => {};
 	useEffect(() => {
 		if (!isResolvedIssueUpdate) return;
 		setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
@@ -160,6 +128,7 @@ function SprintHeader({
 	const [requestBodyForUpdate, setRequesBodyForUpdate] = useState(null);
 	const [isStartedState, setIsStartedState] = useState(isStarted);
 	const [isCompletedState, setIsCompletedState] = useState(isCompleted);
+
 	const {
 		status: updateStatus,
 		receivedData: updatedReveivedData,
@@ -328,7 +297,7 @@ function SprintHeader({
 	);
 }
 export default function Sprints() {
-	const { projectId, currentUserRole } = useProjectContext();
+	const { projectId, currentUserRole, trelloBoardId } = useProjectContext();
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
 	const getParams = useRef({ project_id: projectId });
@@ -383,6 +352,7 @@ export default function Sprints() {
 							currentUserRole={currentUserRole}
 							key={item.id}
 							sprint={item}
+							trelloBoardId={trelloBoardId}
 						/>
 					))}
 				</Box>

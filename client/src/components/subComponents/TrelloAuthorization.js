@@ -20,7 +20,7 @@ export default function TrelloAuthorization(props) {
 			authorizeOnError={() => console.log("Login error!")} // function: {() => console.log('Login error!')}
 			autoAuthorize={false} // boolean: {true} | {false}
 			authorizeButton={true} // boolean: {true} | {false}
-			buttonStyle="metamorph" // string: "metamorph" | "flat"
+			buttonStyle="flat" // string: "metamorph" | "flat"
 			buttonColor="green" // string: "green" | "grayish-blue" | "light"
 			buttonText="Link your Trello account" // string: "Login with Trello"></TrelloClient>;
 		/>

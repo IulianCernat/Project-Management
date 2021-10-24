@@ -230,3 +230,32 @@ export function usePatchFetch(url, bodyContent, headers = null) {
 
 	return transformState(state);
 }
+
+export function doTrelloApiFetch({
+	method,
+	apiUri,
+	apiParams = null,
+	successHandler,
+	errorHandler,
+}) {
+	const key = process.env.REACT_APP_TRELLO_API_KEY;
+	const token = localStorage.getItem("trello_token");
+
+	let url = `https://api.trello.com/1/${apiUri}?key=${key}&token=${token}`;
+
+	const options = {
+		method,
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+	};
+	if (method !== "GET") {
+		options["body"] = JSON.stringify(apiParams);
+	} else url += "&" + new URLSearchParams(apiParams).toString();
+
+	fetch(url, options)
+		.then((response) => response.json())
+		.then((data) => successHandler(data))
+		.catch((error) => errorHandler(error));
+}
