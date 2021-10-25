@@ -30,6 +30,9 @@ ProfileAside.propTypes = {
 	currentUser: PropTypes.object.isRequired,
 };
 export default function ProfileAside(props) {
+	const [isTrelloTokenExisting, setIsTrelloTokenExisting] = useState(
+		Boolean(localStorage.getItem("trello_token"))
+	);
 	const { logout } = useAuth();
 	const [logoutError, setLogoutError] = useState();
 	const history = useHistory();
@@ -42,6 +45,11 @@ export default function ProfileAside(props) {
 		}
 	}
 	const classes = useStyles();
+
+	const handleDisconnectFromTrello = () => {
+		localStorage.removeItem("trello_token");
+		setIsTrelloTokenExisting(false);
+	};
 	return (
 		<Paper elevation={5}>
 			<Box p={3} display="flex" flexDirection="column">
@@ -83,7 +91,15 @@ export default function ProfileAside(props) {
 					</Grid>
 				)}
 				<Box mt={2} display="flex" justifyContent="center">
-					<TrelloAuthorization />
+					{!isTrelloTokenExisting ? (
+						<TrelloAuthorization
+							authorizeOnSuccess={() => {
+								setIsTrelloTokenExisting(true);
+							}}
+						/>
+					) : (
+						<Button onClick={handleDisconnectFromTrello}>Disconnect from Trello</Button>
+					)}
 				</Box>
 				<Box mt={2}>
 					<Button

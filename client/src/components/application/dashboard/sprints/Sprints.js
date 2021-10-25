@@ -253,7 +253,17 @@ function SprintTable({
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
 	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
 	const [trelloFetchError, setTrelloFetchError] = useState();
+	const [openSnackbar, setOpenSnackbar] = useState(false);
+
 	const updateType = useRef(); //delete, copy
+
+	const handleCloseSnackbar = (event, reason) => {
+		if (reason === "clickaway") {
+			return;
+		}
+		setOpenSnackbar(false);
+	};
+
 	const {
 		status: updateIssueStatus,
 		receivedData: updatedIssueReveivedData,
@@ -284,13 +294,14 @@ function SprintTable({
 				setRequestBodyForIssueUpdate(JSON.stringify({ trello_card_id: newTrelloIssue.id }));
 				updateType.current = "copy";
 			},
-			errorHandler: setTrelloFetchError,
+			errorHandler: (error) => {
+				setTrelloFetchError(error);
+				setOpenSnackbar(true);
+			},
 		});
 	};
 	useEffect(() => {
-		console.log("in effect");
 		if (!isResolvedIssueUpdate) return;
-		console.log(updateType.current);
 		switch (updateType.current) {
 			case "delete": {
 				setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
@@ -313,6 +324,28 @@ function SprintTable({
 
 	return (
 		<TableContainer component={Paper} style={{ padding: "1rem" }}>
+			<Snackbar
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: "left",
+				}}
+				open={openSnackbar}
+				onClose={handleCloseSnackbar}
+				autoHideDuration={6000}
+				message={trelloFetchError}
+				action={
+					<>
+						<IconButton
+							size="small"
+							aria-label="close"
+							color="inherit"
+							onClick={handleCloseSnackbar}
+						>
+							<Close fontSize="small" />
+						</IconButton>
+					</>
+				}
+			/>
 			<SprintHeader
 				handleDeleteSprintClick={handleDeleteSprintClick}
 				currentUserRole={currentUserRole}
@@ -403,25 +436,19 @@ export default function Sprints() {
 			successHandler: setTrelloLabels,
 			errorHandler: setTrelloFetchError,
 		});
-	}, [isResolvedGetSprints, getSprintsReceivedData, trelloBoardId]);
+	}, [isResolvedGetSprints, getSprintsReceivedData, trelloBoardId, sprintsList]);
 
 	useEffect(() => {
-		if (!(trelloLabels && trelloBoards)) return;
-		trelloBoards.forEach((board) => {
-			sprintsList.find((sprint) =>
-				sprint.issues.find((issue) =>
-					board.cards.find((card) => {
-						if (card.id === issue.trello_card_id) {
-							issue["trello_issue_card_status"] = board.name;
-							return true;
-						}
-						return false;
-					})
-				)
-			);
-		});
+		for (const trelloBoard of trelloBoards)
+			for (const card of trelloBoard.cards)
+				for (const sprint of sprintsList)
+					for (const issue of sprint.issues)
+						if (card.id === issue.trello_card_id)
+							issue["trello_issue_card_status"] = trelloBoard.name;
+						else if (!issue?.trello_issue_card_status)
+							issue["trello_issue_card_status"] = "Unknown";
 
-		setSprintsList(sprintsList);
+		setSprintsList([...sprintsList]);
 	}, [trelloLabels, trelloBoards]);
 	return (
 		<>

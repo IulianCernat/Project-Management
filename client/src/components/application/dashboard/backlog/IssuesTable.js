@@ -185,6 +185,7 @@ TableHeaderColumn.propTypes = {
 	sortByString: PropTypes.bool.isRequired,
 	clearFilter: PropTypes.func.isRequired,
 	currentFilteredColumnNames: PropTypes.array.isRequired,
+	facadeColumnName: PropTypes.string.isRequired,
 };
 function TableHeaderColumn({
 	columnName,
@@ -194,6 +195,7 @@ function TableHeaderColumn({
 	filterOptions,
 	clearFilter,
 	currentFilteredColumnNames,
+	facadeColumnName,
 }) {
 	const [filterColumnAchorEl, setFilterColumnAchorEl] = useState(null);
 	const [filteredColumnValue, setFilteredColumnValue] = useState(null);
@@ -238,7 +240,7 @@ function TableHeaderColumn({
 				</IconButton>
 			)}
 			<Typography variant="button" align="center">
-				{columnName}
+				{facadeColumnName}
 			</Typography>
 			{currentFilteredColumnNames.includes(columnName) && (
 				<IconButton
@@ -421,6 +423,7 @@ export default function IssuesTable(props) {
 								<TableCell padding="none" align="center">
 									<TableHeaderColumn
 										columnName="type"
+										facadeColumnName="type"
 										sortHandler={sortByColumn}
 										filterHandler={filterByColumn}
 										currentSortOrder={
@@ -445,6 +448,7 @@ export default function IssuesTable(props) {
 									<TableCell align="left">
 										<TableHeaderColumn
 											columnName="trello_issue_card_status"
+											facadeColumnName="status"
 											sortHandler={sortByColumn}
 											currentSortOrder={
 												currentSortedColumnName ===
@@ -453,7 +457,12 @@ export default function IssuesTable(props) {
 													: "null"
 											}
 											sortByString={true}
-											filterOptions={["Pending", "In progress", "Done"]}
+											filterOptions={{
+												Pending: "Pending",
+												"In progress": "In progress",
+												Done: "Done",
+												Unknown: "Unknown",
+											}}
 											filterHandler={filterByColumn}
 											clearFilter={clearColumnFilter}
 											currentFilteredColumnNames={currentFilteredColumnNames}
@@ -463,6 +472,7 @@ export default function IssuesTable(props) {
 								<TableCell align="center">
 									<TableHeaderColumn
 										columnName="priority"
+										facadeColumnName="priority"
 										filterHandler={filterByColumn}
 										sortHandler={sortByColumn}
 										currentSortOrder={
@@ -489,9 +499,6 @@ export default function IssuesTable(props) {
 										clearFilter={clearColumnFilter}
 										currentFilteredColumnNames={currentFilteredColumnNames}
 									/>
-								</TableCell>
-								<TableCell align="left">
-									<Typography>Created at</Typography>
 								</TableCell>
 								<TableCell />
 							</TableRow>

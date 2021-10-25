@@ -1,6 +1,6 @@
 import TrelloClient, { Trello } from "react-trello-client";
 
-export default function TrelloAuthorization(props) {
+export default function TrelloAuthorization({ authorizeOnSuccess }) {
 	return (
 		<TrelloClient
 			apiKey={process.env.REACT_APP_TRELLO_API_KEY}
@@ -16,7 +16,7 @@ export default function TrelloAuthorization(props) {
 			authorizeScopeWrite={true} // boolean: {true} | {false}
 			authorizeScopeAccount={true} // boolean: {true} | {false}
 			authorizeExpiration="never" // string: "1hour", "1day", "30days" | "never"
-			authorizeOnSuccess={() => console.log("Login successful!")} // function: {() => console.log('Login successful!')}
+			authorizeOnSuccess={authorizeOnSuccess} // function: {() => console.log('Login successful!')}
 			authorizeOnError={() => console.log("Login error!")} // function: {() => console.log('Login error!')}
 			autoAuthorize={false} // boolean: {true} | {false}
 			authorizeButton={true} // boolean: {true} | {false}
