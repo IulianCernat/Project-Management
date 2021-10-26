@@ -37,6 +37,6 @@ services:
         command: nginx -g "daemon off;"
 
 # For populating de database with existing script run:
-# docker exec -i database_image_id mysql  -uroot -proot projectsmanager < exportedProjectsManagerDb
+# docker exec -i database_image_id mysql  -uroot -proot projectsmanager < projectsManagerExportedDB.sql
 volumes:
     projectsmanager-mariadb-data:
