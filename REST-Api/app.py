@@ -9,7 +9,8 @@ from endpoints.teams_endpoint import teams_namespace
 from endpoints.teams_members_endpoint import teams_members_namespace
 from endpoints.issues_endpoint import issues_namespace
 from endpoints.sprints_endpoint import sprints_namespace
-
+from flask_socketio import SocketIO
+from flask_socketio import send, emit
 from flask_cors import CORS
 
 
@@ -44,7 +45,13 @@ class FlaskApp(Flask):
         CORS(self)
 
 
+
 app = FlaskApp(__name__)
+socketio = SocketIO(app)
+
+@socketio.on('connect')
+def handle_message(message):
+    send("hello guy!")
 
 if __name__ == "__main__":
-    app.run(debug=settings.FLASK_DEBUG, host="0.0.0.0")
+    socketio.run(app, debug=settings.FLASK_DEBUG)
