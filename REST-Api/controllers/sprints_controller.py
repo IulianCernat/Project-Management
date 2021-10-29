@@ -2,6 +2,7 @@ from database import db
 from database.models import Sprint
 from controllers.issues_controller import update_issue
 from sqlalchemy import select
+import zulu
 
 
 def add_sprint(input_obj):
@@ -21,11 +22,17 @@ def add_sprint(input_obj):
 
 
 def get_sprint(sprint_id):
-    return Sprint.query.filter(Sprint.id == sprint_id).one()
+    sprint = Sprint.query.filter(Sprint.id == sprint_id).one()
+    is_sprint_completed(sprint)
+
+    return sprint
 
 
 def get_sprints(project_id):
-    return Sprint.query.filter(Sprint.project_id == project_id).all()
+    sprints = Sprint.query.filter(Sprint.project_id == project_id).all()
+    for sprint in sprints:
+        is_sprint_completed(sprint)
+    return sprints
 
 
 def get_sprints_with_minimal_info(project_id):
@@ -35,7 +42,6 @@ def get_sprints_with_minimal_info(project_id):
 
 def update_sprint(sprint_id, input_obj):
     sprint = get_sprint(sprint_id)
-
     for field, value in input_obj.items():
         setattr(sprint, field, value)
     db.session.commit()
@@ -48,3 +54,11 @@ def delete_sprint(sprint_id):
         sprint_issue.sprint_id = None
     db.session.delete(sprint)
     db.session.commit()
+
+
+def is_sprint_completed(sprint):
+    if zulu.parse(sprint.end_date).datetime <= zulu.now().datetime:
+        setattr(sprint, 'completed', True)
+        setattr(sprint, 'start', True)
+    else:
+        setattr(sprint, 'completed', False)
