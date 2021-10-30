@@ -9,6 +9,8 @@ from endpoints.teams_endpoint import teams_namespace
 from endpoints.teams_members_endpoint import teams_members_namespace
 from endpoints.issues_endpoint import issues_namespace
 from endpoints.sprints_endpoint import sprints_namespace
+from endpoints.trello_callback_endpoint import trello_callback_namespace
+from endpoints.trello_endpoint import trello_namespace
 from flask_socketio import SocketIO
 from flask_socketio import send, emit
 from flask_cors import CORS
@@ -33,6 +35,8 @@ class FlaskApp(Flask):
         api.add_namespace(teams_members_namespace)
         api.add_namespace(issues_namespace)
         api.add_namespace(sprints_namespace)
+        api.add_namespace(trello_callback_namespace)
+        api.add_namespace(trello_namespace)
 
         self.register_blueprint(blueprint)
 

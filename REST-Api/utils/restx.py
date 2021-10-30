@@ -1,13 +1,12 @@
 import logging
-import traceback
 
 from flask_restx import Api
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import MethodNotAllowed, BadRequest
 from utils.custom_exceptions import AuthorizationFailed
-import settings
 from sqlalchemy.orm.exc import NoResultFound
 from flask_cors import cross_origin
+
 log = logging.getLogger(__name__)
 
 # For development cors is set to * for every route

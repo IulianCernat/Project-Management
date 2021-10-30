@@ -39,3 +39,11 @@ try:
         'GOOGLE_APPLICATION_CREDENTIALS')
 except KeyError:
     log.error("Missing GOOGLE_APPLICATION_CREDENTIALS environment variable")
+
+# Trello
+try:
+    TRELLO_API_KEY = os.environ.get('TRELLO_API_KEY')
+except KeyError:
+    log.error("Missing TRELLO_API_KEY environment variable")
+
+TRELLO_API_URL = "https://api.trello.com/1"

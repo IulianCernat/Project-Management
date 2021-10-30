@@ -168,3 +168,8 @@ user_role_output = api.model("Project user role", {
     "user_role": String(required=True, enum=["developer", "scrumMaster", "productOwner"],
                         description="What role does a user had inside a project")
 })
+
+trello_board_input = api.model("Input for adding a trello board id to a team", {
+    "trello_board_short_id": String(required=True, description="The shortened id of a board"),
+    "team_id": Integer(required=True, description="The id of the team which will have this board linked")
+})

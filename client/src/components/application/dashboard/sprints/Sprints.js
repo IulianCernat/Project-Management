@@ -18,7 +18,6 @@ import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch, doTrelloApiFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import { useProjectContext } from "contexts/ProjectContext";
-import { useAuth } from "contexts/AuthContext";
 import IssuesTable from "../backlog/IssuesTable";
 
 const useStyles = makeStyles({

@@ -5,7 +5,7 @@ import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { trelloBoardUrlValidSchema } from "../../utils/validationSchemas";
-import { usePatchFetch } from "../../customHooks/useFetch.js";
+import { usePatchFetch, doTrelloApiFetch } from "../../customHooks/useFetch.js";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
@@ -24,11 +24,25 @@ export default function TrelloBoardAdditionForm(props) {
 		requestBody
 	);
 	useEffect(() => {
-		if (isResolved) {
-			let addedBoardId = requestBody.split(":").pop();
-			addedBoardId = addedBoardId.slice(1, -2).trim();
-			props.setAddedBoardId(addedBoardId);
-		}
+		if (!isResolved) return;
+		let addedBoardId = requestBody.split(":").pop();
+		addedBoardId = addedBoardId.slice(1, -2).trim();
+		props.setAddedBoardId(addedBoardId);
+		doTrelloApiFetch({
+			method: "PUT",
+			apiUri: "webhooks",
+			apiParams: {
+				description: "This webhook calls when a change in the entire board is made",
+				callbackURL: `https://4bcf-94-177-30-124.ngrok.io/api/trello_callback/`,
+				idModel: "6174034691149a82dae8fb63",
+			},
+			successHandler: (newWebhook) => {
+				console.log(newWebhook);
+			},
+			errorHandler: (error) => {
+				console.error(error);
+			},
+		});
 	}, [isResolved]);
 	return (
 		<>
