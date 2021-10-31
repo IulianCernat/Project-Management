@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
 						null,
 						false,
 						{
-							Authorization: userIdToken,
+							Authorization: `firebase_token_id=${userIdToken}`,
 						}
 					);
 					setAdditionalUserInfo(profile);

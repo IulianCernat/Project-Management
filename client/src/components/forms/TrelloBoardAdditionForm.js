@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { trelloBoardUrlValidSchema } from "../../utils/validationSchemas";
-import { usePatchFetch, doTrelloApiFetch } from "../../customHooks/useFetch.js";
+import { usePostFetch } from "../../customHooks/useFetch.js";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
@@ -19,30 +19,16 @@ TrelloBoardAdditionForm.propTypes = {
 };
 export default function TrelloBoardAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { receivedData, error, isLoading, isRejected, isResolved } = usePatchFetch(
-		`api/teams/${props.teamId}`,
-		requestBody
+	const headers = useRef({ Authorization: localStorage.getItem("trello_token") });
+	const [addedTrelloBoardId, setAddedTreloBoardId] = useState();
+	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
+		`api/trello/boards/`,
+		requestBody,
+		headers.current
 	);
 	useEffect(() => {
 		if (!isResolved) return;
-		let addedBoardId = requestBody.split(":").pop();
-		addedBoardId = addedBoardId.slice(1, -2).trim();
-		props.setAddedBoardId(addedBoardId);
-		doTrelloApiFetch({
-			method: "PUT",
-			apiUri: "webhooks",
-			apiParams: {
-				description: "This webhook calls when a change in the entire board is made",
-				callbackURL: `https://4bcf-94-177-30-124.ngrok.io/api/trello_callback/`,
-				idModel: "6174034691149a82dae8fb63",
-			},
-			successHandler: (newWebhook) => {
-				console.log(newWebhook);
-			},
-			errorHandler: (error) => {
-				console.error(error);
-			},
-		});
+		props.setAddedBoardId(addedTrelloBoardId);
 	}, [isResolved]);
 	return (
 		<>
@@ -53,7 +39,10 @@ export default function TrelloBoardAdditionForm(props) {
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
 					let requestObj = {};
-					requestObj["trello_board_id"] = values.trello_board_url.split("/").pop();
+					const trello_board_short_id = values.trello_board_url.split("/").pop();
+					requestObj["trello_board_short_id"] = trello_board_short_id;
+					setAddedTreloBoardId(trello_board_short_id);
+					requestObj["team_id"] = props.teamId;
 					const stringifiedData = JSON.stringify(requestObj);
 					setRequestBody(stringifiedData);
 				}}

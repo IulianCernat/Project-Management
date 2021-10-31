@@ -13,30 +13,43 @@ import { useGetFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
 import TrelloBoardAdditionForm from "components/forms/TrelloBoardAdditionForm";
 import { useState } from "react";
-
+import PropTypes from "prop-types";
 const UIRestrictionForRoles = ["developer", "productOwner"];
 
-function BoardCard(props) {
+BoardCard.propTypes = {
+	card: PropTypes.exact({
+		id: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+		closed: PropTypes.bool.isRequired,
+		due: PropTypes.string.isRequired,
+		dueComplete: PropTypes.bool.isRequired,
+		labels: PropTypes.arrayOf(
+			PropTypes.exact({
+				id: PropTypes.string.isRequired,
+				name: PropTypes.string.isRequired,
+			})
+		).isRequired,
+		members_info: PropTypes.arrayOf(
+			PropTypes.exact({
+				id: PropTypes.string.isRequired,
+				fullName: PropTypes.string.isRequired,
+				username: PropTypes.string.isRequired,
+			}).isRequired
+		),
+	}),
+};
+function BoardCard({ card }) {
 	return (
 		<Paper elevation={3}>
 			<Box p={1}>
 				<Box mb={1}>
-					<Typography>{props.name}</Typography>
+					<Typography>{card.name}</Typography>
 				</Box>
 				<Divider />
 				<Box p={2} display="flex" style={{ gap: "2px" }}>
-					{props.members.length
-						? props.members.map((item) => (
-								<Chip
-									key={item.id}
-									label={item.fullName}
-									avatar={
-										<Avatar
-											alt={item.fullName}
-											src={item.avatarUrl + "/original.png"}
-										/>
-									}
-								/>
+					{card.members_info.length
+						? card.members_info.map((item) => (
+								<Chip key={item.id} label={item.fullName} />
 						  ))
 						: null}
 				</Box>
@@ -44,15 +57,21 @@ function BoardCard(props) {
 		</Paper>
 	);
 }
-function BoardList(props) {
+
+BoardList.propTypes = {
+	id: PropTypes.string.isRequired,
+	name: PropTypes.string.isRequired,
+	cards: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+function BoardList({ boardList }) {
 	return (
 		<Box flex="0 0 40ch">
 			<Paper>
 				<Box p={2} display="flex" flexDirection="column" style={{ gap: "1rem" }}>
-					<Typography variant="h6">{props.name}</Typography>
+					<Typography variant="h6">{boardList.name}</Typography>
 
-					{props.boardCards.map((item) => (
-						<BoardCard key={item.id} {...item} />
+					{boardList.cards.map((item) => (
+						<BoardCard key={item.id} card={item} />
 					))}
 				</Box>
 			</Paper>
@@ -60,60 +79,52 @@ function BoardList(props) {
 	);
 }
 
+Board.propTypes = {
+	boardId: PropTypes.string.isRequired,
+};
 export default function Board(props) {
-	const [startTrelloFetching, setStartTrelloFetching] = useState(false);
+	const [startFetchingBoardLists, setStartFetchingBoardLists] = useState(false);
+	const [trelloToken, seTrelloToken] = useState();
 	const [boardId, setBoardId] = useState(props.boardId);
 	const [hideBoardAdditionform, setHideBoardAdditionform] = useState(true);
-	const getCardsparameters = useRef({
-		cards: "all",
-		members: true,
-		member_field: "fullName,initials,avatarUrl",
-		fields: "name,members,idList",
+	const getBoardListsParameters = useRef({
+		data_arrangement: "board_lists",
+	});
+	const headers = useRef({
+		Authorization: `trello_token=${trelloToken}`,
 	});
 	const {
-		receivedData: getCardsReceivedData,
-		error: getCardsError,
-		isLoading: isLoadingGetCards,
-		isResolved: isResolvedGetCards,
-		isRejected: isRejectedGetCards,
+		receivedData: getBoardListsReceivedData,
+		error: getBoardListsError,
+		isLoading: isLoadingGetBoardLists,
+		isResolved: isResolvedGetBoardLists,
+		isRejected: isRejectedGetBoardLists,
 	} = useGetFetch(
-		`https://api.trello.com/1/boards/${boardId}/cards`,
-		getCardsparameters.current,
-		startTrelloFetching,
-		true
+		`api/trello/boards/${boardId}`,
+		getBoardListsParameters.current,
+		startFetchingBoardLists,
+		false,
+		headers.current
 	);
-	const getBoardListparameters = useRef({
-		lists: "all",
-		members: true,
-		member_field: "fullName,initials,avatarUrl",
-		fields: "name,members",
-	});
-	const {
-		receivedData: getListsReceivedData,
-		error: getListsError,
-		isLoading: isLoadingGetLists,
-		isResolved: isResolvedGetLists,
-		isRejected: isRejectedGetLists,
-	} = useGetFetch(
-		`https://api.trello.com/1/boards/${boardId}/lists`,
-		getBoardListparameters.current,
-		startTrelloFetching,
-		true
-	);
+
 	useEffect(() => {
-		if (props.boardId) setStartTrelloFetching(true);
+		if (props.boardId) setStartFetchingBoardLists(true);
 	}, [props.boardId]);
 
 	useEffect(() => {
 		if (Boolean(boardId)) {
 			setHideBoardAdditionform(true);
-			setStartTrelloFetching(true);
+			setStartFetchingBoardLists(true);
 		}
 	}, [boardId]);
 
 	useEffect(() => {
-		if (startTrelloFetching) setStartTrelloFetching(false);
-	}, [startTrelloFetching]);
+		if (startFetchingBoardLists) setStartFetchingBoardLists(false);
+	}, [startFetchingBoardLists]);
+
+	useEffect(() => {
+		seTrelloToken(localStorage.getItem("trello_token"));
+	}, []);
 
 	const handleFormAdditionClick = () => {
 		setHideBoardAdditionform((prev) => !prev);
@@ -140,17 +151,15 @@ export default function Board(props) {
 				</Box>
 			)}
 
-			{isRejectedGetCards && !props.boardId ? (
+			{isRejectedGetBoardLists && !props.boardId ? (
 				<Box my={2}>
 					<Alert severity="error">
-						<Typography>Couldnt't load trello board</Typography>
+						<Typography>Couldnt't load trello board. {getBoardListsError}</Typography>
 					</Alert>
 				</Box>
 			) : null}
-			{isLoadingGetCards || isLoadingGetLists ? (
-				<LinearProgress style={{ width: "100%" }} />
-			) : null}
-			{isResolvedGetCards && isResolvedGetLists ? (
+			{isLoadingGetBoardLists ? <LinearProgress style={{ width: "100%" }} /> : null}
+			{isResolvedGetBoardLists ? (
 				<Box
 					mt={4}
 					pb={"6rem"}
@@ -162,17 +171,8 @@ export default function Board(props) {
 						cursor: "grab",
 					}}
 				>
-					{getListsReceivedData.map((boardListItem) => {
-						const boardCards = getCardsReceivedData.filter(
-							(cardItem) => cardItem.idList === boardListItem.id
-						);
-						return (
-							<BoardList
-								key={boardListItem.id}
-								boardCards={boardCards}
-								name={boardListItem.name}
-							/>
-						);
+					{getBoardListsReceivedData.lists.map((boardListItem) => {
+						return <BoardList key={boardListItem.id} boardList={boardListItem} />;
 					})}
 				</Box>
 			) : null}
