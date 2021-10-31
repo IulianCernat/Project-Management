@@ -235,7 +235,7 @@ SprintTable.propTypes = {
 	startedSprintId: PropTypes.number.isRequired,
 	setStartedSprintId: PropTypes.func.isRequired,
 	firstTrelloBoardListId: PropTypes.string.isRequired,
-	trelloLabelsList: PropTypes.arrayOf(PropTypes.obj).isRequired,
+	trelloLabelsObj: PropTypes.object.isRequired,
 };
 function SprintTable({
 	sprint,
@@ -246,7 +246,7 @@ function SprintTable({
 	trelloBoardId,
 	firstTrelloBoardListId,
 	firstTrelloBoardListName,
-	trelloLabelsList,
+	trelloLabelsObj,
 }) {
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
@@ -286,7 +286,7 @@ function SprintTable({
 				name: currentIssue.title,
 				desc: currentIssue.description,
 				idList: firstTrelloBoardListId,
-				idLabels: [trelloLabelsList.find((label) => label.name === currentIssue.type).id],
+				idLabels: [trelloLabelsObj[currentIssue.type]],
 			},
 			successHandler: (newTrelloIssue) => {
 				setIssueIdToBeUpdated(currentIssue.id);
@@ -309,7 +309,7 @@ function SprintTable({
 			case "copy":
 				sprintIssues.filter((item) => {
 					if (item.id === issueIdToBeUpdated) {
-						item["trello_issue_card_status"] = firstTrelloBoardListName;
+						item["list_name"] = firstTrelloBoardListName;
 						return true;
 					}
 					return false;
@@ -373,25 +373,41 @@ function SprintTable({
 
 export default function Sprints() {
 	const { projectId, currentUserRole, trelloBoardId } = useProjectContext();
+	const [trelloToken, setTrelloToken] = useState();
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
-	const getParams = useRef({ project_id: projectId });
+	const getSprintsParams = useRef({ project_id: projectId });
+	const getTrelloDataParams = useRef({
+		data_arrangement: "board_cards,board_lists_ids,board_labels",
+	});
+	const getTrelloDataHeaders = useRef({
+		Authorization: `trello_token=${trelloToken}`,
+	});
 	const [startedSprintId, setStartedSprintId] = useState();
-	const [trelloBoards, setTrelloBoards] = useState([]);
-	const [trelloBoardsFetchError, setTrelloFetchError] = useState();
-	const [trelloLabels, setTrelloLabels] = useState([]);
 
 	const {
-		status: getSprintsStatus,
 		receivedData: getSprintsReceivedData,
 		error: getSprintsError,
 		isLoading: isLoadingGetSprints,
 		isResolved: isResolvedGetSprints,
 		isRejected: isRejectedGetSprints,
-	} = useGetFetch(`api/sprints/`, getParams.current);
+	} = useGetFetch(`api/sprints/`, getSprintsParams.current);
 
 	const {
-		status: deleteSprintStatus,
+		receivedData: getTrelloData,
+		error: getTrelloDataError,
+		isLoading: isLoadingGetTrelloData,
+		isResolved: isResolvedGetTrelloData,
+		isRejected: isRejectedGetTrelloData,
+	} = useGetFetch(
+		`api/trello/boards/${trelloBoardId}`,
+		getTrelloDataParams.current,
+		isResolvedGetSprints,
+		false,
+		getTrelloDataHeaders.current
+	);
+
+	const {
 		isResolved: isResolvedDeleteSprint,
 		isRejected: isRejectedDeleteSprint,
 		isLoading: isLoadingDeleteSprint,
@@ -402,6 +418,11 @@ export default function Sprints() {
 	};
 
 	useEffect(() => {
+		if (!isResolvedGetSprints) return;
+		setSprintsList(getSprintsReceivedData);
+	}, [isResolvedGetSprints]);
+
+	useEffect(() => {
 		if (isResolvedDeleteSprint) {
 			setSprintsList((currentSprintsList) =>
 				currentSprintsList.filter((sprint) => sprint.id !== sprintIdToBeDeleted)
@@ -410,55 +431,29 @@ export default function Sprints() {
 	}, [isResolvedDeleteSprint]);
 
 	useEffect(() => {
-		if (!isResolvedGetSprints || trelloBoards?.length) return;
-
-		setSprintsList(getSprintsReceivedData);
-		setStartedSprintId(
-			getSprintsReceivedData.find((item) => item.start && !item.completed)?.id
-		);
-		if (!trelloBoardId) return;
-
-		doTrelloApiFetch({
-			method: "GET",
-			apiUri: `boards/${trelloBoardId}/lists`,
-			apiParams: {
-				cards: "all",
-				fields: "id,name,labelNames",
-				card_fields: "id,name",
-			},
-			successHandler: setTrelloBoards,
-			errorHandler: setTrelloFetchError,
-		});
-		doTrelloApiFetch({
-			method: "GET",
-			apiUri: `boards/${trelloBoardId}/labels`,
-			successHandler: setTrelloLabels,
-			errorHandler: setTrelloFetchError,
-		});
-	}, [isResolvedGetSprints, getSprintsReceivedData, trelloBoardId, sprintsList]);
+		setTrelloToken(localStorage.getItem("trello_token"));
+	}, []);
 
 	useEffect(() => {
-		for (const trelloBoard of trelloBoards)
-			for (const card of trelloBoard.cards)
-				for (const sprint of sprintsList)
-					for (const issue of sprint.issues)
-						if (card.id === issue.trello_card_id)
-							issue["trello_issue_card_status"] = trelloBoard.name;
-						else if (!issue?.trello_issue_card_status)
-							issue["trello_issue_card_status"] = "Unknown";
+		if (!isResolvedGetTrelloData) return;
+		for (let sprint of sprintsList) {
+			for (let issue of sprint.issues) {
+				const trelloCardForIssue = getTrelloData.trello_board_cards.find(
+					(item) => issue.trello_card_id === item.id
+				);
+				Object.assign(issue, trelloCardForIssue);
+			}
+		}
+	}, [isResolvedGetTrelloData]);
 
-		setSprintsList([...sprintsList]);
-	}, [trelloLabels, trelloBoards]);
 	return (
 		<>
-			{trelloBoardsFetchError ? (
-				<Alert severity="error">{trelloBoardsFetchError}</Alert>
+			{isRejectedGetTrelloData ? <Alert severity="error">{getTrelloDataError}</Alert> : null}
+			{isLoadingGetSprints || isLoadingGetTrelloData ? (
+				<LinearProgress style={{ width: "100%" }} />
 			) : null}
-			{isLoadingGetSprints ? <LinearProgress style={{ width: "100%" }} /> : null}
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
-			{isResolvedGetSprints &&
-			getSprintsReceivedData.length &&
-			((trelloBoards.length && trelloLabels.length) || !trelloBoardId) ? (
+			{isResolvedGetSprints && getSprintsReceivedData.length && isResolvedGetTrelloData ? (
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable
@@ -469,10 +464,12 @@ export default function Sprints() {
 							key={item.id}
 							sprint={item}
 							trelloBoardId={trelloBoardId}
-							firstTrelloBoardListId={trelloBoardId ? trelloBoards[0].id : null}
-							firstTrelloBoardListName={trelloBoardId ? trelloBoards[0].name : null}
-							trelloLabelsList={
-								trelloBoardId ? trelloLabels.filter((label) => label.name) : null
+							firstTrelloBoardListId={
+								trelloBoardId ? getTrelloData.trello_board_lists_ids[0] : null
+							}
+							firstTrelloBoardListName={trelloBoardId ? "Pending" : null}
+							trelloLabelsObj={
+								trelloBoardId ? getTrelloData.trello_board_labels : null
 							}
 						/>
 					))}

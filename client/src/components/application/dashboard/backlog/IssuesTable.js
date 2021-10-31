@@ -396,7 +396,7 @@ export default function IssuesTable(props) {
 		setTableIssues([
 			...issuesList.map((issue) => {
 				issue["filteredColumns"] = new Set();
-				if (!issue?.trello_issue_card_status) issue["trello_issue_card_status"] = "Unknown";
+				if (!issue?.list_name) issue["list_name"] = "Unknown";
 				return issue;
 			}),
 		]);

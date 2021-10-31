@@ -171,7 +171,7 @@ export default function Board(props) {
 						cursor: "grab",
 					}}
 				>
-					{getBoardListsReceivedData.lists.map((boardListItem) => {
+					{getBoardListsReceivedData.trello_board_lists.map((boardListItem) => {
 						return <BoardList key={boardListItem.id} boardList={boardListItem} />;
 					})}
 				</Box>

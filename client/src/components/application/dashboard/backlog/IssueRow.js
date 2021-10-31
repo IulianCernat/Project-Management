@@ -192,7 +192,7 @@ export default function IssueRow(props) {
 							onClick={(event) => handleCopyIssueToTrelloClick(row)}
 							disabled={
 								UIRestrictionForRoles.includes(currentUserRole) ||
-								row.trello_issue_card_status !== "Unknown"
+								row.list_name !== "Unknown"
 							}
 						>
 							<Tooltip
@@ -207,7 +207,7 @@ export default function IssueRow(props) {
 									fontSize="small"
 									color={
 										UIRestrictionForRoles.includes(currentUserRole) ||
-										row.trello_issue_card_status !== "Unknown"
+										row.list_name !== "Unknown"
 											? "disabled"
 											: "secondary"
 									}
@@ -240,7 +240,7 @@ export default function IssueRow(props) {
 				</TableCell>
 				{!isBacklogIssue ? (
 					<TableCell align="center">
-						<Chip color="primary" label={row.trello_issue_card_status} />
+						<Chip color="primary" label={row.list_name} />
 					</TableCell>
 				) : null}
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>
