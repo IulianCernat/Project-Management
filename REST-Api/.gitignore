@@ -142,3 +142,5 @@ cython_debug/
 
 .azure
 firebase-adminsdk.json
+
+ngrok

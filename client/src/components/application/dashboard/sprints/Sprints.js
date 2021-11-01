@@ -15,7 +15,7 @@ import {
 import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp, Close } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
-import { useDeleteFetch, useGetFetch, usePatchFetch, doTrelloApiFetch } from "customHooks/useFetch";
+import { useDeleteFetch, useGetFetch, usePatchFetch, usePostFetch } from "customHooks/useFetch";
 import PropTypes from "prop-types";
 import { useProjectContext } from "contexts/ProjectContext";
 import IssuesTable from "../backlog/IssuesTable";
@@ -251,9 +251,11 @@ function SprintTable({
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
 	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
-	const [trelloFetchError, setTrelloFetchError] = useState();
 	const [openSnackbar, setOpenSnackbar] = useState(false);
-
+	const [newTrelloCardPayload, setNewTrelloCardPayload] = useState();
+	const headersForPostingTrelloCard = useRef({
+		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
+	});
 	const updateType = useRef(); //delete, copy
 
 	const handleCloseSnackbar = (event, reason) => {
@@ -264,13 +266,22 @@ function SprintTable({
 	};
 
 	const {
-		status: updateIssueStatus,
-		receivedData: updatedIssueReveivedData,
 		error: updateIssueError,
 		isLoading: isLoadingIssueUpdate,
 		isResolved: isResolvedIssueUpdate,
 		isRejected: isRejectedIssueUpdate,
 	} = usePatchFetch(`api/issues/${issueIdToBeUpdated}`, requestBodyForIssueUpdate);
+
+	const {
+		error: postTrelloCardError,
+		isLoading: isLoadingPostTrelloCard,
+		isResolved: isResolvedPostTrelloCard,
+		isRejected: isRejectedPostTrelloCard,
+	} = usePostFetch(
+		"api/trello/cards/",
+		newTrelloCardPayload,
+		headersForPostingTrelloCard.current
+	);
 
 	const handleMoveIssueClick = (issueId) => {
 		updateType.current = "delete";
@@ -279,47 +290,36 @@ function SprintTable({
 	};
 
 	const handleCopyIssueToTrelloClick = (currentIssue) => {
-		doTrelloApiFetch({
-			method: "POST",
-			apiUri: "cards",
-			apiParams: {
+		setNewTrelloCardPayload(
+			JSON.stringify({
 				name: currentIssue.title,
 				desc: currentIssue.description,
 				idList: firstTrelloBoardListId,
 				idLabels: [trelloLabelsObj[currentIssue.type]],
-			},
-			successHandler: (newTrelloIssue) => {
-				setIssueIdToBeUpdated(currentIssue.id);
-				setRequestBodyForIssueUpdate(JSON.stringify({ trello_card_id: newTrelloIssue.id }));
-				updateType.current = "copy";
-			},
-			errorHandler: (error) => {
-				setTrelloFetchError(error);
-				setOpenSnackbar(true);
-			},
-		});
+				due: sprint.end_date,
+				issue_id: currentIssue.id,
+			})
+		);
+		setIssueIdToBeUpdated(currentIssue.id);
 	};
+
 	useEffect(() => {
 		if (!isResolvedIssueUpdate) return;
-		switch (updateType.current) {
-			case "delete": {
-				setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
-				break;
-			}
-			case "copy":
-				sprintIssues.filter((item) => {
-					if (item.id === issueIdToBeUpdated) {
-						item["list_name"] = firstTrelloBoardListName;
-						return true;
-					}
-					return false;
-				});
-				setSprintIssues([...sprintIssues]);
-				break;
-			default:
-				break;
-		}
+
+		setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
 	}, [isResolvedIssueUpdate, issueIdToBeUpdated]);
+
+	useEffect(() => {
+		if (!isResolvedPostTrelloCard) return;
+		sprintIssues.filter((item) => {
+			if (item.id === issueIdToBeUpdated) {
+				item["list_name"] = firstTrelloBoardListName;
+				return true;
+			}
+			return false;
+		});
+		setSprintIssues([...sprintIssues]);
+	}, [isResolvedPostTrelloCard]);
 
 	return (
 		<TableContainer component={Paper} style={{ padding: "1rem" }}>
@@ -331,7 +331,7 @@ function SprintTable({
 				open={openSnackbar}
 				onClose={handleCloseSnackbar}
 				autoHideDuration={6000}
-				message={trelloFetchError}
+				message={postTrelloCardError}
 				action={
 					<>
 						<IconButton
@@ -373,7 +373,7 @@ function SprintTable({
 
 export default function Sprints() {
 	const { projectId, currentUserRole, trelloBoardId } = useProjectContext();
-	const [trelloToken, setTrelloToken] = useState();
+	const [trelloToken, setTrelloToken] = useState(localStorage.getItem("trello_token"));
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
 	const getSprintsParams = useRef({ project_id: projectId });
