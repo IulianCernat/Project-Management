@@ -208,3 +208,12 @@ trello_board_output = api.model("Board output that can have two properties: card
 		"*": Wildcard(String(description="Contains the label's id")),
 	}, ), skip_none=True)
 })
+
+trello_card_input = api.model("Input for copying an issue to a trello board", {
+	'name': String(required=True),
+	'desc': String(description="The issue description"),
+	'idList': String(required=True, description="The id of a board list"),
+	'idLabels': List(String(), required=True, description="A list of ids of labels"),
+	'due': String(required=True, description="The date until the issue must be completed"),
+	'issue_id': Integer(required=True, descritpion="The issue's id which will pe represented on Trello")
+})

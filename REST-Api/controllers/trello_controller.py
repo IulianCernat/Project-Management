@@ -1,16 +1,20 @@
 import requests
 import logging
 import settings
-from database.models import Team
+from database.models import Team, Issue
 from database import db
 from controllers.teams_controller import get_team
+from utils.custom_exceptions import TrelloRequestFailure
 
 log = logging.getLogger(__name__)
-headers = {'Authorization': f'OAuth oauth_consumer_key="{settings.TRELLO_API_KEY}", '}
+
+
+def create_headers(user_token):
+	return {'Authorization': f'OAuth oauth_consumer_key="{settings.TRELLO_API_KEY}", oauth_token="{user_token}"'}
 
 
 def get_board(board_id, user_token, data_arrangement):
-	headers['Authorization'] += f"oauth_token={user_token}"
+	headers = create_headers(user_token)
 	returned_obj = {}
 	try:
 		for element in data_arrangement:
@@ -44,7 +48,11 @@ def get_board_lists(headers, board_id):
 		'cards': 'open',
 		'card_fields': 'name,closed,due,dueComplete,idMembers,labels'
 	}
-	board_lists = requests.get(url, headers=headers, params=params, timeout=1).json()
+	board_lists_request_obj = requests.get(url, headers=headers, params=params, timeout=1)
+	if board_lists_request_obj.status_code != 200:
+		raise TrelloRequestFailure(board_lists_request_obj.text)
+	board_lists = board_lists_request_obj.json()
+
 	board_members = get_board_members(headers, board_id)
 
 	for board_list in board_lists:
@@ -59,7 +67,13 @@ def get_board_lists(headers, board_id):
 
 def get_board_members(headers, board_id):
 	url = f"{settings.TRELLO_API_URL}/boards/{board_id}/members"
-	return requests.get(url, headers=headers).json()
+
+	board_members_request_obj = requests.get(url, headers=headers)
+	if board_members_request_obj.status_code != 200:
+		raise TrelloRequestFailure(board_members_request_obj.text)
+	board_members = board_members_request_obj.json()
+
+	return board_members
 
 
 def get_board_cards(headers, board_id):
@@ -72,8 +86,11 @@ def get_board_cards(headers, board_id):
 		'list_fields': 'name'
 	}
 
-	board_info = requests.get(url, headers=headers, params=params)
-	board_info = board_info.json()
+	board_info_request_obj = requests.get(url, headers=headers, params=params)
+	if board_info_request_obj.status_code != 200:
+		raise TrelloRequestFailure(board_info_request_obj.text)
+
+	board_info = board_info_request_obj.json()
 
 	cards = []
 	for card in board_info['cards']:
@@ -85,7 +102,7 @@ def get_board_cards(headers, board_id):
 
 
 def add_board(team_id, board_short_id, user_token):
-	headers['Authorization'] += f"oauth_token={user_token}"
+	headers = create_headers(user_token)
 	board_id = get_board_id(board_short_id, headers)
 	team = get_team(team_id)
 	team.trello_board_id = board_id
@@ -97,11 +114,12 @@ def add_board(team_id, board_short_id, user_token):
 def get_board_id(board_short_id, headers):
 	url = f"{settings.TRELLO_API_URL}/boards/{board_short_id}"
 	params = {"fields": "id"}
-	try:
-		return requests.get(url, params=params, timeout=1, headers=headers).json()['id']
-	except Exception as e:
-		log.error(e)
-		return None
+
+	board_id_request_obj = requests.get(url, params=params, timeout=1, headers=headers)
+	if board_id_request_obj.status_code != 200:
+		raise TrelloRequestFailure(board_id_request_obj.text)
+
+	return board_id_request_obj.json()['id']
 
 
 def get_board_labels(board_id, headers):
@@ -121,7 +139,29 @@ def get_board_lists_ids(board_id, headers):
 	url = f"{settings.TRELLO_API_URL}/boards/{board_id}/lists"
 	params = {"fields": "id"}
 
-	lists_ids = requests.get(url, params=params, timeout=1, headers=headers).json()
+	lists_ids_request_obj = requests.get(url, params=params, timeout=1, headers=headers)
+	if lists_ids_request_obj.status_code != 200:
+		raise TrelloRequestFailure(lists_ids_request_obj.text)
+
+	lists_ids = lists_ids_request_obj.json()
 	lists_ids = [list_obj['id'] for list_obj in lists_ids]
 
 	return lists_ids
+
+
+def copy_issue_to_trello_board_list(payload, user_token):
+	url = f"{settings.TRELLO_API_URL}/cards"
+	headers = create_headers(user_token)
+	issue_id = payload['issue_id']
+	del payload['issue_id']
+	try:
+		trello_api_request_obj = requests.post(url, data=payload, timeout=1, headers=headers)
+		if trello_api_request_obj.status_code != 200:
+			raise TrelloRequestFailure(trello_api_request_obj.text)
+
+		created_card = trello_api_request_obj.json()
+		issue_to_be_updated = Issue.query.filter(Issue.id == issue_id)
+		issue_to_be_updated.trello_card_id = created_card['id']
+		return created_card
+	except Exception as e:
+		raise e
