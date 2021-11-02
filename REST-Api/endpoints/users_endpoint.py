@@ -74,6 +74,7 @@ class LoggedUser(Resource):
 			token_id = next(filter(lambda item: "firebase_token_id" in item, authorization_components))
 			token_id = token_id.split("=")[1]
 			decoded_token = verify_id_token(token_id)
+
 		except AuthorizationFailed as e:
 			raise e
 

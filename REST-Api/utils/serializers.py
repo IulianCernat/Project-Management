@@ -130,11 +130,12 @@ multiple_issues_update_input = api.model('List of issues', {
 issue_output = api.inherit('Issue output', issue_input, {
 	'id': Integer(required=True, description="The issue database id"),
 	'trello_card_id': String(required=True, description="Trello card's id which contains this issue"),
-	'status': String(required=True, enum=['pending', 'inProgress', 'done'],
-					 description="The current situation of issue"),
 	'sprint_id': Integer(required=True, description="The sprint id when this issue is added to a sprint"),
 	'creator_user_profile': Nested(user_output, required=True,
-								   description="The profile of the user that created this issue")
+								   description="The profile of the user that created this issue"),
+	'trello_card_is_closed': Boolean(description="Whether the card is archived or not on Trello"),
+	'trello_card_due_is_completed': Boolean(description="Whether the card is marked as completed on Trello"),
+	'trello_card_list_name': String(description="The list on which the card sits on Trello")
 })
 
 sprint_input = api.model('Sprint input', {
@@ -203,7 +204,10 @@ trello_board_output = api.model("Board output that can have two properties: card
 			})))
 		})))
 	}))),
-	'trello_board_lists_ids': List(String(), description='List of board lists ids'),
+	'trello_board_lists_ids_and_names': List(Nested(api.model('Board list', {
+		'id': String(description='Board list id'),
+		'name': String(description='Board list name')
+	}))),
 	'trello_board_labels': Nested(api.model('Label', {
 		"*": Wildcard(String(description="Contains the label's id")),
 	}, ), skip_none=True)
@@ -215,5 +219,6 @@ trello_card_input = api.model("Input for copying an issue to a trello board", {
 	'idList': String(required=True, description="The id of a board list"),
 	'idLabels': List(String(), required=True, description="A list of ids of labels"),
 	'due': String(required=True, description="The date until the issue must be completed"),
-	'issue_id': Integer(required=True, descritpion="The issue's id which will pe represented on Trello")
+	'issue_id': Integer(required=True, descritption="The issue's id which will pe represented on Trello"),
+	'board_list_name': String(required=True, description="The name of the board list where the card will be created")
 })

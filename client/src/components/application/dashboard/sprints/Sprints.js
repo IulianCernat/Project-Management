@@ -293,11 +293,12 @@ function SprintTable({
 		setNewTrelloCardPayload(
 			JSON.stringify({
 				name: currentIssue.title,
-				desc: currentIssue.description,
+				desc: currentIssue?.description,
 				idList: firstTrelloBoardListId,
 				idLabels: [trelloLabelsObj[currentIssue.type]],
 				due: sprint.end_date,
 				issue_id: currentIssue.id,
+				board_list_name: firstTrelloBoardListName,
 			})
 		);
 		setIssueIdToBeUpdated(currentIssue.id);
@@ -313,7 +314,7 @@ function SprintTable({
 		if (!isResolvedPostTrelloCard) return;
 		sprintIssues.filter((item) => {
 			if (item.id === issueIdToBeUpdated) {
-				item["list_name"] = firstTrelloBoardListName;
+				item["trello_card_list_name"] = firstTrelloBoardListName;
 				return true;
 			}
 			return false;
@@ -378,7 +379,7 @@ export default function Sprints() {
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
 	const getSprintsParams = useRef({ project_id: projectId });
 	const getTrelloDataParams = useRef({
-		data_arrangement: "board_cards,board_lists_ids,board_labels",
+		data_arrangement: "board_lists_ids_and_names,board_labels",
 	});
 	const getTrelloDataHeaders = useRef({
 		Authorization: `trello_token=${trelloToken}`,
@@ -434,18 +435,6 @@ export default function Sprints() {
 		setTrelloToken(localStorage.getItem("trello_token"));
 	}, []);
 
-	useEffect(() => {
-		if (!isResolvedGetTrelloData) return;
-		for (let sprint of sprintsList) {
-			for (let issue of sprint.issues) {
-				const trelloCardForIssue = getTrelloData.trello_board_cards.find(
-					(item) => issue.trello_card_id === item.id
-				);
-				Object.assign(issue, trelloCardForIssue);
-			}
-		}
-	}, [isResolvedGetTrelloData]);
-
 	return (
 		<>
 			{isRejectedGetTrelloData ? <Alert severity="error">{getTrelloDataError}</Alert> : null}
@@ -465,9 +454,15 @@ export default function Sprints() {
 							sprint={item}
 							trelloBoardId={trelloBoardId}
 							firstTrelloBoardListId={
-								trelloBoardId ? getTrelloData.trello_board_lists_ids[0] : null
+								trelloBoardId
+									? getTrelloData.trello_board_lists_ids_and_names[0].id
+									: null
 							}
-							firstTrelloBoardListName={trelloBoardId ? "Pending" : null}
+							firstTrelloBoardListName={
+								trelloBoardId
+									? getTrelloData.trello_board_lists_ids_and_names[0].name
+									: null
+							}
 							trelloLabelsObj={
 								trelloBoardId ? getTrelloData.trello_board_labels : null
 							}

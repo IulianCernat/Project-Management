@@ -396,7 +396,7 @@ export default function IssuesTable(props) {
 		setTableIssues([
 			...issuesList.map((issue) => {
 				issue["filteredColumns"] = new Set();
-				if (!issue?.list_name) issue["list_name"] = "Unknown";
+				if (!issue.trello_card_list_name) issue["trello_card_list_name"] = "Unknown";
 				return issue;
 			}),
 		]);
@@ -447,12 +447,11 @@ export default function IssuesTable(props) {
 								{isSprintIssuesTable && (
 									<TableCell align="left">
 										<TableHeaderColumn
-											columnName="trello_issue_card_status"
+											columnName="trello_card_list_name"
 											facadeColumnName="status"
 											sortHandler={sortByColumn}
 											currentSortOrder={
-												currentSortedColumnName ===
-												"trello_issue_card_status"
+												currentSortedColumnName === "trello_card_list_name"
 													? currentSortOrder
 													: "null"
 											}

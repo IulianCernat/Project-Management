@@ -154,7 +154,6 @@ export default function IssueRow(props) {
 	const classes = useStyles();
 	const futureIssueState = useRef(null);
 	const [issueStatus, setNewIssueStatus] = useState(row.status);
-
 	const {
 		error: updateError,
 		isLoading: isLoadingUpdate,
@@ -192,7 +191,7 @@ export default function IssueRow(props) {
 							onClick={(event) => handleCopyIssueToTrelloClick(row)}
 							disabled={
 								UIRestrictionForRoles.includes(currentUserRole) ||
-								row.list_name !== "Unknown"
+								row.trello_card_list_name !== null
 							}
 						>
 							<Tooltip
@@ -207,7 +206,7 @@ export default function IssueRow(props) {
 									fontSize="small"
 									color={
 										UIRestrictionForRoles.includes(currentUserRole) ||
-										row.list_name !== "Unknown"
+										row.trello_card_list_name !== null
 											? "disabled"
 											: "secondary"
 									}
@@ -240,7 +239,7 @@ export default function IssueRow(props) {
 				</TableCell>
 				{!isBacklogIssue ? (
 					<TableCell align="center">
-						<Chip color="primary" label={row.list_name} />
+						<Chip color="primary" label={row.trello_card_list_name} />
 					</TableCell>
 				) : null}
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>

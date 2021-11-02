@@ -11,8 +11,8 @@ from endpoints.issues_endpoint import issues_namespace
 from endpoints.sprints_endpoint import sprints_namespace
 from endpoints.trello_callback_endpoint import trello_callback_namespace
 from endpoints.trello_endpoint import trello_namespace
-from flask_socketio import SocketIO
-from flask_socketio import send, emit
+
+from flask_session import Session
 from flask_cors import CORS
 
 
@@ -25,7 +25,8 @@ class FlaskApp(Flask):
         self.config['RESTX_VALIDATE'] = settings.RESTX_VALIDATE
         self.config['RESTX_MASK_SWAGGER'] = settings.RESTX_MASK_SWAGGER
         self.config['ERROR_404_HELP'] = settings.RESTX_ERROR_404_HELP
-
+        self.config['SESSION_TYPE'] = 'filesystem'
+        self.config['SESSION_PERMANENT'] = False
         blueprint = Blueprint('api', __name__, url_prefix='/api')
         api.init_app(blueprint)
 
@@ -37,7 +38,6 @@ class FlaskApp(Flask):
         api.add_namespace(sprints_namespace)
         api.add_namespace(trello_callback_namespace)
         api.add_namespace(trello_namespace)
-
         self.register_blueprint(blueprint)
 
         db.init_app(self)
@@ -51,11 +51,8 @@ class FlaskApp(Flask):
 
 
 app = FlaskApp(__name__)
-socketio = SocketIO(app)
+Session(app)
 
-@socketio.on('connect')
-def handle_message(message):
-    send("hello guy!")
 
 if __name__ == "__main__":
-    socketio.run(app, debug=settings.FLASK_DEBUG)
+    app.run( debug=settings.FLASK_DEBUG)

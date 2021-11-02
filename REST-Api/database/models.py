@@ -92,9 +92,13 @@ class Issue(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='cascade'), nullable=False)
     creator_user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
     sprint_id = db.Column(db.Integer, db.ForeignKey('sprints.id', ondelete='cascade'), nullable=True)
-    status = db.Column(db.Enum("pending", "done", "inProgress"), default="pending", nullable=False)
 
     trello_card_id = db.Column(db.String(24), nullable=True)
+    trello_webhook_id = db.Column(db.String(24), nullable=True)
+    trello_card_is_closed = db.Column(db.Boolean, default=False)
+    trello_card_due_is_completed = db.Column(db.Boolean, default=False)
+    trello_card_list_name = db.Column(db.String(500), nullable=True)
+
 
     def __init__(self, input_obj):
         self.type = input_obj['type']

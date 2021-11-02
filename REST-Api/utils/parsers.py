@@ -28,5 +28,5 @@ sprints_filtering_args.add_argument('minimal_info', type=bool, location="args", 
 
 trello_board_args = api.parser()
 trello_board_args.add_argument('data_arrangement', type=inputs.regex(
-	'^(board_cards)?,?(board_lists)?,?(board_lists_ids)?,?(board_labels)?,?$'),
+	'^(board_cards)?,?(board_lists)?,?(board_lists_ids_and_names)?,?(board_labels)?,?$'),
 	location="args", required=True)

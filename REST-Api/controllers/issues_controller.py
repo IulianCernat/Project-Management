@@ -20,11 +20,11 @@ def get_nr_of_issues_for_project(project_id):
 
 
 def get_nr_of_finished_issues_for_sprint(sprint_id):
-    return Issue.query.filter(Issue.sprint_id == sprint_id, Issue.status == 'done').count()
+    return Issue.query.filter(Issue.sprint_id == sprint_id, Issue.trello_card_due_is_completed == True).count()
 
 
 def get_nr_of_finished_issues_for_project(project_id):
-    return Issue.query.filter(Issue.project_id == project_id, Issue.status == "done").count()
+    return Issue.query.filter(Issue.project_id == project_id, Issue.trello_card_due_is_completed == True).count()
 
 
 def get_issue(issue_id):
@@ -35,7 +35,7 @@ def get_issue(issue_id):
 def update_issue(issue_id, input_obj):
     issue = get_issue(issue_id)
 
-    if 'sprint_id' in input_obj and input_obj['sprint_id'] == 0:
+    if 'sprint_id' in input_obj and input_obj.get('sprint_id') == 0:
         setattr(issue, 'sprint_id', None)
         del input_obj['sprint_id']
 
@@ -61,3 +61,6 @@ def delete_issue(issue_id):
     issue = get_issue(issue_id)
     db.session.delete(issue)
     db.session.commit()
+
+def get_issue_by_trello_card_id(trello_card_id):
+    return Issue.query.filter(Issue.trello_card_id == trello_card_id).one()

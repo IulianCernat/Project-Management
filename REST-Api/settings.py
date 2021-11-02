@@ -47,3 +47,12 @@ except KeyError:
     log.error("Missing TRELLO_API_KEY environment variable")
 
 TRELLO_API_URL = "https://api.trello.com/1"
+
+# ngrok
+# Share localhost api over network for testing purposes
+# It needs to be updated every time ngrok starts
+
+NGROK_ADDRESS = "https://1b05-94-177-30-124.ngrok.io"
+
+# redis
+REDIS_URL = "localhost:6379"
