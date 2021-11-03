@@ -161,11 +161,6 @@ export default function IssueRow(props) {
 		isRejected: isRejectedUpdate,
 	} = usePatchFetch(`api/issues/${row.id}`, requestBodyForUpdate);
 
-	const handleChangeStatusClick = (event) => {
-		setRequestBodyForUpdate(JSON.stringify({ status: event.target.value }));
-		futureIssueState.current = { futureState: event.target.value };
-	};
-
 	useEffect(() => {
 		if (!isResolvedUpdate) return;
 
@@ -191,7 +186,7 @@ export default function IssueRow(props) {
 							onClick={(event) => handleCopyIssueToTrelloClick(row)}
 							disabled={
 								UIRestrictionForRoles.includes(currentUserRole) ||
-								row.trello_card_list_name !== null
+								row.trello_card_list_name !== "Unknown"
 							}
 						>
 							<Tooltip
@@ -206,7 +201,7 @@ export default function IssueRow(props) {
 									fontSize="small"
 									color={
 										UIRestrictionForRoles.includes(currentUserRole) ||
-										row.trello_card_list_name !== null
+										row.trello_card_list_name !== "Unknown"
 											? "disabled"
 											: "secondary"
 									}
@@ -242,6 +237,10 @@ export default function IssueRow(props) {
 						<Chip color="primary" label={row.trello_card_list_name} />
 					</TableCell>
 				) : null}
+
+				<TableCell align="center">
+					<Typography>{format(new Date(row.created_at), "dd/MM/yyyy")}</Typography>
+				</TableCell>
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>
 
 				<TableCell>
@@ -305,9 +304,6 @@ export default function IssueRow(props) {
 										<TableCell align="left">
 											<Typography>Created by</Typography>
 										</TableCell>
-										<TableCell align="left">
-											<Typography>Created at</Typography>
-										</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -326,11 +322,6 @@ export default function IssueRow(props) {
 												}
 												label={row.creator_user_profile.fullName}
 											/>
-										</TableCell>
-										<TableCell>
-											<Typography>
-												{format(new Date(row.created_at), "dd/MM/yyyy")}
-											</Typography>
 										</TableCell>
 									</TableRow>
 								</TableBody>

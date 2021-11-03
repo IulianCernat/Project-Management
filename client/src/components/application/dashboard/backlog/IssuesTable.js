@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import {
 	TableContainer,
 	TableRow,
@@ -180,18 +180,21 @@ function ColumnFilter({
 TableHeaderColumn.propTypes = {
 	columnName: PropTypes.string.isRequired,
 	sortHandler: PropTypes.func.isRequired,
-	filterHandler: PropTypes.func.isRequired,
+	isFilterable: PropTypes.bool.isRequired,
+	filterHandler: PropTypes.func,
 	currentSortOrder: PropTypes.oneOf(["asc", "desc", "null"]).isRequired,
-	sortByString: PropTypes.bool.isRequired,
-	clearFilter: PropTypes.func.isRequired,
-	currentFilteredColumnNames: PropTypes.array.isRequired,
+	sortBy: PropTypes.oneOf(["string", "date", "number"]).isRequired,
+	clearFilter: PropTypes.func,
+	currentFilteredColumnNames: PropTypes,
 	facadeColumnName: PropTypes.string.isRequired,
 };
 function TableHeaderColumn({
 	columnName,
 	sortHandler,
+	isFilterable,
 	filterHandler,
 	currentSortOrder,
+	sortBy,
 	filterOptions,
 	clearFilter,
 	currentFilteredColumnNames,
@@ -215,7 +218,7 @@ function TableHeaderColumn({
 				<IconButton
 					size="small"
 					onClick={() => {
-						sortHandler(columnName, true, "asc");
+						sortHandler(columnName, sortBy, "asc");
 					}}
 				>
 					<ArrowDownward fontSize="small" color="action" />
@@ -224,7 +227,7 @@ function TableHeaderColumn({
 				<IconButton
 					size="small"
 					onClick={() => {
-						sortHandler(columnName, true, "desc");
+						sortHandler(columnName, sortBy, "desc");
 					}}
 				>
 					<ArrowUpward fontSize="small" color="action" />
@@ -233,7 +236,7 @@ function TableHeaderColumn({
 				<IconButton
 					size="small"
 					onClick={() => {
-						sortHandler(columnName, true, "asc");
+						sortHandler(columnName, sortBy, "asc");
 					}}
 				>
 					<ArrowUpward fontSize="small" color="disabled" />
@@ -242,28 +245,33 @@ function TableHeaderColumn({
 			<Typography variant="button" align="center">
 				{facadeColumnName}
 			</Typography>
-			{currentFilteredColumnNames.includes(columnName) && (
-				<IconButton
-					size="small"
-					onClick={() => {
-						clearFilter(columnName, filteredColumnValue);
-					}}
-				>
-					<FilterList fontSize="small" />
-				</IconButton>
+			{!isFilterable ? null : (
+				<>
+					{currentFilteredColumnNames.includes(columnName) && (
+						<IconButton
+							size="small"
+							onClick={() => {
+								clearFilter(columnName, filteredColumnValue);
+							}}
+						>
+							<FilterList fontSize="small" />
+						</IconButton>
+					)}
+
+					<IconButton size="small" onClick={handleOpenFilterClick}>
+						<MoreVert fontSize="small" color="action" />
+					</IconButton>
+					<ColumnFilter
+						anchorEl={filterColumnAchorEl}
+						open={openFilterOptions}
+						onClose={handleCloseFilterClick}
+						filterHandler={filterHandler}
+						filterOptions={filterOptions}
+						columnName={columnName}
+						setFilteredColumnValue={setFilteredColumnValue}
+					/>
+				</>
 			)}
-			<IconButton size="small" onClick={handleOpenFilterClick}>
-				<MoreVert fontSize="small" color="action" />
-			</IconButton>
-			<ColumnFilter
-				anchorEl={filterColumnAchorEl}
-				open={openFilterOptions}
-				onClose={handleCloseFilterClick}
-				filterHandler={filterHandler}
-				filterOptions={filterOptions}
-				columnName={columnName}
-				setFilteredColumnValue={setFilteredColumnValue}
-			/>
 		</Box>
 	);
 }
@@ -310,32 +318,77 @@ export default function IssuesTable(props) {
 	const [currentFilteredColumnNames, setCurrentFilteredColumnNames] = useState([]);
 	const { currentUserRole } = useProjectContext();
 
-	const sortByColumn = (columnName, isContentString, sortingType) => {
+	const sortByColumn = (columnName, sortBy, sortingType) => {
 		switch (sortingType) {
 			case "asc": {
-				if (isContentString)
-					setTableIssues([
-						...tableIssues.sort((firstItem, secondItem) =>
-							firstItem[columnName].localeCompare(secondItem[columnName])
-						),
-					]);
-				else
-					tableIssues.sort(
-						(firstItem, secondItem) => firstItem[columnName] - secondItem[columnName]
-					);
+				switch (sortBy) {
+					case "string": {
+						setTableIssues([
+							...tableIssues.sort((firstItem, secondItem) =>
+								firstItem[columnName].localeCompare(secondItem[columnName])
+							),
+						]);
+						break;
+					}
+					case "number": {
+						setTableIssues([
+							...tableIssues.sort(
+								(firstItem, secondItem) =>
+									firstItem[columnName] - secondItem[columnName]
+							),
+						]);
+						break;
+					}
+					case "date": {
+						setTableIssues([
+							...tableIssues.sort(
+								(firstItem, secondItem) =>
+									new Date(firstItem[columnName]) -
+									new Date(secondItem[columnName])
+							),
+						]);
+						break;
+					}
+					default:
+						break;
+				}
 				setCurrentSortOrder("asc");
 
 				break;
 			}
 			case "desc": {
-				if (isContentString)
-					tableIssues.sort((firstItem, secondItem) =>
-						secondItem[columnName].localeCompare(firstItem[columnName])
-					);
-				else
-					tableIssues.sort(
-						(firstItem, secondItem) => secondItem[columnName] - firstItem[columnName]
-					);
+				switch (sortBy) {
+					case "string": {
+						setTableIssues([
+							...tableIssues.sort((firstItem, secondItem) =>
+								secondItem[columnName].localeCompare(firstItem[columnName])
+							),
+						]);
+						break;
+					}
+					case "number": {
+						setTableIssues([
+							...tableIssues.sort(
+								(firstItem, secondItem) =>
+									secondItem[columnName] - firstItem[columnName]
+							),
+						]);
+						break;
+					}
+					case "date": {
+						setTableIssues([
+							...tableIssues.sort(
+								(firstItem, secondItem) =>
+									new Date(secondItem[columnName]) -
+									new Date(firstItem[columnName])
+							),
+						]);
+						break;
+					}
+					default: {
+						break;
+					}
+				}
 				setCurrentSortOrder("desc");
 				break;
 			}
@@ -425,6 +478,8 @@ export default function IssuesTable(props) {
 										columnName="type"
 										facadeColumnName="type"
 										sortHandler={sortByColumn}
+										sortBy="string"
+										isFilterable={true}
 										filterHandler={filterByColumn}
 										currentSortOrder={
 											currentSortedColumnName === "type"
@@ -450,12 +505,13 @@ export default function IssuesTable(props) {
 											columnName="trello_card_list_name"
 											facadeColumnName="status"
 											sortHandler={sortByColumn}
+											isFilterable={true}
 											currentSortOrder={
 												currentSortedColumnName === "trello_card_list_name"
 													? currentSortOrder
 													: "null"
 											}
-											sortByString={true}
+											sortBy="string"
 											filterOptions={{
 												Pending: "Pending",
 												"In progress": "In progress",
@@ -470,10 +526,27 @@ export default function IssuesTable(props) {
 								)}
 								<TableCell align="center">
 									<TableHeaderColumn
+										columnName="created_at"
+										facadeColumnName="created at"
+										sortHandler={sortByColumn}
+										sortBy="date"
+										isFilterable={false}
+										currentSortOrder={
+											currentSortedColumnName === "created_at"
+												? currentSortOrder
+												: "null"
+										}
+										sortByString={true}
+									/>
+								</TableCell>
+								<TableCell align="center">
+									<TableHeaderColumn
 										columnName="priority"
 										facadeColumnName="priority"
+										isFilterable={false}
 										filterHandler={filterByColumn}
 										sortHandler={sortByColumn}
+										sortBy="number"
 										currentSortOrder={
 											currentSortedColumnName === "priority"
 												? currentSortOrder
