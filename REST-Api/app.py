@@ -25,8 +25,6 @@ class FlaskApp(Flask):
         self.config['RESTX_VALIDATE'] = settings.RESTX_VALIDATE
         self.config['RESTX_MASK_SWAGGER'] = settings.RESTX_MASK_SWAGGER
         self.config['ERROR_404_HELP'] = settings.RESTX_ERROR_404_HELP
-        self.config['SESSION_TYPE'] = 'filesystem'
-        self.config['SESSION_PERMANENT'] = False
         blueprint = Blueprint('api', __name__, url_prefix='/api')
         api.init_app(blueprint)
 
@@ -49,10 +47,9 @@ class FlaskApp(Flask):
         CORS(self)
 
 
-
 app = FlaskApp(__name__)
 Session(app)
 
 
 if __name__ == "__main__":
-    app.run( debug=settings.FLASK_DEBUG)
+    app.run(debug=settings.FLASK_DEBUG)
