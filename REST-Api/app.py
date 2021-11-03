@@ -11,8 +11,6 @@ from endpoints.issues_endpoint import issues_namespace
 from endpoints.sprints_endpoint import sprints_namespace
 from endpoints.trello_callback_endpoint import trello_callback_namespace
 from endpoints.trello_endpoint import trello_namespace
-
-from flask_session import Session
 from flask_cors import CORS
 
 
@@ -48,7 +46,6 @@ class FlaskApp(Flask):
 
 
 app = FlaskApp(__name__)
-Session(app)
 
 
 if __name__ == "__main__":
