@@ -188,7 +188,7 @@ def create_trello_webhook(trello_model_id, user_token, issue_obj):
     headers = create_headers(user_token)
     payload = {
         'idModel': trello_model_id,
-        'callbackURL': f"{settings.TUNNELED_API_ADDRES}/api/trello_callback/"
+        'callbackURL': f"{settings.TUNNELED_API_ADDRESS}api/trello_callback/"
     }
 
     try:
@@ -224,3 +224,25 @@ def process_callback_data(callback_data):
             'trello_card_list_name': card_data.get("listAfter")['name']
         }
         update_issue(issue_with_card_id.id, issue_update_payload)
+
+
+def delete_webhook_of_model(webhook_id, user_token):
+    url = f"{settings.TRELLO_API_URL}/webhooks/{webhook_id}"
+    headers = create_headers(user_token)
+    try:
+        trello_request_obj = requests.delete(url, headers=headers)
+        if trello_request_obj.status_code != 200:
+            raise TrelloRequestFailure(trello_request_obj.text)
+    except Exception as e:
+        raise e
+
+
+def delete_trello_card(trello_card_id, user_token):
+    url = f"{settings.TRELLO_API_URL}/cards/{trello_card_id}"
+    headers = create_headers(user_token)
+    try:
+        trello_request_obj = requests.delete(url, headers=headers)
+        if trello_request_obj.status_code != 200:
+            raise TrelloRequestFailure(trello_request_obj.text)
+    except Exception as e:
+        raise e

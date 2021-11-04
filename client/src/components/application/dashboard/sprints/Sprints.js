@@ -250,13 +250,13 @@ function SprintTable({
 }) {
 	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
-	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
+	const [idOfIssueToBeMovedToBacklog, setIdOfIssueToBeMovedToBacklog] = useState();
+	const [idOfIssueToBeCopiedToTrello, setIdOfIssueToBeCopiedToTrello] = useState();
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 	const [newTrelloCardPayload, setNewTrelloCardPayload] = useState();
-	const headersForPostingTrelloCard = useRef({
+	const headersForTrello = useRef({
 		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
 	});
-	const updateType = useRef(); //delete, copy
 
 	const handleCloseSnackbar = (event, reason) => {
 		if (reason === "clickaway") {
@@ -270,22 +270,21 @@ function SprintTable({
 		isLoading: isLoadingIssueUpdate,
 		isResolved: isResolvedIssueUpdate,
 		isRejected: isRejectedIssueUpdate,
-	} = usePatchFetch(`api/issues/${issueIdToBeUpdated}`, requestBodyForIssueUpdate);
+	} = usePatchFetch(
+		`api/issues/${idOfIssueToBeMovedToBacklog}`,
+		requestBodyForIssueUpdate,
+		headersForTrello.current
+	);
 
 	const {
 		error: postTrelloCardError,
 		isLoading: isLoadingPostTrelloCard,
 		isResolved: isResolvedPostTrelloCard,
 		isRejected: isRejectedPostTrelloCard,
-	} = usePostFetch(
-		"api/trello/cards/",
-		newTrelloCardPayload,
-		headersForPostingTrelloCard.current
-	);
+	} = usePostFetch("api/trello/cards/", newTrelloCardPayload, headersForTrello.current);
 
 	const handleMoveIssueClick = (issueId) => {
-		updateType.current = "delete";
-		setIssueIdToBeUpdated(issueId);
+		setIdOfIssueToBeMovedToBacklog(issueId);
 		setRequestBodyForIssueUpdate(JSON.stringify({ sprint_id: 0 }));
 	};
 
@@ -301,26 +300,22 @@ function SprintTable({
 				board_list_name: firstTrelloBoardListName,
 			})
 		);
-		setIssueIdToBeUpdated(currentIssue.id);
+		setIdOfIssueToBeCopiedToTrello(currentIssue.id);
 	};
 
 	useEffect(() => {
 		if (!isResolvedIssueUpdate) return;
-
-		setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
-	}, [isResolvedIssueUpdate, issueIdToBeUpdated]);
+		setSprintIssues(sprintIssues.filter((item) => item.id !== idOfIssueToBeMovedToBacklog));
+	}, [isResolvedIssueUpdate, idOfIssueToBeMovedToBacklog]);
 
 	useEffect(() => {
 		if (!isResolvedPostTrelloCard) return;
-		sprintIssues.filter((item) => {
-			if (item.id === issueIdToBeUpdated) {
+		sprintIssues.forEach((item) => {
+			if (item.id === idOfIssueToBeCopiedToTrello)
 				item["trello_card_list_name"] = firstTrelloBoardListName;
-				return true;
-			}
-			return false;
 		});
 		setSprintIssues([...sprintIssues]);
-	}, [isResolvedPostTrelloCard]);
+	}, [isResolvedPostTrelloCard, idOfIssueToBeCopiedToTrello]);
 
 	return (
 		<TableContainer component={Paper} style={{ padding: "1rem" }}>

@@ -229,13 +229,21 @@ export default function IssueRow(props) {
 						<IssueTypesChip type="bug" />
 					)}
 				</TableCell>
-				<TableCell style={{ width: "100ch" }} align="left">
+				<TableCell style={{ maxWidth: "75ch" }} align="left">
 					{row.title}
 				</TableCell>
 				{!isBacklogIssue ? (
-					<TableCell align="center">
-						<Chip color="primary" label={row.trello_card_list_name} />
-					</TableCell>
+					<>
+						<TableCell align="center">
+							<Chip color="primary" label={row.trello_card_list_name} />
+						</TableCell>
+						<TableCell align="center">
+							<Chip
+								color="primary"
+								label={String(row.trello_card_due_is_completed)}
+							/>
+						</TableCell>
+					</>
 				) : null}
 
 				<TableCell align="center">
@@ -253,25 +261,19 @@ export default function IssueRow(props) {
 						disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
 					>
 						{isBacklogIssue ? (
-							!isBeingDeleted ? (
-								<Tooltip
-									title={
-										<Typography variant="subtitle2">Delete issue</Typography>
+							<Tooltip
+								title={<Typography variant="subtitle2">Delete issue</Typography>}
+								arrow
+							>
+								<DeleteForever
+									color={
+										UIRestrictionForRoles.includes(currentUserRole) ||
+										isSelected
+											? "disabled"
+											: "secondary"
 									}
-									arrow
-								>
-									<DeleteForever
-										color={
-											UIRestrictionForRoles.includes(currentUserRole) ||
-											isSelected
-												? "disabled"
-												: "secondary"
-										}
-									/>
-								</Tooltip>
-							) : (
-								<CircularProgress color="secondary" size={30} />
-							)
+								/>
+							</Tooltip>
 						) : (
 							<Tooltip
 								title={<Typography variant="subtitle2">Move to backlog</Typography>}

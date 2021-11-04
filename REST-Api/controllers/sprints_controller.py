@@ -1,7 +1,7 @@
 from database import db
 from database.models import Sprint
 from controllers.issues_controller import update_issue
-from sqlalchemy import select
+from sqlalchemy import select, asc, desc
 import zulu
 
 
@@ -29,14 +29,16 @@ def get_sprint(sprint_id):
 
 
 def get_sprints(project_id):
-    sprints = Sprint.query.filter(Sprint.project_id == project_id).all()
+    sprints = Sprint.query.filter(Sprint.project_id == project_id).order_by(
+        desc(Sprint.created_at)).all()
     for sprint in sprints:
         is_sprint_completed(sprint)
     return sprints
 
 
 def get_sprints_with_minimal_info(project_id):
-    stmt = select(Sprint.id, Sprint.name).where(Sprint.project_id == project_id)
+    stmt = select(Sprint.id, Sprint.name).where(
+        Sprint.project_id == project_id)
     return list(db.session.execute(stmt))
 
 

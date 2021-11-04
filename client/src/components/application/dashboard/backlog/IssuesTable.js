@@ -500,29 +500,59 @@ export default function IssuesTable(props) {
 									<Typography variant="button">Title</Typography>
 								</TableCell>
 								{isSprintIssuesTable && (
-									<TableCell align="left">
-										<TableHeaderColumn
-											columnName="trello_card_list_name"
-											facadeColumnName="status"
-											sortHandler={sortByColumn}
-											isFilterable={true}
-											currentSortOrder={
-												currentSortedColumnName === "trello_card_list_name"
-													? currentSortOrder
-													: "null"
-											}
-											sortBy="string"
-											filterOptions={{
-												Pending: "Pending",
-												"In progress": "In progress",
-												Done: "Done",
-												Unknown: "Unknown",
-											}}
-											filterHandler={filterByColumn}
-											clearFilter={clearColumnFilter}
-											currentFilteredColumnNames={currentFilteredColumnNames}
-										/>
-									</TableCell>
+									<>
+										<TableCell align="left">
+											<TableHeaderColumn
+												columnName="trello_card_list_name"
+												facadeColumnName="status"
+												sortHandler={sortByColumn}
+												isFilterable={true}
+												currentSortOrder={
+													currentSortedColumnName ===
+													"trello_card_list_name"
+														? currentSortOrder
+														: "null"
+												}
+												sortBy="string"
+												filterOptions={{
+													Pending: "Pending",
+													"In progress": "In progress",
+													Done: "Done",
+													Unknown: "Unknown",
+												}}
+												filterHandler={filterByColumn}
+												clearFilter={clearColumnFilter}
+												currentFilteredColumnNames={
+													currentFilteredColumnNames
+												}
+											/>
+										</TableCell>
+										<TableCell align="left">
+											<TableHeaderColumn
+												columnName="trello_card_due_is_completed"
+												facadeColumnName="completed"
+												sortHandler={sortByColumn}
+												sortBy="string"
+												isFilterable={true}
+												filterHandler={filterByColumn}
+												currentSortOrder={
+													currentSortedColumnName ===
+													"trello_card_due_is_completed"
+														? currentSortOrder
+														: "null"
+												}
+												sortByString={true}
+												filterOptions={{
+													yes: <Typography>Yes</Typography>,
+													no: <Typography>No</Typography>,
+												}}
+												clearFilter={clearColumnFilter}
+												currentFilteredColumnNames={
+													currentFilteredColumnNames
+												}
+											/>
+										</TableCell>
+									</>
 								)}
 								<TableCell align="center">
 									<TableHeaderColumn
@@ -543,7 +573,7 @@ export default function IssuesTable(props) {
 									<TableHeaderColumn
 										columnName="priority"
 										facadeColumnName="priority"
-										isFilterable={false}
+										isFilterable={true}
 										filterHandler={filterByColumn}
 										sortHandler={sortByColumn}
 										sortBy="number"
