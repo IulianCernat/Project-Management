@@ -33,33 +33,41 @@ def get_issue(issue_id):
     return issue
 
 
-def update_issue(issue_id, input_obj, trello_token=None):
+def update_issue(issue_id, input_obj=None, trello_token=None, clear_trello_data=False):
     from controllers.trello_controller import delete_webhook_of_model, delete_trello_card
     issue = get_issue(issue_id)
-    deleting_from_trello_exception = None
 
-    if 'sprint_id' in input_obj and input_obj.get('sprint_id') == 0:
-        setattr(issue, 'sprint_id', None)
-        del input_obj['sprint_id']
-        if trello_token is not None:
-            try:
-                if issue.trello_card_id is not None and issue.trello_webhook_id is not None:
-                    delete_webhook_of_model(
-                        issue.trello_webhook_id, trello_token)
-                    delete_trello_card(issue.trello_card_id, trello_token)
-            except TrelloResourceUnavailable as e:
-                pass
-            except Exception as e:
-                raise e
+    def clean_issue_trello_data():
+        setattr(issue, 'trello_webhook_id', None)
+        setattr(issue, 'trello_card_id', None)
+        setattr(issue, 'trello_card_is_closed', None)
+        setattr(issue, 'trello_card_due_is_completed', None),
+        setattr(issue, 'trello_card_list_name', None)
 
-            setattr(issue, 'trello_webhook_id', None)
-            setattr(issue, 'trello_card_id', None)
-            setattr(issue, 'trello_card_is_closed', None)
-            setattr(issue, 'trello_card_due_is_completed', None),
-            setattr(issue, 'trello_card_list_name', None)
+    if input_obj is not None:
+        if 'sprint_id' in input_obj and input_obj.get('sprint_id') == 0:
+            setattr(issue, 'sprint_id', None)
+            del input_obj['sprint_id']
+            if trello_token is not None:
+                try:
+                    if issue.trello_card_id is not None and issue.trello_webhook_id is not None:
+                        delete_webhook_of_model(
+                            issue.trello_webhook_id, trello_token)
+                        delete_trello_card(issue.trello_card_id, trello_token)
+                except TrelloResourceUnavailable as e:
+                    # If resource doesn't exist then continue with clearing Trello info
+                    pass
+                except Exception as e:
+                    raise e
+            clean_issue_trello_data()
 
-    for field, value in input_obj.items():
-        setattr(issue, field, value)
+        # Update other fields
+        for field, value in input_obj.items():
+            setattr(issue, field, value)
+
+    # delete only trello info (for example when card is deleted from Trello)
+    if clear_trello_data is True:
+        clean_issue_trello_data()
 
     db.session.commit()
 

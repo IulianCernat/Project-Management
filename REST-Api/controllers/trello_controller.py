@@ -206,31 +206,32 @@ def create_trello_webhook(trello_model_id, user_token, issue_obj):
 
 def process_callback_data(callback_data):
     def process_event():
-        if action_type != 'updateCard':
-            return
-
         issue_with_card_id = get_issue_by_trello_card_id(
-            callback_data['model']['id'])
+            card_data.get('card')['id'])
+        if action_type == 'updateCard':
+            if card_data.get("listAfter") and card_data.get("listAfter")['name']:
+                issue_update_payload = {
+                    'trello_card_list_name': card_data.get("listAfter")['name']
+                }
+                update_issue(issue_with_card_id.id, issue_update_payload)
+                return
 
-        if card_data.get("listAfter") and card_data.get("listAfter")['name']:
-            issue_update_payload = {
-                'trello_card_list_name': card_data.get("listAfter")['name']
-            }
-            update_issue(issue_with_card_id.id, issue_update_payload)
-            return
+            if 'dueComplete' in card_data['old']:
+                issue_update_payload = {
+                    'trello_card_due_is_completed': card_data.get('card')['dueComplete']
+                }
+                update_issue(issue_with_card_id.id, issue_update_payload)
+                return
 
-        if 'dueComplete' in card_data['old']:
-            issue_update_payload = {
-                'trello_card_due_is_completed': card_data.get('card')['dueComplete']
-            }
-            update_issue(issue_with_card_id.id, issue_update_payload)
-            return
+            if 'closed' in card_data['old']:
+                issue_update_payload = {
+                    'trello_card_is_closed': card_data.get('card')['closed']
+                }
+                update_issue(issue_with_card_id.id, issue_update_payload)
+                return
 
-        if 'closed' in card_data['old']:
-            issue_update_payload = {
-                'trello_card_is_closed': card_data.get('card')['closed']
-            }
-            update_issue(issue_with_card_id.id, issue_update_payload)
+        if action_type == 'deleteCard':
+            update_issue(issue_with_card_id.id, clear_trello_data=True)
             return
 
     action = callback_data.get('action')
@@ -241,8 +242,6 @@ def process_callback_data(callback_data):
     if action_type is None:
         return
 
-    if action_type != 'updateCard':
-        return
     card_data = action.get('data')
 
     if card_data is None:
