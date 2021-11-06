@@ -5,7 +5,7 @@ from database.models import Team, Issue
 from database import db
 from controllers.teams_controller import get_team
 from controllers.issues_controller import get_issue_by_trello_card_id, update_issue
-from utils.custom_exceptions import TrelloRequestFailure
+from utils.custom_exceptions import TrelloRequestFailure, TrelloResourceUnavailable
 
 log = logging.getLogger(__name__)
 
@@ -175,6 +175,9 @@ def copy_issue_to_trello_board_list(payload, user_token):
         issue_to_be_updated = Issue.query.filter(Issue.id == issue_id).one()
         issue_to_be_updated.trello_card_id = created_card['id']
         issue_to_be_updated.trello_card_list_name = board_list_name
+        issue_to_be_updated.trello_card_due_is_completed = False
+        issue_to_be_updated.trello_card_is_closed = False
+
         create_trello_webhook(
             created_card['id'], user_token, issue_to_be_updated)
         db.session.commit()
@@ -202,6 +205,34 @@ def create_trello_webhook(trello_model_id, user_token, issue_obj):
 
 
 def process_callback_data(callback_data):
+    def process_event():
+        if action_type != 'updateCard':
+            return
+
+        issue_with_card_id = get_issue_by_trello_card_id(
+            callback_data['model']['id'])
+
+        if card_data.get("listAfter") and card_data.get("listAfter")['name']:
+            issue_update_payload = {
+                'trello_card_list_name': card_data.get("listAfter")['name']
+            }
+            update_issue(issue_with_card_id.id, issue_update_payload)
+            return
+
+        if 'dueComplete' in card_data['old']:
+            issue_update_payload = {
+                'trello_card_due_is_completed': card_data.get('card')['dueComplete']
+            }
+            update_issue(issue_with_card_id.id, issue_update_payload)
+            return
+
+        if 'closed' in card_data['old']:
+            issue_update_payload = {
+                'trello_card_is_closed': card_data.get('card')['closed']
+            }
+            update_issue(issue_with_card_id.id, issue_update_payload)
+            return
+
     action = callback_data.get('action')
     if action is None:
         return
@@ -217,13 +248,7 @@ def process_callback_data(callback_data):
     if card_data is None:
         return
 
-    if card_data.get("listAfter") and card_data.get("listAfter")['name']:
-        issue_with_card_id = get_issue_by_trello_card_id(
-            callback_data['model']['id'])
-        issue_update_payload = {
-            'trello_card_list_name': card_data.get("listAfter")['name']
-        }
-        update_issue(issue_with_card_id.id, issue_update_payload)
+    process_event()
 
 
 def delete_webhook_of_model(webhook_id, user_token):
@@ -231,8 +256,12 @@ def delete_webhook_of_model(webhook_id, user_token):
     headers = create_headers(user_token)
     try:
         trello_request_obj = requests.delete(url, headers=headers)
+
+        if trello_request_obj.status_code == 404:
+            raise TrelloResourceUnavailable(trello_request_obj.text)
         if trello_request_obj.status_code != 200:
             raise TrelloRequestFailure(trello_request_obj.text)
+
     except Exception as e:
         raise e
 
@@ -242,6 +271,8 @@ def delete_trello_card(trello_card_id, user_token):
     headers = create_headers(user_token)
     try:
         trello_request_obj = requests.delete(url, headers=headers)
+        if trello_request_obj.status_code == 404:
+            raise TrelloResourceUnavailable(trello_request_obj.text)
         if trello_request_obj.status_code != 200:
             raise TrelloRequestFailure(trello_request_obj.text)
     except Exception as e:

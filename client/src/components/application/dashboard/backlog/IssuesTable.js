@@ -449,10 +449,12 @@ export default function IssuesTable(props) {
 		setTableIssues([
 			...issuesList.map((issue) => {
 				issue["filteredColumns"] = new Set();
-				if (!issue.trello_card_list_name) issue["trello_card_list_name"] = "Unknown";
-				if (!issue.trello_card_due_is_completed)
+				if (issue.trello_card_list_name === null)
+					issue["trello_card_list_name"] = "Unknown";
+				if (issue.trello_card_due_is_completed === null)
 					issue["trello_card_due_is_completed"] = "Unknown";
-				if (!issue.trello_card_is_closed) issue["trello_card_is_closed"] = "Unknown";
+				if (issue.trello_card_is_closed === null)
+					issue["trello_card_is_closed"] = "Unknown";
 				return issue;
 			}),
 		]);

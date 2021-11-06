@@ -314,10 +314,14 @@ function SprintTable({
 
 	useEffect(() => {
 		if (!isResolvedPostTrelloCard) return;
-		sprintIssues.forEach((item) => {
-			if (item.id === idOfIssueToBeCopiedToTrello)
-				item["trello_card_list_name"] = firstTrelloBoardListName;
-		});
+		const issue_to_be_updated = sprintIssues.find(
+			(item) => item.id === idOfIssueToBeCopiedToTrello
+		);
+
+		issue_to_be_updated["trello_card_list_name"] = firstTrelloBoardListName;
+		issue_to_be_updated["trello_card_due_is_completed"] = false;
+		issue_to_be_updated["trello_card_is_closed"] = false;
+
 		setSprintIssues([...sprintIssues]);
 	}, [isResolvedPostTrelloCard, idOfIssueToBeCopiedToTrello]);
 

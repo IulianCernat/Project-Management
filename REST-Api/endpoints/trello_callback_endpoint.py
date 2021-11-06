@@ -14,6 +14,7 @@ class TrelloCallback(Resource):
     @api.response(200, 'Successfully called endpoint')
     def post(self):
         trello_received_data = request.json
+        print(trello_received_data)
         process_callback_data(trello_received_data)
 
     @api.response(200, 'Successfully called endpoint')
