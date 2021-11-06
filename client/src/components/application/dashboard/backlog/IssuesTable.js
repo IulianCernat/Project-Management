@@ -450,6 +450,9 @@ export default function IssuesTable(props) {
 			...issuesList.map((issue) => {
 				issue["filteredColumns"] = new Set();
 				if (!issue.trello_card_list_name) issue["trello_card_list_name"] = "Unknown";
+				if (!issue.trello_card_due_is_completed)
+					issue["trello_card_due_is_completed"] = "Unknown";
+				if (!issue.trello_card_is_closed) issue["trello_card_is_closed"] = "Unknown";
 				return issue;
 			}),
 		]);
@@ -531,6 +534,31 @@ export default function IssuesTable(props) {
 											<TableHeaderColumn
 												columnName="trello_card_due_is_completed"
 												facadeColumnName="completed"
+												sortHandler={sortByColumn}
+												sortBy="string"
+												isFilterable={true}
+												filterHandler={filterByColumn}
+												currentSortOrder={
+													currentSortedColumnName ===
+													"trello_card_due_is_completed"
+														? currentSortOrder
+														: "null"
+												}
+												sortByString={true}
+												filterOptions={{
+													yes: <Typography>Yes</Typography>,
+													no: <Typography>No</Typography>,
+												}}
+												clearFilter={clearColumnFilter}
+												currentFilteredColumnNames={
+													currentFilteredColumnNames
+												}
+											/>
+										</TableCell>
+										<TableCell align="left">
+											<TableHeaderColumn
+												columnName="trello_card_due_is_closed"
+												facadeColumnName="closed"
 												sortHandler={sortByColumn}
 												sortBy="string"
 												isFilterable={true}

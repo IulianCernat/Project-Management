@@ -276,7 +276,7 @@ function SprintTable({
 		headersForTrello.current
 	);
 
-	const {
+	let {
 		error: postTrelloCardError,
 		isLoading: isLoadingPostTrelloCard,
 		isResolved: isResolvedPostTrelloCard,
@@ -289,6 +289,10 @@ function SprintTable({
 	};
 
 	const handleCopyIssueToTrelloClick = (currentIssue) => {
+		if (!Boolean(trelloBoardId)) {
+			setOpenSnackbar(true);
+			return;
+		}
 		setNewTrelloCardPayload(
 			JSON.stringify({
 				name: currentIssue.title,
@@ -372,6 +376,8 @@ export default function Sprints() {
 	const [trelloToken, setTrelloToken] = useState(localStorage.getItem("trello_token"));
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
+	const [startFetchingTrelloInfo, setStartFetchingTrelloInfo] = useState(false);
+
 	const getSprintsParams = useRef({ project_id: projectId });
 	const getTrelloDataParams = useRef({
 		data_arrangement: "board_lists_ids_and_names,board_labels",
@@ -398,7 +404,7 @@ export default function Sprints() {
 	} = useGetFetch(
 		`api/trello/boards/${trelloBoardId}`,
 		getTrelloDataParams.current,
-		isResolvedGetSprints,
+		Boolean(trelloBoardId),
 		false,
 		getTrelloDataHeaders.current
 	);
@@ -427,7 +433,8 @@ export default function Sprints() {
 	}, [isResolvedDeleteSprint]);
 
 	useEffect(() => {
-		setTrelloToken(localStorage.getItem("trello_token"));
+		const trelloToken = localStorage.getItem("trello_token");
+		setTrelloToken(trelloToken);
 	}, []);
 
 	return (
@@ -437,7 +444,9 @@ export default function Sprints() {
 				<LinearProgress style={{ width: "100%" }} />
 			) : null}
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
-			{isResolvedGetSprints && getSprintsReceivedData.length && isResolvedGetTrelloData ? (
+			{isResolvedGetSprints &&
+			getSprintsReceivedData.length &&
+			(trelloBoardId ? (getTrelloData ? true : false) : true) ? (
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable

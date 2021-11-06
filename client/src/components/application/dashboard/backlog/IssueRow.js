@@ -229,7 +229,7 @@ export default function IssueRow(props) {
 						<IssueTypesChip type="bug" />
 					)}
 				</TableCell>
-				<TableCell style={{ maxWidth: "75ch" }} align="left">
+				<TableCell style={{ maxWidth: "60ch" }} align="left">
 					{row.title}
 				</TableCell>
 				{!isBacklogIssue ? (
@@ -240,7 +240,25 @@ export default function IssueRow(props) {
 						<TableCell align="center">
 							<Chip
 								color="primary"
-								label={String(row.trello_card_due_is_completed)}
+								label={
+									typeof row.trello_card_due_is_completed === "string"
+										? row.trello_card_due_is_completed
+										: row.trello_card_due_is_completed === true
+										? "Yes"
+										: "No"
+								}
+							/>
+						</TableCell>
+						<TableCell align="center">
+							<Chip
+								color="primary"
+								label={
+									typeof row.trello_card_is_closed === "string"
+										? row.trello_card_is_closed
+										: row.trello_card_is_closed === true
+										? "Yes"
+										: "No"
+								}
 							/>
 						</TableCell>
 					</>
