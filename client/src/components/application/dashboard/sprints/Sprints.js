@@ -186,7 +186,6 @@ function SprintHeader({
 				</Box>
 				<div
 					style={{
-						transition: "height 0.25s linear",
 						left: 0,
 						right: 0,
 						position: "absolute",
