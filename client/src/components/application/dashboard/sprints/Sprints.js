@@ -379,7 +379,7 @@ export default function Sprints() {
 	const [trelloToken, setTrelloToken] = useState(localStorage.getItem("trello_token"));
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
-	const [startFetchingTrelloInfo, setStartFetchingTrelloInfo] = useState(false);
+	const [startFetchingSprints, setStartFetchingSprints] = useState(true);
 
 	const getSprintsParams = useRef({ project_id: projectId });
 	const getTrelloDataParams = useRef({
@@ -396,7 +396,7 @@ export default function Sprints() {
 		isLoading: isLoadingGetSprints,
 		isResolved: isResolvedGetSprints,
 		isRejected: isRejectedGetSprints,
-	} = useGetFetch(`api/sprints/`, getSprintsParams.current);
+	} = useGetFetch(`api/sprints/`, getSprintsParams.current, startFetchingSprints);
 
 	const {
 		receivedData: getTrelloData,
@@ -422,9 +422,14 @@ export default function Sprints() {
 		setSprintIdToBeDeleted(sprintId);
 	};
 
+	const handleSyncWithTrelloClick = () => {
+		setStartFetchingSprints(true);
+	};
+
 	useEffect(() => {
 		if (!isResolvedGetSprints) return;
 		setSprintsList(getSprintsReceivedData);
+		setStartFetchingSprints(false);
 	}, [isResolvedGetSprints]);
 
 	useEffect(() => {
@@ -446,6 +451,12 @@ export default function Sprints() {
 			{isLoadingGetSprints || isLoadingGetTrelloData ? (
 				<LinearProgress style={{ width: "100%" }} />
 			) : null}
+			<Box my={2}>
+				<Button color="primary" variant="contained" onClick={handleSyncWithTrelloClick}>
+					Sync with Trello
+				</Button>
+			</Box>
+
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
 			{isResolvedGetSprints &&
 			getSprintsReceivedData.length &&
