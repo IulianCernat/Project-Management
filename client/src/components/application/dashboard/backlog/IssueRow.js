@@ -31,7 +31,6 @@ import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
 import { format } from "date-fns";
-import TrelloClient, { Trello } from "react-trello-client";
 
 const useStyles = makeStyles({
 	table: {
@@ -90,10 +89,17 @@ IssueRow.propTypes = {
 };
 const generatePriorityStars = (priorityNumber) => {
 	let starsArray = [];
-	for (let i = 0; i < priorityNumber; i++) starsArray.push(<Star key={`star${i}`} />);
+	for (let i = 0; i < priorityNumber; i++)
+		starsArray.push(<Star style={{ color: "hsl(31, 100%, 61%)" }} key={`star${i}`} />);
 
 	for (let i = 0; i < 5 - priorityNumber; i++)
-		starsArray.push(<StarOutline key={`emptyStar${i}`} />);
+		starsArray.push(
+			<StarOutline
+				style={{ color: "hsl(31, 100%, 61%)" }}
+				color="primary"
+				key={`emptyStar${i}`}
+			/>
+		);
 
 	return starsArray;
 };
