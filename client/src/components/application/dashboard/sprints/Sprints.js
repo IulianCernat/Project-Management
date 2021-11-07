@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import {
 	TableContainer,
 	Paper,
@@ -242,7 +242,7 @@ function SprintTable({
 	handleDeleteSprintClick,
 	setStartedSprintId,
 	startedSprintId,
-	trelloBoardId,
+	added_trello_board_id_by_user,
 	firstTrelloBoardListId,
 	firstTrelloBoardListName,
 	trelloLabelsObj,
@@ -288,7 +288,7 @@ function SprintTable({
 	};
 
 	const handleCopyIssueToTrelloClick = (currentIssue) => {
-		if (!Boolean(trelloBoardId)) {
+		if (!Boolean(added_trello_board_id_by_user)) {
 			setOpenSnackbar(true);
 			return;
 		}
@@ -375,12 +375,15 @@ function SprintTable({
 }
 
 export default function Sprints() {
-	const { projectId, currentUserRole, trelloBoardId } = useProjectContext();
+	const { projectId, currentUserRole, trelloBoards } = useProjectContext();
+	const added_trello_board_id_by_user = useMemo(
+		() => trelloBoards.find((trelloBoard) => trelloBoard.is_added_by_user).trello_board_id,
+		[trelloBoards]
+	);
 	const [trelloToken, setTrelloToken] = useState(localStorage.getItem("trello_token"));
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
 	const [startFetchingSprints, setStartFetchingSprints] = useState(true);
-
 	const getSprintsParams = useRef({ project_id: projectId });
 	const getTrelloDataParams = useRef({
 		data_arrangement: "board_lists_ids_and_names,board_labels",
@@ -405,9 +408,9 @@ export default function Sprints() {
 		isResolved: isResolvedGetTrelloData,
 		isRejected: isRejectedGetTrelloData,
 	} = useGetFetch(
-		`api/trello/boards/${trelloBoardId}`,
+		`api/trello/boards/${added_trello_board_id_by_user}`,
 		getTrelloDataParams.current,
-		Boolean(trelloBoardId),
+		Boolean(added_trello_board_id_by_user),
 		false,
 		getTrelloDataHeaders.current
 	);
@@ -460,7 +463,7 @@ export default function Sprints() {
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
 			{isResolvedGetSprints &&
 			getSprintsReceivedData.length &&
-			(trelloBoardId ? (getTrelloData ? true : false) : true) ? (
+			(added_trello_board_id_by_user ? (getTrelloData ? true : false) : true) ? (
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable
@@ -470,19 +473,21 @@ export default function Sprints() {
 							currentUserRole={currentUserRole}
 							key={item.id}
 							sprint={item}
-							trelloBoardId={trelloBoardId}
+							added_trello_board_id_by_user={added_trello_board_id_by_user}
 							firstTrelloBoardListId={
-								trelloBoardId
+								added_trello_board_id_by_user
 									? getTrelloData.trello_board_lists_ids_and_names[0].id
 									: null
 							}
 							firstTrelloBoardListName={
-								trelloBoardId
+								added_trello_board_id_by_user
 									? getTrelloData.trello_board_lists_ids_and_names[0].name
 									: null
 							}
 							trelloLabelsObj={
-								trelloBoardId ? getTrelloData.trello_board_labels : null
+								added_trello_board_id_by_user
+									? getTrelloData.trello_board_labels
+									: null
 							}
 						/>
 					))}

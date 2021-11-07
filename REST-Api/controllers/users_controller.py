@@ -47,14 +47,7 @@ def get_users_by_filters(keyword, part_of_project_id=None):
 
 def get_self(uid):
     user = User.query.filter(User.uid == uid).one()
-    setattr(user, 'trello_boards_ids', get_user_trello_board_id(user.id))
     return user
-
-
-def get_user_trello_board_id(user_id):
-    teams = Team.query.join(TeamMember, Team.id == TeamMember.team_id).filter(
-        TeamMember.user_id == user_id, Team.trello_board_id != None)
-    return [{'project_id': team.project_id, 'trello_board_id': team.trello_board_id} for team in teams]
 
 
 def get_user_id(uid):

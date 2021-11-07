@@ -124,11 +124,7 @@ export default function Dashboard() {
 						<ProjectProvider
 							projectId={Number(projectId)}
 							currentUserRole={getRoleReceivedData.user_role}
-							trelloBoardId={
-								additionalUserInfo.trello_boards_ids.find(
-									(item) => item.project_id === Number(projectId)
-								)?.trello_board_id
-							}
+							trelloBoards={getRoleReceivedData.trello_boards}
 						>
 							<Switch>
 								<Route
