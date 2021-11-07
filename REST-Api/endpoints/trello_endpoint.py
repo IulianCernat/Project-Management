@@ -12,7 +12,6 @@ import json
 @trello_namespace.route('/boards/<id>')
 @api.expect(authorization_header)
 class TrelloBoard(Resource):
-	@api.header("Authorization", description="Must contain trello_token")
 	@api.response(200, "Trello board successfully fetched. 'cards' or/and 'lists' can be absent",
 				  trello_board_output)
 	@api.marshal_with(trello_board_output, skip_none=True)
@@ -22,14 +21,8 @@ class TrelloBoard(Resource):
 		data_arrangement = args.get('data_arrangement', None)
 		if data_arrangement is not None:
 			data_arrangement = data_arrangement.split(',')
-		try:
-			authorization_components = request.headers.get('Authorization').split(",")
-			user_token = next(filter(lambda item: "trello_token" in item, authorization_components))
-			user_token = user_token.split('=')[1]
-		except Exception as e:
-			raise e
 
-		board_response = get_board(id, user_token, data_arrangement)
+		board_response = get_board(id, data_arrangement)
 		if board_response is None:
 			return "Internal Server error", 500
 

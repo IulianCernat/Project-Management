@@ -282,6 +282,10 @@ IssuesTable.propTypes = {
 		PropTypes.exact({
 			handleMoveIssueClick: PropTypes.func.isRequired,
 			handleCopyIssueToTrelloClick: PropTypes.func.isRequired,
+			idOfIssueToBeMovedToBacklog: PropTypes.number.isRequired,
+			idOfIssueToBeCopiedToTrello: PropTypes.number.isRequired,
+			isLoadingPostTrelloCard: PropTypes.bool.isRequired,
+			isLoadingIssueUpdate: PropTypes.bool.isRequired,
 			issuesList: PropTypes.array.isRequired,
 		}),
 
@@ -301,6 +305,10 @@ export default function IssuesTable(props) {
 	const classes = useStyles();
 	const isSprintIssuesTable = props.isSprintIssuesTable;
 	const {
+		isLoadingPostTrelloCard,
+		isLoadingIssueUpdate,
+		idOfIssueToBeMovedToBacklog,
+		idOfIssueToBeCopiedToTrello,
 		openIssueCreationDialog,
 		openSprintCreationDialog,
 		openTransferIssuesToSprintDialog,
@@ -662,6 +670,10 @@ export default function IssuesTable(props) {
 								})
 								.map((item) => (
 									<IssueRow
+										idOfIssueToBeMovedToBacklog={idOfIssueToBeMovedToBacklog}
+										idOfIssueToBeCopiedToTrello={idOfIssueToBeCopiedToTrello}
+										isLoadingPostTrelloCard={isLoadingPostTrelloCard}
+										isLoadingIssueUpdate={isLoadingIssueUpdate}
 										handleMoveIssueClick={handleMoveIssueClick}
 										handleCopyIssueToTrelloClick={handleCopyIssueToTrelloClick}
 										isBeingDeleted={isLoadingDeleteIssue}

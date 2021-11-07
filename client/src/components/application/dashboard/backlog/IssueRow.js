@@ -149,29 +149,17 @@ export default function IssueRow(props) {
 		selectedRows,
 		handleSelectionClick,
 		isBacklogIssue,
-		isBeingDeleted,
 		handleMoveIssueClick,
 		handleCopyIssueToTrelloClick,
 		handleDeleteIssueClick,
+		idOfIssueToBeMovedToBacklog,
+		idOfIssueToBeCopiedToTrello,
+		isLoadingPostTrelloCard,
+		isLoadingIssueUpdate,
 	} = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
-	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
 	const isSelected = selectedRows ? selectedRows.indexOf(row.id) !== -1 : false;
 	const classes = useStyles();
-	const futureIssueState = useRef(null);
-	const [issueStatus, setNewIssueStatus] = useState(row.status);
-	const {
-		error: updateError,
-		isLoading: isLoadingUpdate,
-		isResolved: isResolvedUpdate,
-		isRejected: isRejectedUpdate,
-	} = usePatchFetch(`api/issues/${row.id}`, requestBodyForUpdate);
-
-	useEffect(() => {
-		if (!isResolvedUpdate) return;
-
-		setNewIssueStatus(futureIssueState.current.futureState);
-	}, [isResolvedUpdate]);
 
 	return (
 		<>
@@ -188,32 +176,40 @@ export default function IssueRow(props) {
 					</TableCell>
 				) : (
 					<TableCell padding="checkbox">
-						<IconButton
-							onClick={(event) => handleCopyIssueToTrelloClick(row)}
-							disabled={
-								UIRestrictionForRoles.includes(currentUserRole) ||
-								row.trello_card_list_name !== "Unknown"
-							}
-						>
-							<Tooltip
-								arrow
-								title={
-									<Typography variant="subtitle2">
-										Copy issue to Trello
-									</Typography>
+						{isLoadingPostTrelloCard && row.id === idOfIssueToBeCopiedToTrello ? (
+							<CircularProgress size={"2rem"} thickness={5} />
+						) : (
+							<IconButton
+								onClick={(event) => handleCopyIssueToTrelloClick(row)}
+								disabled={
+									UIRestrictionForRoles.includes(currentUserRole) ||
+									row.trello_card_list_name !== "Unknown" ||
+									isLoadingIssueUpdate ||
+									isLoadingPostTrelloCard
 								}
 							>
-								<Launch
-									fontSize="small"
-									color={
-										UIRestrictionForRoles.includes(currentUserRole) ||
-										row.trello_card_list_name !== "Unknown"
-											? "disabled"
-											: "secondary"
+								<Tooltip
+									arrow
+									title={
+										<Typography variant="subtitle2">
+											Copy issue to Trello
+										</Typography>
 									}
-								/>
-							</Tooltip>
-						</IconButton>
+								>
+									<Launch
+										fontSize="small"
+										color={
+											UIRestrictionForRoles.includes(currentUserRole) ||
+											row.trello_card_list_name !== "Unknown" ||
+											isLoadingIssueUpdate ||
+											isLoadingPostTrelloCard
+												? "disabled"
+												: "secondary"
+										}
+									/>
+								</Tooltip>
+							</IconButton>
+						)}
 					</TableCell>
 				)}
 				<TableCell align="center" padding="none">
@@ -276,44 +272,59 @@ export default function IssueRow(props) {
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>
 
 				<TableCell>
-					<IconButton
-						onClick={(event) =>
-							isBacklogIssue
-								? handleDeleteIssueClick(row.id)
-								: handleMoveIssueClick(row.id)
-						}
-						disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
-					>
-						{isBacklogIssue ? (
-							<Tooltip
-								title={<Typography variant="subtitle2">Delete issue</Typography>}
-								arrow
-							>
-								<DeleteForever
-									color={
-										UIRestrictionForRoles.includes(currentUserRole) ||
-										isSelected
-											? "disabled"
-											: "secondary"
+					{isLoadingIssueUpdate && row.id === idOfIssueToBeMovedToBacklog ? (
+						<CircularProgress size={"2rem"} thickness={5} />
+					) : (
+						<IconButton
+							onClick={(event) =>
+								isBacklogIssue
+									? handleDeleteIssueClick(row.id)
+									: handleMoveIssueClick(row.id)
+							}
+							disabled={
+								UIRestrictionForRoles.includes(currentUserRole) ||
+								isSelected ||
+								isLoadingIssueUpdate ||
+								isLoadingPostTrelloCard
+							}
+						>
+							{isBacklogIssue ? (
+								<Tooltip
+									title={
+										<Typography variant="subtitle2">Delete issue</Typography>
 									}
-								/>
-							</Tooltip>
-						) : (
-							<Tooltip
-								title={<Typography variant="subtitle2">Move to backlog</Typography>}
-								arrow
-							>
-								<OpenWith
-									color={
-										UIRestrictionForRoles.includes(currentUserRole) ||
-										isSelected
-											? "disabled"
-											: "primary"
+									arrow
+								>
+									<DeleteForever
+										color={
+											UIRestrictionForRoles.includes(currentUserRole) ||
+											isSelected
+												? "disabled"
+												: "secondary"
+										}
+									/>
+								</Tooltip>
+							) : (
+								<Tooltip
+									title={
+										<Typography variant="subtitle2">Move to backlog</Typography>
 									}
-								/>
-							</Tooltip>
-						)}
-					</IconButton>
+									arrow
+								>
+									<OpenWith
+										color={
+											UIRestrictionForRoles.includes(currentUserRole) ||
+											isSelected ||
+											isLoadingIssueUpdate ||
+											isLoadingPostTrelloCard
+												? "disabled"
+												: "primary"
+										}
+									/>
+								</Tooltip>
+							)}
+						</IconButton>
+					)}
 				</TableCell>
 			</TableRow>
 

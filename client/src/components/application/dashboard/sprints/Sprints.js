@@ -365,6 +365,10 @@ function SprintTable({
 			<IssuesTable
 				isSprintIssuesTable
 				issuesTableProps={{
+					idOfIssueToBeMovedToBacklog,
+					idOfIssueToBeCopiedToTrello,
+					isLoadingPostTrelloCard,
+					isLoadingIssueUpdate,
 					handleCopyIssueToTrelloClick,
 					handleMoveIssueClick,
 					issuesList: sprintIssues,
@@ -377,7 +381,7 @@ function SprintTable({
 export default function Sprints() {
 	const { projectId, currentUserRole, trelloBoards } = useProjectContext();
 	const added_trello_board_id_by_user = useMemo(
-		() => trelloBoards.find((trelloBoard) => trelloBoard.is_added_by_user).trello_board_id,
+		() => trelloBoards.find((trelloBoard) => trelloBoard.is_added_by_user)?.trello_board_id,
 		[trelloBoards]
 	);
 	const [trelloToken, setTrelloToken] = useState(localStorage.getItem("trello_token"));
@@ -388,9 +392,7 @@ export default function Sprints() {
 	const getTrelloDataParams = useRef({
 		data_arrangement: "board_lists_ids_and_names,board_labels",
 	});
-	const getTrelloDataHeaders = useRef({
-		Authorization: `trello_token=${trelloToken}`,
-	});
+
 	const [startedSprintId, setStartedSprintId] = useState();
 
 	const {
@@ -411,8 +413,7 @@ export default function Sprints() {
 		`api/trello/boards/${added_trello_board_id_by_user}`,
 		getTrelloDataParams.current,
 		Boolean(added_trello_board_id_by_user),
-		false,
-		getTrelloDataHeaders.current
+		false
 	);
 
 	const {

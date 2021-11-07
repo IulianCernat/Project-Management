@@ -45,10 +45,9 @@ def get_projects(user_id, user_type):
 def get_project_role(user_id, project_id):
     product_owner_flag = Project.query.filter(Project.id == project_id,
                                               Project.product_owner_id == user_id).one_or_none()
-    if product_owner_flag:
-        return {"user_role": "productOwner"}
 
-    team_member_role = TeamMember.query.join(Team).filter(Team.project_id == project_id,
+    if product_owner_flag is None:
+        team_member_role = TeamMember.query.join(Team).filter(Team.project_id == project_id,
                                                           TeamMember.user_id == user_id).one()
 
     def get_user_trello_board_ids():
@@ -64,8 +63,14 @@ def get_project_role(user_id, project_id):
         ]
 
     trello_boards = get_user_trello_board_ids()
+    project_role = {}
+    if product_owner_flag:
+        project_role["user_role"] = "productOwner"
+    else:
+        project_role["user_role"] = team_member_role.user_type
 
-    return {'user_role': team_member_role.user_type, 'trello_boards': trello_boards}
+    project_role['trello_boards'] = trello_boards
+    return project_role
 
 
 def update_project(project_id, input_obj):
