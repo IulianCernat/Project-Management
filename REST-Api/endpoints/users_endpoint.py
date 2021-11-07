@@ -21,8 +21,8 @@ class ProfilesCollection(Resource):
 	def post(self):
 		try:
 			authorization_components = request.headers.get('Authorization').split(",")
-			token_id_list_index = authorization_components.index("token_id")
-			token_id = authorization_components[token_id_list_index]
+			token_id = next(filter(lambda item: "firebase_token_id" in item, authorization_components))
+			token_id = token_id.split("=")[1]
 			decoded_token = verify_id_token(token_id)
 		except AuthorizationFailed as e:
 			raise e
