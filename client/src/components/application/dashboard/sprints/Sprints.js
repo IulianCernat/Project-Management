@@ -253,14 +253,12 @@ function SprintTable({
 	const [idOfIssueToBeCopiedToTrello, setIdOfIssueToBeCopiedToTrello] = useState();
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 	const [newTrelloCardPayload, setNewTrelloCardPayload] = useState();
+	const [snackbarMessage, setSnackbarMessage] = useState();
 	const headersForTrello = useRef({
 		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
 	});
 
 	const handleCloseSnackbar = (event, reason) => {
-		if (reason === "clickaway") {
-			return;
-		}
 		setOpenSnackbar(false);
 	};
 
@@ -290,6 +288,7 @@ function SprintTable({
 	const handleCopyIssueToTrelloClick = (currentIssue) => {
 		if (!Boolean(added_trello_board_id_by_user)) {
 			setOpenSnackbar(true);
+			setSnackbarMessage("You haven't added a Trello board");
 			return;
 		}
 		setNewTrelloCardPayload(
@@ -324,17 +323,30 @@ function SprintTable({
 		setSprintIssues([...sprintIssues]);
 	}, [isResolvedPostTrelloCard, idOfIssueToBeCopiedToTrello]);
 
+	useEffect(() => {
+		if (isRejectedPostTrelloCard) {
+			setSnackbarMessage(postTrelloCardError);
+			setOpenSnackbar(true);
+			return;
+		}
+		if (isRejectedIssueUpdate) {
+			setSnackbarMessage(updateIssueError);
+			setOpenSnackbar(true);
+
+			return;
+		}
+	}, [isRejectedIssueUpdate, isRejectedPostTrelloCard]);
 	return (
 		<TableContainer component={Paper} style={{ padding: "1rem" }}>
 			<Snackbar
 				anchorOrigin={{
-					vertical: "bottom",
-					horizontal: "left",
+					vertical: "top",
+					horizontal: "center",
 				}}
 				open={openSnackbar}
 				onClose={handleCloseSnackbar}
 				autoHideDuration={6000}
-				message={postTrelloCardError}
+				message={snackbarMessage}
 				action={
 					<>
 						<IconButton

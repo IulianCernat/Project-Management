@@ -45,11 +45,11 @@ function transformState(state) {
 }
 
 async function processResponse(response) {
-	if (!response.ok)
-		return {
-			error: response.statusText ? response.statusText : "unknown error",
-			receivedData: null,
-		};
+	// if (!response.ok)
+	// 	return {
+	// 		error: response.statusText ? response.statusText : "unknown error",
+	// 		receivedData: null,
+	// 	};
 
 	let status = response.status;
 	let result = await response.json();
@@ -60,7 +60,7 @@ async function processResponse(response) {
 		case 201:
 			return { error: null, location: result["location"] };
 		default:
-			return { error: result.toString(), receivedData: null };
+			return { error: result.message, receivedData: null };
 	}
 }
 

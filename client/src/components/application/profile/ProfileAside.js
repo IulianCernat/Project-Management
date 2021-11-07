@@ -103,9 +103,6 @@ export default function ProfileAside(props) {
 							style={{
 								color: "hsl(82, 0%, 100%)",
 								backgroundColor: "hsl(82,60%, 44%)",
-								"&:hover": {
-									backgroundColor: "hsl(82,60%, 0%)",
-								},
 							}}
 							onClick={handleDisconnectFromTrello}
 						>
