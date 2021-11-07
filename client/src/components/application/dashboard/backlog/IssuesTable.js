@@ -445,16 +445,33 @@ export default function IssuesTable(props) {
 		setSelectedIssues(newSelectedIssues);
 	};
 
+	const transformTrelloColumn = (columnValue) => {
+		switch (columnValue) {
+			case null:
+				return "Unknown";
+			case false:
+				return "No";
+			case true:
+				return "Yes";
+			default:
+				return String(columnValue);
+		}
+	};
+
 	useEffect(() => {
 		setTableIssues([
 			...issuesList.map((issue) => {
 				issue["filteredColumns"] = new Set();
-				if (issue.trello_card_list_name === null)
-					issue["trello_card_list_name"] = "Unknown";
-				if (issue.trello_card_due_is_completed === null)
-					issue["trello_card_due_is_completed"] = "Unknown";
-				if (issue.trello_card_is_closed === null)
-					issue["trello_card_is_closed"] = "Unknown";
+
+				issue["trello_card_list_name"] = transformTrelloColumn(
+					issue["trello_card_list_name"]
+				);
+				issue["trello_card_due_is_completed"] = transformTrelloColumn(
+					issue["trello_card_due_is_completed"]
+				);
+				issue["trello_card_is_closed"] = transformTrelloColumn(
+					issue["trello_card_is_closed"]
+				);
 				return issue;
 			}),
 		]);
@@ -491,7 +508,6 @@ export default function IssuesTable(props) {
 												? currentSortOrder
 												: "null"
 										}
-										sortByString={true}
 										filterOptions={{
 											bug: <IssueTypesChip type="bug" />,
 											task: <IssueTypesChip type="task" />,
@@ -546,10 +562,10 @@ export default function IssuesTable(props) {
 														? currentSortOrder
 														: "null"
 												}
-												sortByString={true}
 												filterOptions={{
-													yes: <Typography>Yes</Typography>,
-													no: <Typography>No</Typography>,
+													Yes: <Typography>Yes</Typography>,
+													No: <Typography>No</Typography>,
+													Unknown: <Typography>Unknown</Typography>,
 												}}
 												clearFilter={clearColumnFilter}
 												currentFilteredColumnNames={
@@ -559,7 +575,7 @@ export default function IssuesTable(props) {
 										</TableCell>
 										<TableCell align="left">
 											<TableHeaderColumn
-												columnName="trello_card_due_is_closed"
+												columnName="trello_card_is_closed"
 												facadeColumnName="closed"
 												sortHandler={sortByColumn}
 												sortBy="string"
@@ -567,14 +583,14 @@ export default function IssuesTable(props) {
 												filterHandler={filterByColumn}
 												currentSortOrder={
 													currentSortedColumnName ===
-													"trello_card_due_is_completed"
+													"trello_card_is_closed"
 														? currentSortOrder
 														: "null"
 												}
-												sortByString={true}
 												filterOptions={{
-													yes: <Typography>Yes</Typography>,
-													no: <Typography>No</Typography>,
+													Yes: <Typography>Yes</Typography>,
+													No: <Typography>No</Typography>,
+													Unknown: <Typography>Unknown</Typography>,
 												}}
 												clearFilter={clearColumnFilter}
 												currentFilteredColumnNames={
@@ -596,7 +612,6 @@ export default function IssuesTable(props) {
 												? currentSortOrder
 												: "null"
 										}
-										sortByString={true}
 									/>
 								</TableCell>
 								<TableCell align="center">
@@ -612,7 +627,6 @@ export default function IssuesTable(props) {
 												? currentSortOrder
 												: "null"
 										}
-										sortByString={true}
 										filterOptions={Object.fromEntries(
 											Array.from({ length: 6 }, (item, index) => `${index}`)
 												.slice(1)
