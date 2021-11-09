@@ -16,31 +16,26 @@ def create_headers(user_token):
 
 def get_board(board_id, data_arrangement):
 	returned_obj = {}
-	try:
-		for element in data_arrangement:
-			if element == 'board_lists':
-				returned_obj['trello_board_lists'] = get_board_lists(
-					board_id)
-				continue
 
-			if element == 'board_cards':
-				returned_obj['trello_board_cards'] = get_board_cards(
-					board_id)
-				continue
+	for element in data_arrangement:
+		if element == 'board_lists':
+			returned_obj['trello_board_lists'] = get_board_lists(
+				board_id)
+			continue
 
-			if element == 'board_lists_ids_and_names':
-				returned_obj['trello_board_lists_ids_and_names'] = get_board_lists_ids_and_names(
-					board_id)
-				continue
+		if element == 'board_cards':
+			returned_obj['trello_board_cards'] = get_board_cards(
+				board_id)
+			continue
 
-			if element == 'board_labels':
-				returned_obj['trello_board_labels'] = get_board_labels(
-					board_id)
-				continue
+		if element == 'board_lists_ids_and_names':
+			returned_obj['trello_board_lists_ids_and_names'] = get_board_lists_ids_and_names(
+				board_id)
+			continue
 
-	except Exception as e:
-		log.error(e)
-		return None
+		if element == 'board_labels':
+			returned_obj['trello_board_labels'] = get_board_labels(board_id)
+			continue
 
 	return returned_obj
 
@@ -54,6 +49,8 @@ def get_board_lists(board_id):
 	}
 	board_lists_request_obj = requests.get(
 		url, params=params, timeout=1)
+	if board_lists_request_obj.status_code == 404:
+		raise TrelloResourceUnavailable(board_lists_request_obj.text)
 	if board_lists_request_obj.status_code != 200:
 		raise TrelloRequestFailure(board_lists_request_obj.text)
 	board_lists = board_lists_request_obj.json()
@@ -107,16 +104,6 @@ def get_board_cards(board_id):
 	return cards
 
 
-def add_board(team_id, board_short_id, user_token):
-	headers = create_headers(user_token)
-	board_id = get_board_id(board_short_id, headers)
-	team = get_team(team_id)
-	team.trello_board_id = board_id
-	db.session.commit()
-
-	return team.id
-
-
 def get_board_id(board_short_id):
 	url = f"{settings.TRELLO_API_URL}/boards/{board_short_id}"
 	params = {"fields": "id"}
@@ -133,7 +120,7 @@ def get_board_labels(board_id):
 	url = f"{settings.TRELLO_API_URL}/boards/{board_id}/labels"
 	params = {"fields": "id,name"}
 
-	labels = requests.get(url, params=params, timeout=1,).json()
+	labels = requests.get(url, params=params, timeout=1, ).json()
 	labels_obj = {}
 	for label in labels:
 		if label['name'] != "":
@@ -274,3 +261,71 @@ def delete_trello_card(trello_card_id, user_token):
 			raise TrelloRequestFailure(trello_request_obj.text)
 	except Exception as e:
 		raise e
+
+
+def create_trello_board(input_board_obj, user_token):
+	url = f"{settings.TRELLO_API_URL}/boards"
+	headers = create_headers(user_token)
+	for_team = Team.query.filter(Team.id == input_board_obj["team_id"]).one()
+
+	payload = {
+		"name": input_board_obj["name"],
+		"prefs_permissionLevel": "public",
+	}
+
+	try:
+		trello_request_obj = requests.post(url, data=payload, headers=headers)
+		if trello_request_obj.status_code != 200:
+			raise TrelloRequestFailure(trello_request_obj.text)
+		created_board = trello_request_obj.json()
+		for_team.trello_board_id = created_board['id']
+		db.session.commit()
+
+		create_board_labels(created_board['id'], user_token)
+		return created_board
+	except Exception as e:
+		raise e
+
+
+def delete_trello_board(board_id, user_token):
+	url = f"{settings.TRELLO_API_URL}/boards/{board_id}"
+	headers = create_headers(user_token)
+
+	try:
+		trello_request_obj = requests.delete(url, headers=headers)
+		if trello_request_obj.status_code == 404:
+			raise TrelloResourceUnavailable(trello_request_obj.text)
+		if trello_request_obj.status_code != 200:
+			raise TrelloRequestFailure(trello_request_obj.text)
+	except Exception as e:
+		raise e
+
+
+def create_board_labels(board_id, user_token):
+	url = f"{settings.TRELLO_API_URL}/boards/{board_id}/labels"
+	headers = create_headers(user_token)
+
+	custom_labels = [
+		{
+			"name": "bug",
+			"color": "red"
+		},
+		{
+			"name": "task",
+			"color": "blue"
+		},
+		{
+			"name": "story",
+			"color": "green"
+		}
+	]
+
+	for label in custom_labels:
+		try:
+			trello_request_obj = requests.post(url, data=label, headers=headers)
+			if trello_request_obj.status_code == 404:
+				raise TrelloResourceUnavailable(trello_request_obj.text)
+			if trello_request_obj.status_code != 200:
+				raise TrelloRequestFailure(trello_request_obj.text)
+		except Exception as e:
+			raise e

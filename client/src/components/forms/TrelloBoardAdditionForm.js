@@ -4,12 +4,12 @@ import * as Yup from "yup";
 import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
-import { trelloBoardUrlValidSchema } from "../../utils/validationSchemas";
+import { trelloBoardNameValidSchema } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
-	trello_board_url: trelloBoardUrlValidSchema,
+	name: trelloBoardNameValidSchema,
 });
 
 TrelloBoardAdditionForm.propTypes = {
@@ -19,8 +19,9 @@ TrelloBoardAdditionForm.propTypes = {
 };
 export default function TrelloBoardAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const headers = useRef({ Authorization: localStorage.getItem("trello_token") });
-	const [addedTrelloBoardId, setAddedTreloBoardId] = useState();
+	const headers = useRef({
+		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
+	});
 	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
 		`api/trello/boards/`,
 		requestBody,
@@ -28,20 +29,20 @@ export default function TrelloBoardAdditionForm(props) {
 	);
 	useEffect(() => {
 		if (!isResolved) return;
-		props.setAddedBoardId(addedTrelloBoardId);
+		props.setAddedBoardId(receivedData.split("/").pop());
+		props.hideForm();
 	}, [isResolved]);
+
 	return (
 		<>
 			<Formik
 				initialValues={{
-					trello_board_url: "",
+					name: "",
 				}}
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
 					let requestObj = {};
-					const trello_board_short_id = values.trello_board_url.split("/").pop();
-					requestObj["trello_board_short_id"] = trello_board_short_id;
-					setAddedTreloBoardId(trello_board_short_id);
+					requestObj["name"] = values.name;
 					requestObj["team_id"] = props.teamId;
 					const stringifiedData = JSON.stringify(requestObj);
 					setRequestBody(stringifiedData);
@@ -53,9 +54,9 @@ export default function TrelloBoardAdditionForm(props) {
 						required
 						fullWidth
 						margin="normal"
-						id="trello_board_url"
-						label="Trello public board link"
-						name="trello_board_url"
+						id="name"
+						label="Trello board name"
+						name="name"
 						disabled={isLoading}
 					/>
 					<Box display="flex" style={{ gap: "1rem" }} flexWrap="wrap">

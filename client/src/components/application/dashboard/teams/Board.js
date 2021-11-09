@@ -84,15 +84,12 @@ Board.propTypes = {
 };
 export default function Board(props) {
 	const [startFetchingBoardLists, setStartFetchingBoardLists] = useState(false);
-	const [trelloToken, seTrelloToken] = useState();
 	const [boardId, setBoardId] = useState(props.boardId);
 	const [hideBoardAdditionform, setHideBoardAdditionform] = useState(true);
 	const getBoardListsParameters = useRef({
 		data_arrangement: "board_lists",
 	});
-	const headers = useRef({
-		Authorization: `trello_token=${trelloToken}`,
-	});
+
 	const {
 		receivedData: getBoardListsReceivedData,
 		error: getBoardListsError,
@@ -103,28 +100,17 @@ export default function Board(props) {
 		`api/trello/boards/${boardId}`,
 		getBoardListsParameters.current,
 		startFetchingBoardLists,
-		false,
-		headers.current
+		false
 	);
 
 	useEffect(() => {
-		if (props.boardId) setStartFetchingBoardLists(true);
-	}, [props.boardId]);
+		if (!isResolvedGetBoardLists) return;
+		setStartFetchingBoardLists(false);
+	}, [isResolvedGetBoardLists]);
 
 	useEffect(() => {
-		if (Boolean(boardId)) {
-			setHideBoardAdditionform(true);
-			setStartFetchingBoardLists(true);
-		}
+		if (Boolean(boardId)) setStartFetchingBoardLists(true);
 	}, [boardId]);
-
-	useEffect(() => {
-		if (startFetchingBoardLists) setStartFetchingBoardLists(false);
-	}, [startFetchingBoardLists]);
-
-	useEffect(() => {
-		seTrelloToken(localStorage.getItem("trello_token"));
-	}, []);
 
 	const handleFormAdditionClick = () => {
 		setHideBoardAdditionform((prev) => !prev);
@@ -139,7 +125,7 @@ export default function Board(props) {
 					onClick={handleFormAdditionClick}
 					disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
 				>
-					Link your public trello board
+					Create Trello Board
 				</Button>
 			) : (
 				<Box width="50ch">
