@@ -5,7 +5,7 @@ import { Alert } from "@material-ui/lab";
 import { makeStyles } from "@material-ui/core/styles";
 import CustomAppBar from "components/subComponents/CustomAppBar";
 import CustomDrawer from "components/subComponents/CustomDrawer";
-import Teams from "./TeamsIncorrectFolderName/Teams";
+import Teams from "./teams/Teams";
 import Sprints from "./sprints/Sprints";
 import Backlog from "./backlog/Backlog";
 import Overview from "./overview/Overview";
