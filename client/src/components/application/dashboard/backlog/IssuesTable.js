@@ -544,8 +544,8 @@ export default function IssuesTable(props) {
 												}
 												sortBy="string"
 												filterOptions={{
-													Pending: "Pending",
-													"In progress": "In progress",
+													"To Do": "To Do",
+													Doing: "Doing",
 													Done: "Done",
 													Unknown: "Unknown",
 												}}

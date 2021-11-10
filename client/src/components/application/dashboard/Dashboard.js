@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function Dashboard() {
-	const { currentUser, additionalUserInfo } = useAuth();
+	const { currentUser } = useAuth();
 	let match = useRouteMatch();
 	const { projectId } = useParams();
 	const classes = useStyles();

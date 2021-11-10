@@ -6,6 +6,7 @@ import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { trelloBoardNameValidSchema } from "../../utils/validationSchemas";
 import { usePostFetch } from "../../customHooks/useFetch.js";
+import { useProjectContext } from "../../contexts/ProjectContext.js";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
@@ -19,6 +20,7 @@ TrelloBoardAdditionForm.propTypes = {
 };
 export default function TrelloBoardAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
+	const { setTrelloBoards, trelloBoards } = useProjectContext();
 	const headers = useRef({
 		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
 	});
@@ -29,7 +31,9 @@ export default function TrelloBoardAdditionForm(props) {
 	);
 	useEffect(() => {
 		if (!isResolved) return;
-		props.setAddedBoardId(receivedData.split("/").pop());
+		const newBoardId = receivedData.split("/").pop();
+		setTrelloBoards([...trelloBoards, { trello_board_id: newBoardId, is_added_by_user: true }]);
+		props.setAddedBoardId(newBoardId);
 		props.hideForm();
 	}, [isResolved]);
 
