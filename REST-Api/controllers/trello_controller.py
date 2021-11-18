@@ -6,7 +6,7 @@ from database import db
 from controllers.teams_controller import get_team
 from controllers.issues_controller import get_issue_by_trello_card_id, update_issue
 from utils.custom_exceptions import TrelloRequestFailure, TrelloResourceUnavailable
-
+import settings
 log = logging.getLogger(__name__)
 
 
@@ -189,15 +189,29 @@ def create_trello_webhook(trello_model_id, user_token, issue_obj):
 		raise e
 
 
+def send_trello_data_to_realtime_service(trello_data):
+	service_url = settings.REALTIME_UPDATES_SERVICE_URL
+	try:
+		request_obj = requests.post(service_url, json=trello_data)
+
+	except Exception as e:
+		raise e
+
+
 def process_callback_data(callback_data):
+	issue_update_for_client = dict()
+
 	def process_event():
 		issue_with_card_id = get_issue_by_trello_card_id(
 			card_data.get('card')['id'])
+		issue_update_for_client['issue_id'] = issue_with_card_id.id
+
 		if action_type == 'updateCard':
 			if card_data.get("listAfter") and card_data.get("listAfter")['name']:
 				issue_update_payload = {
 					'trello_card_list_name': card_data.get("listAfter")['name']
 				}
+				issue_update_for_client.update(issue_update_payload)
 				update_issue(issue_with_card_id.id, issue_update_payload)
 				return
 
@@ -205,6 +219,7 @@ def process_callback_data(callback_data):
 				issue_update_payload = {
 					'trello_card_due_is_completed': card_data.get('card')['dueComplete']
 				}
+				issue_update_for_client.update(issue_update_payload)
 				update_issue(issue_with_card_id.id, issue_update_payload)
 				return
 
@@ -212,12 +227,14 @@ def process_callback_data(callback_data):
 				issue_update_payload = {
 					'trello_card_is_closed': card_data.get('card')['closed']
 				}
+				issue_update_for_client.update(issue_update_payload)
 				update_issue(issue_with_card_id.id, issue_update_payload)
 				return
 
 		if action_type == 'deleteCard':
+			issue_update_for_client['is_trello_card_deleted'] = True
 			update_issue(issue_with_card_id.id, clear_trello_data=True)
-			return
+		return
 
 	action = callback_data.get('action')
 	if action is None:
@@ -233,6 +250,7 @@ def process_callback_data(callback_data):
 		return
 
 	process_event()
+	send_trello_data_to_realtime_service(issue_update_for_client)
 
 
 def delete_webhook_of_model(webhook_id, user_token):
@@ -322,7 +340,8 @@ def create_board_labels(board_id, user_token):
 
 	for label in custom_labels:
 		try:
-			trello_request_obj = requests.post(url, data=label, headers=headers)
+			trello_request_obj = requests.post(
+				url, data=label, headers=headers)
 			if trello_request_obj.status_code == 404:
 				raise TrelloResourceUnavailable(trello_request_obj.text)
 			if trello_request_obj.status_code != 200:

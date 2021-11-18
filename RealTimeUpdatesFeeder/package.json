@@ -4,8 +4,7 @@
   "description": "",
   "main": "feeder.js",
   "scripts": {
-    "start": "nodemon feeder.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon feeder.js"
   },
   "author": "",
   "license": "ISC",

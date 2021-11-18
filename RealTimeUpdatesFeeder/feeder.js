@@ -9,14 +9,23 @@ const setHeaders = (responseObj, statusCode) => {
 	});
 };
 
-const processPOSTRequest = async (req) => {
-	const dataChunks = [];
-	for await (const chunk of req) dataChunks.push(chunk);
+function getReqData(req) {
+	return new Promise((resolve, reject) => {
+		try {
+			let body = "";
 
-	const data = Buffer.concat(dataChunks).toString();
-	const parsedObj = JSON.parse(data);
-	return parsedObj;
-};
+			req.on("data", (chunk) => {
+				body += chunk.toString();
+			});
+
+			req.on("end", () => {
+				resolve(JSON.parse(body));
+			});
+		} catch (error) {
+			reject(error);
+		}
+	});
+}
 
 const server = http.createServer(async (req, res) => {
 	if (req.url !== "/updatesFeeder") {
@@ -30,10 +39,17 @@ const server = http.createServer(async (req, res) => {
 		res.end(JSON.stringify({ message: "Method not allowed" }));
 		return;
 	}
-	setHeaders(res, 200);
-	const parsedObj = await processPOSTRequest(req);
-	console.log(parsedObj);
-	res.end(JSON.stringify({ message: "Data was posted, congrats" }));
+
+	try {
+		const parsedObj = await getReqData(req);
+		setHeaders(res, 200);
+		console.log(parsedObj);
+		res.end(JSON.stringify({ message: "Data was posted, congrats" }));
+	} catch (e) {
+		console.log(e);
+		setHeaders(res, 500);
+		res.end({ message: "Something went wrong" });
+	}
 });
 
 server.listen({ host: HOST, port: PORT }, () => {
