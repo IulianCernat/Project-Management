@@ -1,0 +1,15 @@
+{
+  "name": "realtimeupdatesfeeder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "feeder.js",
+  "scripts": {
+    "start": "nodemon feeder.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
