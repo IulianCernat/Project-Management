@@ -55,7 +55,7 @@ describe("testing web socket connection", () => {
 		});
 	});
 
-	test.only("client receives trello card update", (done) => {
+	test("client receives trello card update", (done) => {
 		let websocketConSessionId;
 		// establish a websocket connection
 		ws.on("open", () => {
@@ -90,14 +90,16 @@ describe("testing web socket connection", () => {
 			},
 		};
 
-		const req = http.request(options, (res) => {
-			if (res.statusCode !== 200) done(`POST operation failed: ${res.statusCode}`);
-		});
-		req.on("error", (error) => {
-			done(error);
-		});
+		setTimeout(() => {
+			const req = http.request(options, (res) => {
+				if (res.statusCode !== 200) done(`POST operation failed: ${res.statusCode}`);
+			});
+			req.on("error", (error) => {
+				done(error);
+			});
 
-		req.write(JSON.stringify(trelloCardUpdateMockup));
-		req.end();
-	});
+			req.write(JSON.stringify(trelloCardUpdateMockup));
+			req.end();
+		}, 1000);
+	}, 6000);
 });
