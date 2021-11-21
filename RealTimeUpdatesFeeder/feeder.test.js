@@ -38,7 +38,7 @@ describe("doing post requests", () => {
 describe("testing web socket connection", () => {
 	let ws;
 	beforeEach(() => {
-		ws = new wsModule.WebSocket("ws://localhost:3001/updatesFeeder");
+		ws = new wsModule.WebSocket("ws://localhost:3001");
 	});
 	afterEach(() => {
 		ws.close();

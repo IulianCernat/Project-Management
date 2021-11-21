@@ -7,6 +7,7 @@ from controllers.teams_controller import get_team
 from controllers.issues_controller import get_issue_by_trello_card_id, update_issue
 from utils.custom_exceptions import TrelloRequestFailure, TrelloResourceUnavailable
 import settings
+import time
 log = logging.getLogger(__name__)
 
 
@@ -190,15 +191,19 @@ def create_trello_webhook(trello_model_id, user_token, issue_obj):
 
 
 def send_trello_data_to_realtime_service(trello_data):
+    startBenchmarckClock = time.perf_counter()
     service_url = settings.REALTIME_UPDATES_SERVICE_URL
     try:
-        request_obj = requests.post(service_url, json=trello_data)
+        requests.post(service_url, json=trello_data, headers={
+                      "Content-Type": "application/json"})
 
     except Exception as e:
-        raise e
+        pass
+    print(time.perf_counter() - startBenchmarckClock)
 
 
 def process_callback_data(callback_data):
+
     issue_update_for_client = dict()
 
     def process_event():
@@ -206,7 +211,7 @@ def process_callback_data(callback_data):
             card_data.get('card')['id'])
 
         issue_update_for_client['issue_id'] = issue_with_card_id.id
-        issue_update_for_client['board_id'] = model_data['idBoard']
+        issue_update_for_client['board_id'] = card_data['board']['id']
 
         if action_type == 'updateCard':
             if card_data.get("listAfter") and card_data.get("listAfter")['name']:
@@ -236,7 +241,7 @@ def process_callback_data(callback_data):
         if action_type == 'deleteCard':
             issue_update_for_client['is_trello_card_deleted'] = True
             update_issue(issue_with_card_id.id, clear_trello_data=True)
-        return
+            return
 
     action = callback_data.get('action')
     if action is None:
@@ -247,7 +252,7 @@ def process_callback_data(callback_data):
         return
 
     card_data = action.get('data')
-    model_data = callback_data.get('model')
+
     if card_data is None:
         return
 
