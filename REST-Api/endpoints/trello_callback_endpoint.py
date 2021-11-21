@@ -16,8 +16,8 @@ class TrelloCallback(Resource):
     def post(self):
 
         trello_received_data = request.json
-        with open("callbackInfo", "w") as file_desc:
-            json.dump(trello_received_data, file_desc)
+        # with open("callbackInfo", "w") as file_desc:
+        #     json.dump(trello_received_data, file_desc)
 
         process_callback_data(trello_received_data)
         return "success", 200

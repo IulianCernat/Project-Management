@@ -195,7 +195,7 @@ def send_trello_data_to_realtime_service(trello_data):
     service_url = settings.REALTIME_UPDATES_SERVICE_URL
     try:
         requests.post(service_url, json=trello_data, headers={
-                      "Content-Type": "application/json"})
+                      "Content-Type": "application/json"}, timeout=0.000001)
 
     except Exception as e:
         pass

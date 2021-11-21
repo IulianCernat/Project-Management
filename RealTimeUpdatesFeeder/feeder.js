@@ -59,7 +59,6 @@ const getReqData = (req) => {
 };
 
 const server = http.createServer(async (req, res) => {
-	const startTimeForBenchmark = Date.now();
 	if (req.url !== "/updatesFeeder") {
 		setHeaders(res, 404);
 		res.end(JSON.stringify({ message: "Route not found" }));
@@ -82,7 +81,6 @@ const server = http.createServer(async (req, res) => {
 		setHeaders(res, 500);
 		res.end({ message: "Something went wrong" });
 	}
-	console.log(Date.now() - startTimeForBenchmark);
 });
 
 server.listen({ host: HOST, port: PORT }, () => {
