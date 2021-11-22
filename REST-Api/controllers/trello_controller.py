@@ -195,7 +195,7 @@ def send_trello_data_to_realtime_service(trello_data):
     service_url = settings.REALTIME_UPDATES_SERVICE_URL
     try:
         requests.post(service_url, json=trello_data, headers={
-                      "Content-Type": "application/json"}, timeout=0.000001)
+                      "Content-Type": "application/json"}, timeout=0.003)
 
     except Exception as e:
         pass
@@ -239,7 +239,10 @@ def process_callback_data(callback_data):
                 return
 
         if action_type == 'deleteCard':
-            issue_update_for_client['is_trello_card_deleted'] = True
+            issue_update_for_client['trello_card_id'] = None
+            issue_update_for_client['trello_card_is_closed'] = None
+            issue_update_for_client['trello_card_is_completed'] = None
+            issue_update_for_client['trello_card_list_name'] = None
             update_issue(issue_with_card_id.id, clear_trello_data=True)
             return
 

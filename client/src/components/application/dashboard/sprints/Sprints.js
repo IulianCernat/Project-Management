@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import {
 	TableContainer,
 	Paper,
@@ -16,7 +16,7 @@ import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp, Close } from "@mater
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch, usePostFetch } from "customHooks/useFetch";
-import PropTypes from "prop-types";
+import PropTypes, { instanceOf } from "prop-types";
 import { useProjectContext } from "contexts/ProjectContext";
 import IssuesTable from "../backlog/IssuesTable";
 
@@ -391,7 +391,7 @@ function SprintTable({
 }
 
 export default function Sprints() {
-	const [websockeWithRealtimeService, setWebsockeWithRealtimeService] = useState(null);
+	const websockeWithRealtimeService = useRef(null);
 	const [websocketSessionId, setWebsocketSessionId] = useState(null);
 	const { projectId, currentUserRole, trelloBoards } = useProjectContext();
 	const added_trello_board_id_by_user = useMemo(
@@ -413,10 +413,13 @@ export default function Sprints() {
 
 	const [startedSprintId, setStartedSprintId] = useState();
 
-	const doUpdateIssueWithTrelloCardNewInfo = (newTrelloCardInfo) => {
+	function doUpdateIssueWithTrelloCardNewInfo(newTrelloCardInfo) {
 		let issueForUpdate;
 		for (const sprint of sprintsList) {
-			issueForUpdate = sprint.issues.find((issue) => issue.id === newTrelloCardInfo.issue_id);
+			console.log(sprint.id);
+			issueForUpdate = sprint.issues.find((issue) => {
+				return issue.id === newTrelloCardInfo.issue_id;
+			});
 			if (issueForUpdate) break;
 		}
 
@@ -428,7 +431,7 @@ export default function Sprints() {
 				issueForUpdate[property] = value;
 			setSprintsList([...sprintsList]);
 		}
-	};
+	}
 
 	const {
 		receivedData: getSprintsReceivedData,
@@ -469,39 +472,17 @@ export default function Sprints() {
 		if (!isResolvedGetSprints) return;
 		setSprintsList(getSprintsReceivedData);
 		setStartFetchingSprints(false);
-
-		// Initialize websocket connection
-
-		setWebsockeWithRealtimeService(
-			new WebSocket(process.env.REACT_APP_REAL_TIME_TRELLO_UPDATES_SERVICE_URL)
-		);
-	}, [isResolvedGetSprints]);
+	}, [isResolvedGetSprints, getSprintsReceivedData]);
 
 	useEffect(() => {
-		if (!websockeWithRealtimeService) return;
-		websockeWithRealtimeService.onopen = () => {
-			websockeWithRealtimeService.send(
-				JSON.stringify({
-					action: "join",
-					boardIdList: listWithTrelloBoardsIdsOnly,
-				})
-			);
-		};
-		websockeWithRealtimeService.onmessage = (event) => {
+		if (!websockeWithRealtimeService.current) return;
+		websockeWithRealtimeService.current.onmessage = (event) => {
 			const parsedMessageObj = JSON.parse(event.data);
-			console.log(parsedMessageObj);
-			if ("sessionId" in parsedMessageObj) setWebsocketSessionId(parsedMessageObj.sessionId);
-			else if ("error" in parsedMessageObj) console.log(parsedMessageObj.error);
+
+			if ("error" in parsedMessageObj) console.log(parsedMessageObj.error);
 			else doUpdateIssueWithTrelloCardNewInfo(parsedMessageObj);
 		};
-
-		return () => {
-			websockeWithRealtimeService.send(
-				JSON.stringify({ action: "leave", sessioId: websocketSessionId })
-			);
-			websockeWithRealtimeService.close();
-		};
-	}, [websockeWithRealtimeService]);
+	}, [sprintsList]);
 
 	useEffect(() => {
 		if (isResolvedDeleteSprint) {
@@ -514,6 +495,32 @@ export default function Sprints() {
 	useEffect(() => {
 		const trelloToken = localStorage.getItem("trello_token");
 		setTrelloToken(trelloToken);
+
+		// Initialize websocket connection
+		websockeWithRealtimeService.current = new WebSocket(
+			process.env.REACT_APP_REAL_TIME_TRELLO_UPDATES_SERVICE_URL
+		);
+
+		websockeWithRealtimeService.current.onopen = () => {
+			websockeWithRealtimeService.current.send(
+				JSON.stringify({
+					action: "join",
+					boardIdList: listWithTrelloBoardsIdsOnly,
+				})
+			);
+			websockeWithRealtimeService.current.onmessage = (event) => {
+				const parsedMessageObj = JSON.parse(event.data);
+				if ("sessionId" in parsedMessageObj)
+					setWebsocketSessionId(parsedMessageObj.sessionId);
+			};
+		};
+
+		return () => {
+			websockeWithRealtimeService.current.send(
+				JSON.stringify({ action: "leave", sessioId: websocketSessionId })
+			);
+			websockeWithRealtimeService.current.close();
+		};
 	}, []);
 
 	return (

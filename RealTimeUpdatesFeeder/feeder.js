@@ -72,10 +72,10 @@ const server = http.createServer(async (req, res) => {
 	}
 
 	try {
-		const parsedObj = await getReqData(req);
-		sendTrelloCardUpdateToClients(parsedObj);
 		setHeaders(res, 200);
 		res.end(JSON.stringify({ message: "Data was posted, congrats" }));
+		const parsedObj = await getReqData(req);
+		sendTrelloCardUpdateToClients(parsedObj);
 	} catch (e) {
 		console.log(e);
 		setHeaders(res, 500);
@@ -102,6 +102,7 @@ websocketServer.on("connection", (ws) => {
 	const leaveRoom = (sessionId) => {
 		Object.entries(roomsWithSameBoard).forEach((roomKeyValuePair) => {
 			if (sessionId in roomKeyValuePair[1]) {
+				roomKeyValuePair[1]["sessionId"].close();
 				delete roomKeyValuePair[1]["sessionId"];
 				if (!roomKeyValuePair[1].keys().length) delete roomsWithSameBoard[boardId];
 			}
