@@ -247,7 +247,7 @@ function SprintTable({
 	firstTrelloBoardListName,
 	trelloLabelsObj,
 }) {
-	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
+	const [sprintIssues, setSprintIssues] = useState([]);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
 	const [idOfIssueToBeMovedToBacklog, setIdOfIssueToBeMovedToBacklog] = useState();
 	const [idOfIssueToBeCopiedToTrello, setIdOfIssueToBeCopiedToTrello] = useState();
@@ -336,6 +336,10 @@ function SprintTable({
 			return;
 		}
 	}, [isRejectedIssueUpdate, isRejectedPostTrelloCard]);
+
+	useEffect(() => {
+		if (sprint.issues.length) setSprintIssues(sprint.issues);
+	}, [sprint.issues]);
 	return (
 		<TableContainer component={Paper} style={{ padding: "1rem" }}>
 			<Snackbar
@@ -383,8 +387,8 @@ function SprintTable({
 					isLoadingIssueUpdate,
 					handleCopyIssueToTrelloClick,
 					handleMoveIssueClick,
-					issuesList: sprintIssues,
 				}}
+				issuesList={sprintIssues}
 			/>
 		</TableContainer>
 	);
@@ -414,21 +418,35 @@ export default function Sprints() {
 	const [startedSprintId, setStartedSprintId] = useState();
 
 	function doUpdateIssueWithTrelloCardNewInfo(newTrelloCardInfo) {
-		let issueForUpdate;
-		for (const sprint of sprintsList) {
-			console.log(sprint.id);
-			issueForUpdate = sprint.issues.find((issue) => {
-				return issue.id === newTrelloCardInfo.issue_id;
-			});
-			if (issueForUpdate) break;
+		let indexOfIssueForUpdate;
+		let indexOfSprintForUpdate;
+		for (const [sprintIndex, sprint] of Object.entries(sprintsList)) {
+			indexOfIssueForUpdate = sprint.issues.findIndex(
+				(issue) => issue.id === newTrelloCardInfo.issue_id
+			);
+
+			if (indexOfIssueForUpdate) {
+				indexOfSprintForUpdate = sprintIndex;
+				break;
+			}
 		}
 
-		delete newTrelloCardInfo.issue_id;
-		delete newTrelloCardInfo.board_id;
+		if (indexOfIssueForUpdate !== -1) {
+			delete newTrelloCardInfo.issue_id;
+			delete newTrelloCardInfo.board_id;
 
-		if (issueForUpdate) {
-			for (const [property, value] of Object.entries(newTrelloCardInfo))
-				issueForUpdate[property] = value;
+			sprintsList[indexOfSprintForUpdate].issues[indexOfIssueForUpdate] = Object.assign(
+				sprintsList[indexOfSprintForUpdate].issues[indexOfIssueForUpdate],
+				newTrelloCardInfo
+			);
+
+			sprintsList[indexOfSprintForUpdate].issues = [
+				...sprintsList[indexOfSprintForUpdate].issues,
+			];
+			sprintsList[indexOfSprintForUpdate] = Object.assign(
+				{},
+				sprintsList[indexOfSprintForUpdate]
+			);
 			setSprintsList([...sprintsList]);
 		}
 	}

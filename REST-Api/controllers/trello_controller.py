@@ -241,7 +241,7 @@ def process_callback_data(callback_data):
         if action_type == 'deleteCard':
             issue_update_for_client['trello_card_id'] = None
             issue_update_for_client['trello_card_is_closed'] = None
-            issue_update_for_client['trello_card_is_completed'] = None
+            issue_update_for_client['trello_card_due_is_completed'] = None
             issue_update_for_client['trello_card_list_name'] = None
             update_issue(issue_with_card_id.id, clear_trello_data=True)
             return

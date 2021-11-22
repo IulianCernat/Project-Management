@@ -128,9 +128,9 @@ export default function Backlog() {
 							setSelectedIssues,
 							handleDeleteIssueClick,
 							isLoadingDeleteIssue,
-							issuesList,
 							selectedIssues,
 						}}
+						issuesList={issuesList}
 					/>
 				)}
 			</Box>
