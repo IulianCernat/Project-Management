@@ -240,6 +240,7 @@ function SprintTable({
 	sprint,
 	currentUserRole,
 	handleDeleteSprintClick,
+	doUpdateIssueForSprint,
 	setStartedSprintId,
 	startedSprintId,
 	added_trello_board_id_by_user,
@@ -274,6 +275,7 @@ function SprintTable({
 	);
 
 	let {
+		receivedData: postTrelloCardReceivedData,
 		error: postTrelloCardError,
 		isLoading: isLoadingPostTrelloCard,
 		isResolved: isResolvedPostTrelloCard,
@@ -307,20 +309,23 @@ function SprintTable({
 
 	useEffect(() => {
 		if (!isResolvedIssueUpdate) return;
-		setSprintIssues(sprintIssues.filter((item) => item.id !== idOfIssueToBeMovedToBacklog));
+		doUpdateIssueForSprint({
+			issueForUpdateId: idOfIssueToBeMovedToBacklog,
+			deleteIssue: true,
+		});
 	}, [isResolvedIssueUpdate, idOfIssueToBeMovedToBacklog]);
 
 	useEffect(() => {
-		if (!isResolvedPostTrelloCard) return;
-		const issue_to_be_updated = sprintIssues.find(
-			(item) => item.id === idOfIssueToBeCopiedToTrello
-		);
-
-		issue_to_be_updated["trello_card_list_name"] = firstTrelloBoardListName;
-		issue_to_be_updated["trello_card_due_is_completed"] = false;
-		issue_to_be_updated["trello_card_is_closed"] = false;
-
-		setSprintIssues([...sprintIssues]);
+		if (!(isResolvedPostTrelloCard && idOfIssueToBeCopiedToTrello)) return;
+		doUpdateIssueForSprint({
+			issueForUpdateId: idOfIssueToBeCopiedToTrello,
+			newIssueProperties: {
+				trello_card_id: postTrelloCardReceivedData.location,
+				trello_card_list_name: firstTrelloBoardListName,
+				trello_card_due_is_completed: false,
+				trello_card_is_closed: false,
+			},
+		});
 	}, [isResolvedPostTrelloCard, idOfIssueToBeCopiedToTrello]);
 
 	useEffect(() => {
@@ -417,29 +422,36 @@ export default function Sprints() {
 
 	const [startedSprintId, setStartedSprintId] = useState();
 
-	function doUpdateIssueWithTrelloCardNewInfo(newTrelloCardInfo) {
+	function doUpdateIssueForSprint({
+		issueForUpdateId,
+		newIssueProperties = null,
+		deleteIssue = false,
+	}) {
 		let indexOfIssueForUpdate;
 		let indexOfSprintForUpdate;
 		for (const [sprintIndex, sprint] of Object.entries(sprintsList)) {
-			indexOfIssueForUpdate = sprint.issues.findIndex(
-				(issue) => issue.id === newTrelloCardInfo.issue_id
-			);
-
-			if (indexOfIssueForUpdate) {
+			indexOfIssueForUpdate = sprint.issues.findIndex((issue) => {
+				return issue.id === issueForUpdateId;
+			});
+			if (indexOfIssueForUpdate !== -1) {
 				indexOfSprintForUpdate = sprintIndex;
 				break;
 			}
 		}
 
 		if (indexOfIssueForUpdate !== -1) {
-			delete newTrelloCardInfo.issue_id;
-			delete newTrelloCardInfo.board_id;
+			if (deleteIssue) {
+				sprintsList[indexOfSprintForUpdate].issues.splice(indexOfIssueForUpdate, 1);
+			} else if (newIssueProperties) {
+				delete newIssueProperties.board_id;
 
-			sprintsList[indexOfSprintForUpdate].issues[indexOfIssueForUpdate] = Object.assign(
-				sprintsList[indexOfSprintForUpdate].issues[indexOfIssueForUpdate],
-				newTrelloCardInfo
-			);
+				sprintsList[indexOfSprintForUpdate].issues[indexOfIssueForUpdate] = Object.assign(
+					sprintsList[indexOfSprintForUpdate].issues[indexOfIssueForUpdate],
+					newIssueProperties
+				);
+			}
 
+			// trigger rerender by changing object references
 			sprintsList[indexOfSprintForUpdate].issues = [
 				...sprintsList[indexOfSprintForUpdate].issues,
 			];
@@ -493,12 +505,20 @@ export default function Sprints() {
 	}, [isResolvedGetSprints, getSprintsReceivedData]);
 
 	useEffect(() => {
+		console.log("useEffect run");
 		if (!websockeWithRealtimeService.current) return;
 		websockeWithRealtimeService.current.onmessage = (event) => {
 			const parsedMessageObj = JSON.parse(event.data);
 
 			if ("error" in parsedMessageObj) console.log(parsedMessageObj.error);
-			else doUpdateIssueWithTrelloCardNewInfo(parsedMessageObj);
+			else {
+				const issueId = parsedMessageObj.issue_id;
+				delete parsedMessageObj.issue_id;
+				doUpdateIssueForSprint({
+					issueForUpdateId: issueId,
+					newIssueProperties: parsedMessageObj,
+				});
+			}
 		};
 	}, [sprintsList]);
 
@@ -563,6 +583,7 @@ export default function Sprints() {
 							startedSprintId={startedSprintId}
 							setStartedSprintId={setStartedSprintId}
 							handleDeleteSprintClick={handleDeleteSprintClick}
+							doUpdateIssueForSprint={doUpdateIssueForSprint}
 							currentUserRole={currentUserRole}
 							key={item.id}
 							sprint={item}
