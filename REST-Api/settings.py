@@ -48,11 +48,11 @@ except KeyError:
 
 TRELLO_API_URL = "https://api.trello.com/1"
 
-#
+
 # Share localhost api over network for testing purposes
 # Subdomain name resides in tunneling/runJprq.py file
 
-TUNNELED_API_ADDRESS = "https://tunneled_api.jprq.io/"
+TUNNELED_API_ADDRESS = "https://tunneled_api_q62h9abghr.jprq.io/"
 
-# redis
-REDIS_URL = "localhost:6379"
+# Real time updates delivering service
+REALTIME_UPDATES_SERVICE_URL = "http://localhost:3001/updatesFeeder"

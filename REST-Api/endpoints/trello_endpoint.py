@@ -48,7 +48,7 @@ class TrelloBoards(Resource):
         input_data = request.json
         created_trello_board = create_trello_board(
             input_data, user_token)
-        return {'location': f"https://https://trello.com/b/{created_trello_board['id']}"}, 201
+        return {'location': f"https://https://trello.com/boards/{created_trello_board['id']}"}, 201
 
 
 @trello_namespace.route('/cards/')

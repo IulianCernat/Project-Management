@@ -286,7 +286,6 @@ IssuesTable.propTypes = {
 			idOfIssueToBeCopiedToTrello: PropTypes.number.isRequired,
 			isLoadingPostTrelloCard: PropTypes.bool.isRequired,
 			isLoadingIssueUpdate: PropTypes.bool.isRequired,
-			issuesList: PropTypes.array.isRequired,
 		}),
 
 		PropTypes.exact({
@@ -297,9 +296,9 @@ IssuesTable.propTypes = {
 			setSelectedIssues: PropTypes.func.isRequired,
 			handleDeleteIssueClick: PropTypes.func.isRequired,
 			isLoadingDeleteIssue: PropTypes.bool.isRequired,
-			issuesList: PropTypes.array.isRequired,
 		}),
 	]),
+	issuesList: PropTypes.array.isRequired,
 };
 export default function IssuesTable(props) {
 	const classes = useStyles();
@@ -316,11 +315,11 @@ export default function IssuesTable(props) {
 		selectedIssues,
 		handleDeleteIssueClick,
 		isLoadingDeleteIssue,
-		issuesList,
 		handleMoveIssueClick,
 		handleCopyIssueToTrelloClick,
 	} = props.issuesTableProps;
-	const [tableIssues, setTableIssues] = useState([...issuesList]);
+	const [issuesList, setIssuesList] = useState([]);
+	const [tableIssues, setTableIssues] = useState([]);
 	const [currentSortOrder, setCurrentSortOrder] = useState();
 	const [currentSortedColumnName, setCurrentSortedColumnName] = useState();
 	const [currentFilteredColumnNames, setCurrentFilteredColumnNames] = useState([]);
@@ -467,6 +466,7 @@ export default function IssuesTable(props) {
 	};
 
 	useEffect(() => {
+		if (!issuesList.length) return;
 		setTableIssues([
 			...issuesList.map((issue) => {
 				issue["filteredColumns"] = new Set();
@@ -485,6 +485,10 @@ export default function IssuesTable(props) {
 		]);
 	}, [issuesList]);
 
+	useEffect(() => {
+		if (props.issuesList.length) setIssuesList(props.issuesList);
+	}, [props.issuesList]);
+
 	return (
 		<Paper>
 			{!isSprintIssuesTable && (
@@ -497,7 +501,7 @@ export default function IssuesTable(props) {
 				/>
 			)}
 			<TableContainer>
-				{issuesList?.length ? (
+				{tableIssues?.length ? (
 					<Table className={classes.table}>
 						<TableHead>
 							<TableRow>
