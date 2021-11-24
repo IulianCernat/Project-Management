@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import {
 	TableContainer,
 	Paper,
@@ -15,10 +15,9 @@ import {
 import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp, Close } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
-import { useDeleteFetch, useGetFetch, usePatchFetch, doTrelloApiFetch } from "customHooks/useFetch";
-import PropTypes from "prop-types";
+import { useDeleteFetch, useGetFetch, usePatchFetch, usePostFetch } from "customHooks/useFetch";
+import PropTypes, { instanceOf } from "prop-types";
 import { useProjectContext } from "contexts/ProjectContext";
-import { useAuth } from "contexts/AuthContext";
 import IssuesTable from "../backlog/IssuesTable";
 
 const useStyles = makeStyles({
@@ -187,7 +186,6 @@ function SprintHeader({
 				</Box>
 				<div
 					style={{
-						transition: "height 0.25s linear",
 						left: 0,
 						right: 0,
 						position: "absolute",
@@ -236,103 +234,128 @@ SprintTable.propTypes = {
 	startedSprintId: PropTypes.number.isRequired,
 	setStartedSprintId: PropTypes.func.isRequired,
 	firstTrelloBoardListId: PropTypes.string.isRequired,
-	trelloLabelsList: PropTypes.arrayOf(PropTypes.obj).isRequired,
+	trelloLabelsObj: PropTypes.object.isRequired,
 };
 function SprintTable({
 	sprint,
 	currentUserRole,
 	handleDeleteSprintClick,
+	doUpdateIssueForSprint,
 	setStartedSprintId,
 	startedSprintId,
-	trelloBoardId,
+	added_trello_board_id_by_user,
 	firstTrelloBoardListId,
 	firstTrelloBoardListName,
-	trelloLabelsList,
+	trelloLabelsObj,
 }) {
-	const [sprintIssues, setSprintIssues] = useState(sprint.issues);
+	const [sprintIssues, setSprintIssues] = useState([]);
 	const [requestBodyForIssueUpdate, setRequestBodyForIssueUpdate] = useState();
-	const [issueIdToBeUpdated, setIssueIdToBeUpdated] = useState();
-	const [trelloFetchError, setTrelloFetchError] = useState();
+	const [idOfIssueToBeMovedToBacklog, setIdOfIssueToBeMovedToBacklog] = useState();
+	const [idOfIssueToBeCopiedToTrello, setIdOfIssueToBeCopiedToTrello] = useState();
 	const [openSnackbar, setOpenSnackbar] = useState(false);
-
-	const updateType = useRef(); //delete, copy
+	const [newTrelloCardPayload, setNewTrelloCardPayload] = useState();
+	const [snackbarMessage, setSnackbarMessage] = useState();
+	const headersForTrello = useRef({
+		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
+	});
 
 	const handleCloseSnackbar = (event, reason) => {
-		if (reason === "clickaway") {
-			return;
-		}
 		setOpenSnackbar(false);
 	};
 
 	const {
-		status: updateIssueStatus,
-		receivedData: updatedIssueReveivedData,
 		error: updateIssueError,
 		isLoading: isLoadingIssueUpdate,
 		isResolved: isResolvedIssueUpdate,
 		isRejected: isRejectedIssueUpdate,
-	} = usePatchFetch(`api/issues/${issueIdToBeUpdated}`, requestBodyForIssueUpdate);
+	} = usePatchFetch(
+		`api/issues/${idOfIssueToBeMovedToBacklog}`,
+		requestBodyForIssueUpdate,
+		headersForTrello.current
+	);
+
+	let {
+		receivedData: postTrelloCardReceivedData,
+		error: postTrelloCardError,
+		isLoading: isLoadingPostTrelloCard,
+		isResolved: isResolvedPostTrelloCard,
+		isRejected: isRejectedPostTrelloCard,
+	} = usePostFetch("api/trello/cards/", newTrelloCardPayload, headersForTrello.current);
 
 	const handleMoveIssueClick = (issueId) => {
-		updateType.current = "delete";
-		setIssueIdToBeUpdated(issueId);
+		setIdOfIssueToBeMovedToBacklog(issueId);
 		setRequestBodyForIssueUpdate(JSON.stringify({ sprint_id: 0 }));
 	};
 
 	const handleCopyIssueToTrelloClick = (currentIssue) => {
-		doTrelloApiFetch({
-			method: "POST",
-			apiUri: "cards",
-			apiParams: {
+		if (!Boolean(added_trello_board_id_by_user)) {
+			setOpenSnackbar(true);
+			setSnackbarMessage("You haven't added a Trello board");
+			return;
+		}
+		setNewTrelloCardPayload(
+			JSON.stringify({
 				name: currentIssue.title,
-				desc: currentIssue.description,
+				desc: currentIssue?.description,
 				idList: firstTrelloBoardListId,
-				idLabels: [trelloLabelsList.find((label) => label.name === currentIssue.type).id],
-			},
-			successHandler: (newTrelloIssue) => {
-				setIssueIdToBeUpdated(currentIssue.id);
-				setRequestBodyForIssueUpdate(JSON.stringify({ trello_card_id: newTrelloIssue.id }));
-				updateType.current = "copy";
-			},
-			errorHandler: (error) => {
-				setTrelloFetchError(error);
-				setOpenSnackbar(true);
-			},
-		});
+				idLabels: [trelloLabelsObj[currentIssue.type]],
+				due: sprint.end_date,
+				issue_id: currentIssue.id,
+				board_list_name: firstTrelloBoardListName,
+			})
+		);
+		setIdOfIssueToBeCopiedToTrello(currentIssue.id);
 	};
+
 	useEffect(() => {
 		if (!isResolvedIssueUpdate) return;
-		switch (updateType.current) {
-			case "delete": {
-				setSprintIssues(sprintIssues.filter((item) => item.id !== issueIdToBeUpdated));
-				break;
-			}
-			case "copy":
-				sprintIssues.filter((item) => {
-					if (item.id === issueIdToBeUpdated) {
-						item["trello_issue_card_status"] = firstTrelloBoardListName;
-						return true;
-					}
-					return false;
-				});
-				setSprintIssues([...sprintIssues]);
-				break;
-			default:
-				break;
-		}
-	}, [isResolvedIssueUpdate, issueIdToBeUpdated]);
+		doUpdateIssueForSprint({
+			issueForUpdateId: idOfIssueToBeMovedToBacklog,
+			deleteIssue: true,
+		});
+	}, [isResolvedIssueUpdate, idOfIssueToBeMovedToBacklog]);
 
+	useEffect(() => {
+		if (!(isResolvedPostTrelloCard && idOfIssueToBeCopiedToTrello)) return;
+		doUpdateIssueForSprint({
+			issueForUpdateId: idOfIssueToBeCopiedToTrello,
+			newIssueProperties: {
+				trello_card_id: postTrelloCardReceivedData.location,
+				trello_card_list_name: firstTrelloBoardListName,
+				trello_card_due_is_completed: false,
+				trello_card_is_closed: false,
+			},
+		});
+	}, [isResolvedPostTrelloCard, idOfIssueToBeCopiedToTrello]);
+
+	useEffect(() => {
+		if (isRejectedPostTrelloCard) {
+			setSnackbarMessage(postTrelloCardError);
+			setOpenSnackbar(true);
+			return;
+		}
+		if (isRejectedIssueUpdate) {
+			setSnackbarMessage(updateIssueError);
+			setOpenSnackbar(true);
+
+			return;
+		}
+	}, [isRejectedIssueUpdate, isRejectedPostTrelloCard]);
+
+	useEffect(() => {
+		if (sprint.issues.length) setSprintIssues(sprint.issues);
+	}, [sprint.issues]);
 	return (
 		<TableContainer component={Paper} style={{ padding: "1rem" }}>
 			<Snackbar
 				anchorOrigin={{
-					vertical: "bottom",
-					horizontal: "left",
+					vertical: "top",
+					horizontal: "center",
 				}}
 				open={openSnackbar}
 				onClose={handleCloseSnackbar}
 				autoHideDuration={6000}
-				message={trelloFetchError}
+				message={snackbarMessage}
 				action={
 					<>
 						<IconButton
@@ -363,36 +386,105 @@ function SprintTable({
 			<IssuesTable
 				isSprintIssuesTable
 				issuesTableProps={{
+					idOfIssueToBeMovedToBacklog,
+					idOfIssueToBeCopiedToTrello,
+					isLoadingPostTrelloCard,
+					isLoadingIssueUpdate,
 					handleCopyIssueToTrelloClick,
 					handleMoveIssueClick,
-					issuesList: sprintIssues,
 				}}
+				issuesList={sprintIssues}
 			/>
 		</TableContainer>
 	);
 }
 
 export default function Sprints() {
-	const { projectId, currentUserRole, trelloBoardId } = useProjectContext();
+	const websockeWithRealtimeService = useRef(null);
+	const [websocketSessionId, setWebsocketSessionId] = useState(null);
+	const { projectId, currentUserRole, trelloBoards } = useProjectContext();
+	const added_trello_board_id_by_user = useMemo(
+		() => trelloBoards.find((trelloBoard) => trelloBoard.is_added_by_user)?.trello_board_id,
+		[trelloBoards]
+	);
+	const listWithTrelloBoardsIdsOnly = useMemo(
+		() => trelloBoards.map((trelloBoard) => trelloBoard.trello_board_id),
+		[trelloBoards]
+	);
+	const [trelloToken, setTrelloToken] = useState(localStorage.getItem("trello_token"));
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
-	const getParams = useRef({ project_id: projectId });
+	const [startFetchingSprints, setStartFetchingSprints] = useState(true);
+	const getSprintsParams = useRef({ project_id: projectId });
+	const getTrelloDataParams = useRef({
+		data_arrangement: "board_lists_ids_and_names,board_labels",
+	});
+
 	const [startedSprintId, setStartedSprintId] = useState();
-	const [trelloBoards, setTrelloBoards] = useState([]);
-	const [trelloBoardsFetchError, setTrelloFetchError] = useState();
-	const [trelloLabels, setTrelloLabels] = useState([]);
+
+	function doUpdateIssueForSprint({
+		issueForUpdateId,
+		newIssueProperties = null,
+		deleteIssue = false,
+	}) {
+		let indexOfIssueForUpdate;
+		let indexOfSprintForUpdate;
+		for (const [sprintIndex, sprint] of Object.entries(sprintsList)) {
+			indexOfIssueForUpdate = sprint.issues.findIndex((issue) => {
+				return issue.id === issueForUpdateId;
+			});
+			if (indexOfIssueForUpdate !== -1) {
+				indexOfSprintForUpdate = sprintIndex;
+				break;
+			}
+		}
+
+		if (indexOfIssueForUpdate !== -1) {
+			if (deleteIssue) {
+				sprintsList[indexOfSprintForUpdate].issues.splice(indexOfIssueForUpdate, 1);
+			} else if (newIssueProperties) {
+				delete newIssueProperties.board_id;
+
+				sprintsList[indexOfSprintForUpdate].issues[indexOfIssueForUpdate] = Object.assign(
+					sprintsList[indexOfSprintForUpdate].issues[indexOfIssueForUpdate],
+					newIssueProperties
+				);
+			}
+
+			// trigger rerender by changing object references
+			sprintsList[indexOfSprintForUpdate].issues = [
+				...sprintsList[indexOfSprintForUpdate].issues,
+			];
+			sprintsList[indexOfSprintForUpdate] = Object.assign(
+				{},
+				sprintsList[indexOfSprintForUpdate]
+			);
+			setSprintsList([...sprintsList]);
+		}
+	}
 
 	const {
-		status: getSprintsStatus,
 		receivedData: getSprintsReceivedData,
 		error: getSprintsError,
 		isLoading: isLoadingGetSprints,
 		isResolved: isResolvedGetSprints,
 		isRejected: isRejectedGetSprints,
-	} = useGetFetch(`api/sprints/`, getParams.current);
+	} = useGetFetch(`api/sprints/`, getSprintsParams.current, startFetchingSprints);
 
 	const {
-		status: deleteSprintStatus,
+		receivedData: getTrelloData,
+		error: getTrelloDataError,
+		isLoading: isLoadingGetTrelloData,
+		isResolved: isResolvedGetTrelloData,
+		isRejected: isRejectedGetTrelloData,
+	} = useGetFetch(
+		`api/trello/boards/${added_trello_board_id_by_user}`,
+		getTrelloDataParams.current,
+		Boolean(added_trello_board_id_by_user),
+		false
+	);
+
+	const {
 		isResolved: isResolvedDeleteSprint,
 		isRejected: isRejectedDeleteSprint,
 		isLoading: isLoadingDeleteSprint,
@@ -401,6 +493,34 @@ export default function Sprints() {
 	const handleDeleteSprintClick = (sprintId) => {
 		setSprintIdToBeDeleted(sprintId);
 	};
+
+	const handleSyncWithTrelloClick = () => {
+		setStartFetchingSprints(true);
+	};
+
+	useEffect(() => {
+		if (!isResolvedGetSprints) return;
+		setSprintsList(getSprintsReceivedData);
+		setStartFetchingSprints(false);
+	}, [isResolvedGetSprints, getSprintsReceivedData]);
+
+	useEffect(() => {
+		console.log("useEffect run");
+		if (!websockeWithRealtimeService.current) return;
+		websockeWithRealtimeService.current.onmessage = (event) => {
+			const parsedMessageObj = JSON.parse(event.data);
+
+			if ("error" in parsedMessageObj) console.log(parsedMessageObj.error);
+			else {
+				const issueId = parsedMessageObj.issue_id;
+				delete parsedMessageObj.issue_id;
+				doUpdateIssueForSprint({
+					issueForUpdateId: issueId,
+					newIssueProperties: parsedMessageObj,
+				});
+			}
+		};
+	}, [sprintsList]);
 
 	useEffect(() => {
 		if (isResolvedDeleteSprint) {
@@ -411,69 +531,77 @@ export default function Sprints() {
 	}, [isResolvedDeleteSprint]);
 
 	useEffect(() => {
-		if (!isResolvedGetSprints || trelloBoards?.length) return;
+		const trelloToken = localStorage.getItem("trello_token");
+		setTrelloToken(trelloToken);
 
-		setSprintsList(getSprintsReceivedData);
-		setStartedSprintId(
-			getSprintsReceivedData.find((item) => item.start && !item.completed)?.id
+		// Initialize websocket connection
+		websockeWithRealtimeService.current = new WebSocket(
+			process.env.REACT_APP_REAL_TIME_TRELLO_UPDATES_SERVICE_URL
 		);
-		if (!trelloBoardId) return;
 
-		doTrelloApiFetch({
-			method: "GET",
-			apiUri: `boards/${trelloBoardId}/lists`,
-			apiParams: {
-				cards: "all",
-				fields: "id,name,labelNames",
-				card_fields: "id,name",
-			},
-			successHandler: setTrelloBoards,
-			errorHandler: setTrelloFetchError,
-		});
-		doTrelloApiFetch({
-			method: "GET",
-			apiUri: `boards/${trelloBoardId}/labels`,
-			successHandler: setTrelloLabels,
-			errorHandler: setTrelloFetchError,
-		});
-	}, [isResolvedGetSprints, getSprintsReceivedData, trelloBoardId, sprintsList]);
+		websockeWithRealtimeService.current.onopen = () => {
+			websockeWithRealtimeService.current.send(
+				JSON.stringify({
+					action: "join",
+					boardIdList: listWithTrelloBoardsIdsOnly,
+				})
+			);
+			websockeWithRealtimeService.current.onmessage = (event) => {
+				const parsedMessageObj = JSON.parse(event.data);
+				if ("sessionId" in parsedMessageObj)
+					setWebsocketSessionId(parsedMessageObj.sessionId);
+			};
+		};
 
-	useEffect(() => {
-		for (const trelloBoard of trelloBoards)
-			for (const card of trelloBoard.cards)
-				for (const sprint of sprintsList)
-					for (const issue of sprint.issues)
-						if (card.id === issue.trello_card_id)
-							issue["trello_issue_card_status"] = trelloBoard.name;
-						else if (!issue?.trello_issue_card_status)
-							issue["trello_issue_card_status"] = "Unknown";
+		return () => {
+			websockeWithRealtimeService.current.send(
+				JSON.stringify({ action: "leave", sessioId: websocketSessionId })
+			);
+			websockeWithRealtimeService.current.close();
+		};
+	}, []);
 
-		setSprintsList([...sprintsList]);
-	}, [trelloLabels, trelloBoards]);
 	return (
 		<>
-			{trelloBoardsFetchError ? (
-				<Alert severity="error">{trelloBoardsFetchError}</Alert>
+			{isRejectedGetTrelloData ? <Alert severity="error">{getTrelloDataError}</Alert> : null}
+			{isLoadingGetSprints || isLoadingGetTrelloData ? (
+				<LinearProgress style={{ width: "100%" }} />
 			) : null}
-			{isLoadingGetSprints ? <LinearProgress style={{ width: "100%" }} /> : null}
+			<Box my={2}>
+				<Button color="primary" variant="contained" onClick={handleSyncWithTrelloClick}>
+					Sync with Trello
+				</Button>
+			</Box>
+
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
 			{isResolvedGetSprints &&
 			getSprintsReceivedData.length &&
-			((trelloBoards.length && trelloLabels.length) || !trelloBoardId) ? (
+			(added_trello_board_id_by_user ? (getTrelloData ? true : false) : true) ? (
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable
 							startedSprintId={startedSprintId}
 							setStartedSprintId={setStartedSprintId}
 							handleDeleteSprintClick={handleDeleteSprintClick}
+							doUpdateIssueForSprint={doUpdateIssueForSprint}
 							currentUserRole={currentUserRole}
 							key={item.id}
 							sprint={item}
-							trelloBoardId={trelloBoardId}
-							firstTrelloBoardListId={trelloBoardId ? trelloBoards[0].id : null}
-							firstTrelloBoardListName={trelloBoardId ? trelloBoards[0].name : null}
-							trelloLabelsList={
-								trelloBoardId ? trelloLabels.filter((label) => label.name) : null
+							added_trello_board_id_by_user={added_trello_board_id_by_user}
+							firstTrelloBoardListId={
+								added_trello_board_id_by_user
+									? getTrelloData.trello_board_lists_ids_and_names[0].id
+									: null
+							}
+							firstTrelloBoardListName={
+								added_trello_board_id_by_user
+									? getTrelloData.trello_board_lists_ids_and_names[0].name
+									: null
+							}
+							trelloLabelsObj={
+								added_trello_board_id_by_user
+									? getTrelloData.trello_board_labels
+									: null
 							}
 						/>
 					))}

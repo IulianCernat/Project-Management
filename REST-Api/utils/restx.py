@@ -1,13 +1,12 @@
 import logging
-import traceback
 
 from flask_restx import Api
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import MethodNotAllowed, BadRequest
-from utils.custom_exceptions import AuthorizationFailed
-import settings
+from utils.custom_exceptions import AuthorizationFailed, TrelloRequestFailure, TrelloResourceUnavailable
 from sqlalchemy.orm.exc import NoResultFound
 from flask_cors import cross_origin
+
 log = logging.getLogger(__name__)
 
 # For development cors is set to * for every route
@@ -43,6 +42,18 @@ def integrity_error(e):
 def bad_request_error(e):
     log.error(e)
     return {'message': "Bad request"}, 400
+
+
+@api.errorhandler(TrelloResourceUnavailable)
+def trello_resource_unavailable(e):
+    log.error(e)
+    return {'message': f"{e}"}, 404
+
+
+@api.errorhandler(TrelloRequestFailure)
+def trello_request_error(e):
+    log.error(e)
+    return {"message": f"{e}"}, 500
 
 
 @api.errorhandler(Exception)

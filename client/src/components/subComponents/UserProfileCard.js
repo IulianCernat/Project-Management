@@ -88,13 +88,11 @@ export default function UserProfileCard(props) {
 			</IconContext.Provider>
 			<CardContent>
 				<Box display="flex" alignItems="center" flexDirection="column">
-					<Box display="flex">
-						<Avatar className={classes.avatar} src={props.user_profile.avatar_url}>
-							<Typography className={classes.avatarText}>
-								{props.user_profile.fullName.slice(0, 2)}
-							</Typography>
-						</Avatar>
-					</Box>
+					<Avatar className={classes.avatar} src={props.user_profile.avatar_url}>
+						<Typography align="center" className={classes.avatarText}>
+							{props.user_profile.fullName.slice(0, 2)}
+						</Typography>
+					</Avatar>
 
 					<Box
 						className={classes.textContent}
@@ -102,7 +100,7 @@ export default function UserProfileCard(props) {
 						flexDirection="column"
 						alignItems="center"
 					>
-						<Typography variant="h6" className={classes.name}>
+						<Typography align="center" variant="h6" className={classes.name}>
 							{props.user_profile.fullName}
 						</Typography>
 						<Typography variant="h6" className={classes.role}>

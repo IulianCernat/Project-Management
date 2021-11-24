@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
 import {
 	TableContainer,
 	TableRow,
@@ -180,18 +180,21 @@ function ColumnFilter({
 TableHeaderColumn.propTypes = {
 	columnName: PropTypes.string.isRequired,
 	sortHandler: PropTypes.func.isRequired,
-	filterHandler: PropTypes.func.isRequired,
+	isFilterable: PropTypes.bool.isRequired,
+	filterHandler: PropTypes.func,
 	currentSortOrder: PropTypes.oneOf(["asc", "desc", "null"]).isRequired,
-	sortByString: PropTypes.bool.isRequired,
-	clearFilter: PropTypes.func.isRequired,
-	currentFilteredColumnNames: PropTypes.array.isRequired,
+	sortBy: PropTypes.oneOf(["string", "date", "number"]).isRequired,
+	clearFilter: PropTypes.func,
+	currentFilteredColumnNames: PropTypes,
 	facadeColumnName: PropTypes.string.isRequired,
 };
 function TableHeaderColumn({
 	columnName,
 	sortHandler,
+	isFilterable,
 	filterHandler,
 	currentSortOrder,
+	sortBy,
 	filterOptions,
 	clearFilter,
 	currentFilteredColumnNames,
@@ -215,7 +218,7 @@ function TableHeaderColumn({
 				<IconButton
 					size="small"
 					onClick={() => {
-						sortHandler(columnName, true, "asc");
+						sortHandler(columnName, sortBy, "asc");
 					}}
 				>
 					<ArrowDownward fontSize="small" color="action" />
@@ -224,7 +227,7 @@ function TableHeaderColumn({
 				<IconButton
 					size="small"
 					onClick={() => {
-						sortHandler(columnName, true, "desc");
+						sortHandler(columnName, sortBy, "desc");
 					}}
 				>
 					<ArrowUpward fontSize="small" color="action" />
@@ -233,7 +236,7 @@ function TableHeaderColumn({
 				<IconButton
 					size="small"
 					onClick={() => {
-						sortHandler(columnName, true, "asc");
+						sortHandler(columnName, sortBy, "asc");
 					}}
 				>
 					<ArrowUpward fontSize="small" color="disabled" />
@@ -242,28 +245,33 @@ function TableHeaderColumn({
 			<Typography variant="button" align="center">
 				{facadeColumnName}
 			</Typography>
-			{currentFilteredColumnNames.includes(columnName) && (
-				<IconButton
-					size="small"
-					onClick={() => {
-						clearFilter(columnName, filteredColumnValue);
-					}}
-				>
-					<FilterList fontSize="small" />
-				</IconButton>
+			{!isFilterable ? null : (
+				<>
+					{currentFilteredColumnNames.includes(columnName) && (
+						<IconButton
+							size="small"
+							onClick={() => {
+								clearFilter(columnName, filteredColumnValue);
+							}}
+						>
+							<FilterList fontSize="small" />
+						</IconButton>
+					)}
+
+					<IconButton size="small" onClick={handleOpenFilterClick}>
+						<MoreVert fontSize="small" color="action" />
+					</IconButton>
+					<ColumnFilter
+						anchorEl={filterColumnAchorEl}
+						open={openFilterOptions}
+						onClose={handleCloseFilterClick}
+						filterHandler={filterHandler}
+						filterOptions={filterOptions}
+						columnName={columnName}
+						setFilteredColumnValue={setFilteredColumnValue}
+					/>
+				</>
 			)}
-			<IconButton size="small" onClick={handleOpenFilterClick}>
-				<MoreVert fontSize="small" color="action" />
-			</IconButton>
-			<ColumnFilter
-				anchorEl={filterColumnAchorEl}
-				open={openFilterOptions}
-				onClose={handleCloseFilterClick}
-				filterHandler={filterHandler}
-				filterOptions={filterOptions}
-				columnName={columnName}
-				setFilteredColumnValue={setFilteredColumnValue}
-			/>
 		</Box>
 	);
 }
@@ -274,7 +282,10 @@ IssuesTable.propTypes = {
 		PropTypes.exact({
 			handleMoveIssueClick: PropTypes.func.isRequired,
 			handleCopyIssueToTrelloClick: PropTypes.func.isRequired,
-			issuesList: PropTypes.array.isRequired,
+			idOfIssueToBeMovedToBacklog: PropTypes.number.isRequired,
+			idOfIssueToBeCopiedToTrello: PropTypes.number.isRequired,
+			isLoadingPostTrelloCard: PropTypes.bool.isRequired,
+			isLoadingIssueUpdate: PropTypes.bool.isRequired,
 		}),
 
 		PropTypes.exact({
@@ -285,14 +296,18 @@ IssuesTable.propTypes = {
 			setSelectedIssues: PropTypes.func.isRequired,
 			handleDeleteIssueClick: PropTypes.func.isRequired,
 			isLoadingDeleteIssue: PropTypes.bool.isRequired,
-			issuesList: PropTypes.array.isRequired,
 		}),
 	]),
+	issuesList: PropTypes.array.isRequired,
 };
 export default function IssuesTable(props) {
 	const classes = useStyles();
 	const isSprintIssuesTable = props.isSprintIssuesTable;
 	const {
+		isLoadingPostTrelloCard,
+		isLoadingIssueUpdate,
+		idOfIssueToBeMovedToBacklog,
+		idOfIssueToBeCopiedToTrello,
 		openIssueCreationDialog,
 		openSprintCreationDialog,
 		openTransferIssuesToSprintDialog,
@@ -300,42 +315,87 @@ export default function IssuesTable(props) {
 		selectedIssues,
 		handleDeleteIssueClick,
 		isLoadingDeleteIssue,
-		issuesList,
 		handleMoveIssueClick,
 		handleCopyIssueToTrelloClick,
 	} = props.issuesTableProps;
-	const [tableIssues, setTableIssues] = useState([...issuesList]);
+	const [issuesList, setIssuesList] = useState([]);
+	const [tableIssues, setTableIssues] = useState([]);
 	const [currentSortOrder, setCurrentSortOrder] = useState();
 	const [currentSortedColumnName, setCurrentSortedColumnName] = useState();
 	const [currentFilteredColumnNames, setCurrentFilteredColumnNames] = useState([]);
 	const { currentUserRole } = useProjectContext();
 
-	const sortByColumn = (columnName, isContentString, sortingType) => {
+	const sortByColumn = (columnName, sortBy, sortingType) => {
 		switch (sortingType) {
 			case "asc": {
-				if (isContentString)
-					setTableIssues([
-						...tableIssues.sort((firstItem, secondItem) =>
-							firstItem[columnName].localeCompare(secondItem[columnName])
-						),
-					]);
-				else
-					tableIssues.sort(
-						(firstItem, secondItem) => firstItem[columnName] - secondItem[columnName]
-					);
+				switch (sortBy) {
+					case "string": {
+						setTableIssues([
+							...tableIssues.sort((firstItem, secondItem) =>
+								firstItem[columnName].localeCompare(secondItem[columnName])
+							),
+						]);
+						break;
+					}
+					case "number": {
+						setTableIssues([
+							...tableIssues.sort(
+								(firstItem, secondItem) =>
+									firstItem[columnName] - secondItem[columnName]
+							),
+						]);
+						break;
+					}
+					case "date": {
+						setTableIssues([
+							...tableIssues.sort(
+								(firstItem, secondItem) =>
+									new Date(firstItem[columnName]) -
+									new Date(secondItem[columnName])
+							),
+						]);
+						break;
+					}
+					default:
+						break;
+				}
 				setCurrentSortOrder("asc");
 
 				break;
 			}
 			case "desc": {
-				if (isContentString)
-					tableIssues.sort((firstItem, secondItem) =>
-						secondItem[columnName].localeCompare(firstItem[columnName])
-					);
-				else
-					tableIssues.sort(
-						(firstItem, secondItem) => secondItem[columnName] - firstItem[columnName]
-					);
+				switch (sortBy) {
+					case "string": {
+						setTableIssues([
+							...tableIssues.sort((firstItem, secondItem) =>
+								secondItem[columnName].localeCompare(firstItem[columnName])
+							),
+						]);
+						break;
+					}
+					case "number": {
+						setTableIssues([
+							...tableIssues.sort(
+								(firstItem, secondItem) =>
+									secondItem[columnName] - firstItem[columnName]
+							),
+						]);
+						break;
+					}
+					case "date": {
+						setTableIssues([
+							...tableIssues.sort(
+								(firstItem, secondItem) =>
+									new Date(secondItem[columnName]) -
+									new Date(firstItem[columnName])
+							),
+						]);
+						break;
+					}
+					default: {
+						break;
+					}
+				}
 				setCurrentSortOrder("desc");
 				break;
 			}
@@ -392,15 +452,42 @@ export default function IssuesTable(props) {
 		setSelectedIssues(newSelectedIssues);
 	};
 
+	const transformTrelloColumn = (columnValue) => {
+		switch (columnValue) {
+			case null:
+				return "Unknown";
+			case false:
+				return "No";
+			case true:
+				return "Yes";
+			default:
+				return String(columnValue);
+		}
+	};
+
 	useEffect(() => {
+		if (!issuesList.length) return;
 		setTableIssues([
 			...issuesList.map((issue) => {
 				issue["filteredColumns"] = new Set();
-				if (!issue?.trello_issue_card_status) issue["trello_issue_card_status"] = "Unknown";
+
+				issue["trello_card_list_name"] = transformTrelloColumn(
+					issue["trello_card_list_name"]
+				);
+				issue["trello_card_due_is_completed"] = transformTrelloColumn(
+					issue["trello_card_due_is_completed"]
+				);
+				issue["trello_card_is_closed"] = transformTrelloColumn(
+					issue["trello_card_is_closed"]
+				);
 				return issue;
 			}),
 		]);
 	}, [issuesList]);
+
+	useEffect(() => {
+		if (props.issuesList.length) setIssuesList(props.issuesList);
+	}, [props.issuesList]);
 
 	return (
 		<Paper>
@@ -414,7 +501,7 @@ export default function IssuesTable(props) {
 				/>
 			)}
 			<TableContainer>
-				{issuesList?.length ? (
+				{tableIssues?.length ? (
 					<Table className={classes.table}>
 						<TableHead>
 							<TableRow>
@@ -425,13 +512,14 @@ export default function IssuesTable(props) {
 										columnName="type"
 										facadeColumnName="type"
 										sortHandler={sortByColumn}
+										sortBy="string"
+										isFilterable={true}
 										filterHandler={filterByColumn}
 										currentSortOrder={
 											currentSortedColumnName === "type"
 												? currentSortOrder
 												: "null"
 										}
-										sortByString={true}
 										filterOptions={{
 											bug: <IssueTypesChip type="bug" />,
 											task: <IssueTypesChip type="task" />,
@@ -445,42 +533,112 @@ export default function IssuesTable(props) {
 									<Typography variant="button">Title</Typography>
 								</TableCell>
 								{isSprintIssuesTable && (
-									<TableCell align="left">
-										<TableHeaderColumn
-											columnName="trello_issue_card_status"
-											facadeColumnName="status"
-											sortHandler={sortByColumn}
-											currentSortOrder={
-												currentSortedColumnName ===
-												"trello_issue_card_status"
-													? currentSortOrder
-													: "null"
-											}
-											sortByString={true}
-											filterOptions={{
-												Pending: "Pending",
-												"In progress": "In progress",
-												Done: "Done",
-												Unknown: "Unknown",
-											}}
-											filterHandler={filterByColumn}
-											clearFilter={clearColumnFilter}
-											currentFilteredColumnNames={currentFilteredColumnNames}
-										/>
-									</TableCell>
+									<>
+										<TableCell align="left">
+											<TableHeaderColumn
+												columnName="trello_card_list_name"
+												facadeColumnName="status"
+												sortHandler={sortByColumn}
+												isFilterable={true}
+												currentSortOrder={
+													currentSortedColumnName ===
+													"trello_card_list_name"
+														? currentSortOrder
+														: "null"
+												}
+												sortBy="string"
+												filterOptions={{
+													"To Do": "To Do",
+													Doing: "Doing",
+													Done: "Done",
+													Unknown: "Unknown",
+												}}
+												filterHandler={filterByColumn}
+												clearFilter={clearColumnFilter}
+												currentFilteredColumnNames={
+													currentFilteredColumnNames
+												}
+											/>
+										</TableCell>
+										<TableCell align="left">
+											<TableHeaderColumn
+												columnName="trello_card_due_is_completed"
+												facadeColumnName="completed"
+												sortHandler={sortByColumn}
+												sortBy="string"
+												isFilterable={true}
+												filterHandler={filterByColumn}
+												currentSortOrder={
+													currentSortedColumnName ===
+													"trello_card_due_is_completed"
+														? currentSortOrder
+														: "null"
+												}
+												filterOptions={{
+													Yes: <Typography>Yes</Typography>,
+													No: <Typography>No</Typography>,
+													Unknown: <Typography>Unknown</Typography>,
+												}}
+												clearFilter={clearColumnFilter}
+												currentFilteredColumnNames={
+													currentFilteredColumnNames
+												}
+											/>
+										</TableCell>
+										<TableCell align="left">
+											<TableHeaderColumn
+												columnName="trello_card_is_closed"
+												facadeColumnName="closed"
+												sortHandler={sortByColumn}
+												sortBy="string"
+												isFilterable={true}
+												filterHandler={filterByColumn}
+												currentSortOrder={
+													currentSortedColumnName ===
+													"trello_card_is_closed"
+														? currentSortOrder
+														: "null"
+												}
+												filterOptions={{
+													Yes: <Typography>Yes</Typography>,
+													No: <Typography>No</Typography>,
+													Unknown: <Typography>Unknown</Typography>,
+												}}
+												clearFilter={clearColumnFilter}
+												currentFilteredColumnNames={
+													currentFilteredColumnNames
+												}
+											/>
+										</TableCell>
+									</>
 								)}
+								<TableCell align="center">
+									<TableHeaderColumn
+										columnName="created_at"
+										facadeColumnName="created at"
+										sortHandler={sortByColumn}
+										sortBy="date"
+										isFilterable={false}
+										currentSortOrder={
+											currentSortedColumnName === "created_at"
+												? currentSortOrder
+												: "null"
+										}
+									/>
+								</TableCell>
 								<TableCell align="center">
 									<TableHeaderColumn
 										columnName="priority"
 										facadeColumnName="priority"
+										isFilterable={true}
 										filterHandler={filterByColumn}
 										sortHandler={sortByColumn}
+										sortBy="number"
 										currentSortOrder={
 											currentSortedColumnName === "priority"
 												? currentSortOrder
 												: "null"
 										}
-										sortByString={true}
 										filterOptions={Object.fromEntries(
 											Array.from({ length: 6 }, (item, index) => `${index}`)
 												.slice(1)
@@ -516,6 +674,10 @@ export default function IssuesTable(props) {
 								})
 								.map((item) => (
 									<IssueRow
+										idOfIssueToBeMovedToBacklog={idOfIssueToBeMovedToBacklog}
+										idOfIssueToBeCopiedToTrello={idOfIssueToBeCopiedToTrello}
+										isLoadingPostTrelloCard={isLoadingPostTrelloCard}
+										isLoadingIssueUpdate={isLoadingIssueUpdate}
 										handleMoveIssueClick={handleMoveIssueClick}
 										handleCopyIssueToTrelloClick={handleCopyIssueToTrelloClick}
 										isBeingDeleted={isLoadingDeleteIssue}

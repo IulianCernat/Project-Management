@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
-import { trelloBoardUrlValidSchema } from "../../utils/validationSchemas";
-import { usePatchFetch } from "../../customHooks/useFetch.js";
+import { trelloBoardNameValidSchema } from "../../utils/validationSchemas";
+import { usePostFetch } from "../../customHooks/useFetch.js";
+import { useProjectContext } from "../../contexts/ProjectContext.js";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
-	trello_board_url: trelloBoardUrlValidSchema,
+	name: trelloBoardNameValidSchema,
 });
 
 TrelloBoardAdditionForm.propTypes = {
@@ -19,27 +20,34 @@ TrelloBoardAdditionForm.propTypes = {
 };
 export default function TrelloBoardAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { receivedData, error, isLoading, isRejected, isResolved } = usePatchFetch(
-		`api/teams/${props.teamId}`,
-		requestBody
+	const { setTrelloBoards, trelloBoards } = useProjectContext();
+	const headers = useRef({
+		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
+	});
+	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
+		`api/trello/boards/`,
+		requestBody,
+		headers.current
 	);
 	useEffect(() => {
-		if (isResolved) {
-			let addedBoardId = requestBody.split(":").pop();
-			addedBoardId = addedBoardId.slice(1, -2).trim();
-			props.setAddedBoardId(addedBoardId);
-		}
+		if (!isResolved) return;
+		const newBoardId = receivedData.split("/").pop();
+		setTrelloBoards([...trelloBoards, { trello_board_id: newBoardId, is_added_by_user: true }]);
+		props.setAddedBoardId(newBoardId);
+		props.hideForm();
 	}, [isResolved]);
+
 	return (
 		<>
 			<Formik
 				initialValues={{
-					trello_board_url: "",
+					name: "",
 				}}
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
 					let requestObj = {};
-					requestObj["trello_board_id"] = values.trello_board_url.split("/").pop();
+					requestObj["name"] = values.name;
+					requestObj["team_id"] = props.teamId;
 					const stringifiedData = JSON.stringify(requestObj);
 					setRequestBody(stringifiedData);
 				}}
@@ -50,9 +58,9 @@ export default function TrelloBoardAdditionForm(props) {
 						required
 						fullWidth
 						margin="normal"
-						id="trello_board_url"
-						label="Trello public board link"
-						name="trello_board_url"
+						id="name"
+						label="Trello board name"
+						name="name"
 						disabled={isLoading}
 					/>
 					<Box display="flex" style={{ gap: "1rem" }} flexWrap="wrap">

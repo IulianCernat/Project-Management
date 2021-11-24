@@ -111,6 +111,10 @@ function TabPanel(props) {
 	};
 
 	useEffect(() => {
+		if (props.index !== props.value) {
+			setProjectsList([]);
+			return;
+		}
 		getParams.current.user_id = props.userId;
 		setStartGetFetch(true);
 	}, [props.value, props.userId]);
@@ -134,11 +138,7 @@ function TabPanel(props) {
 					alignItems="center"
 					style={{ gap: "1rem" }}
 				>
-					{isLoading ? (
-						<Box>
-							<CircularProgress />
-						</Box>
-					) : null}
+					{isLoading ? <CircularProgress /> : null}
 					{isRejected ? <Alert severity="error">{error} </Alert> : null}
 					{props.withProjectAdditionForm && (
 						<Box alignSelf="center" width="100%">

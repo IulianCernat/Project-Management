@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 export default function Dashboard() {
-	const { currentUser, additionalUserInfo } = useAuth();
+	const { currentUser } = useAuth();
 	let match = useRouteMatch();
 	const { projectId } = useParams();
 	const classes = useStyles();
@@ -124,11 +124,7 @@ export default function Dashboard() {
 						<ProjectProvider
 							projectId={Number(projectId)}
 							currentUserRole={getRoleReceivedData.user_role}
-							trelloBoardId={
-								additionalUserInfo.trello_boards_ids.find(
-									(item) => item.project_id === Number(projectId)
-								)?.trello_board_id
-							}
+							trelloBoards={getRoleReceivedData.trello_boards}
 						>
 							<Switch>
 								<Route

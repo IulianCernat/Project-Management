@@ -98,7 +98,16 @@ export default function ProfileAside(props) {
 							}}
 						/>
 					) : (
-						<Button onClick={handleDisconnectFromTrello}>Disconnect from Trello</Button>
+						<Button
+							fullWidth
+							style={{
+								color: "hsl(82, 0%, 100%)",
+								backgroundColor: "hsl(82,60%, 44%)",
+							}}
+							onClick={handleDisconnectFromTrello}
+						>
+							Disconnect from Trello
+						</Button>
 					)}
 				</Box>
 				<Box mt={2}>

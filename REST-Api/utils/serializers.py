@@ -29,7 +29,8 @@ user_output = api.model('User output', {
     'avatar_url': String(required=True, description="User's avatar url"),
     'contact': String(required=True, description="User's contact information (email)"),
     'is_part_of_project': Boolean(required=False, description="Whether user is part of specified project id"),
-    'trello_boards_ids': List(Nested(trello_board_id), description="The ids of the Trello boards on which the user is a member")
+    'trello_boards_ids': List(Nested(trello_board_id, skip_none=True),
+                              description="The ids of the Trello boards on which the user is a member")
 })
 
 user_update = api.model('User update', {
@@ -129,11 +130,12 @@ multiple_issues_update_input = api.model('List of issues', {
 issue_output = api.inherit('Issue output', issue_input, {
     'id': Integer(required=True, description="The issue database id"),
     'trello_card_id': String(required=True, description="Trello card's id which contains this issue"),
-    'status': String(required=True, enum=['pending', 'inProgress', 'done'],
-                     description="The current situation of issue"),
     'sprint_id': Integer(required=True, description="The sprint id when this issue is added to a sprint"),
     'creator_user_profile': Nested(user_output, required=True,
-                                   description="The profile of the user that created this issue")
+                                   description="The profile of the user that created this issue"),
+    'trello_card_is_closed': Boolean(description="Whether the card is archived or not on Trello"),
+    'trello_card_due_is_completed': Boolean(description="Whether the card is marked as completed on Trello"),
+    'trello_card_list_name': String(description="The list on which the card sits on Trello")
 })
 
 sprint_input = api.model('Sprint input', {
@@ -166,5 +168,61 @@ ids_list_input = api.model("General ids list", {
 
 user_role_output = api.model("Project user role", {
     "user_role": String(required=True, enum=["developer", "scrumMaster", "productOwner"],
-                        description="What role does a user had inside a project")
+                        description="What role does a user had inside a project"),
+    "trello_boards": List(Nested(api.model("Trello Boards", {
+        "trello_board_id": String(required=True),
+        "is_added_by_user": Boolean(required=True, description="Whether the board is added by user if he's a Scrum Master")
+    })), description="A list with all the trello boards available in a project")
+})
+
+trello_board_input = api.model("Input for adding a trello board id to a team", {
+    "name": String(required=True, description="The shortened id of a board"),
+    "team_id": Integer(required=True, description="The id of the team which will have this board linked")
+})
+
+trello_board_output = api.model("Board output that can have two properties: cards or lists", {
+    'trello_board_cards': List(Nested(api.model('Board card', {
+        'id': String(required=True),
+        'closed': Boolean(required=True),
+        'dueComplete': Boolean(required=True),
+        'list_name': String(required=True)
+    }))),
+    'trello_board_lists': List(Nested(api.model('Board list', {
+        'id': String(required=True),
+        'name': String(required=True),
+        'cards': List(Nested(api.model('List card', {
+            'id': String(required=True),
+            'name': String(required=True),
+            'closed': Boolean(required=True),
+            'due': String(required=True),
+            'dueComplete': Boolean(required=True),
+            'labels': List(Nested(api.model('Label', {
+                'id': String(required=True),
+                'name': String(required=True)
+
+            }))),
+            'members_info': List(Nested(api.model('Member info', {
+                'id': String(required=True),
+                'fullName': String(required=True),
+                'username': String(required=True)
+            })))
+        })))
+    }))),
+    'trello_board_lists_ids_and_names': List(Nested(api.model('Board list', {
+        'id': String(description='Board list id'),
+        'name': String(description='Board list name')
+    }))),
+    'trello_board_labels': Nested(api.model('Label', {
+        "*": Wildcard(String(description="Contains the label's id")),
+    }, ), skip_none=True)
+})
+
+trello_card_input = api.model("Input for copying an issue to a trello board", {
+    'name': String(required=True),
+    'desc': String(description="The issue description"),
+    'idList': String(required=True, description="The id of a board list"),
+    'idLabels': List(String(), required=True, description="A list of ids of labels"),
+    'due': String(required=True, description="The date until the issue must be completed"),
+    'issue_id': Integer(required=True, descritption="The issue's id which will pe represented on Trello"),
+    'board_list_name': String(required=True, description="The name of the board list where the card will be created")
 })

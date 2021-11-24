@@ -31,7 +31,8 @@ def get_project(project_id):
 def get_projects(user_id, user_type):
     projects = None
     if user_type == 'productOwner':
-        projects = Project.query.filter(Project.product_owner_id == user_id).all()
+        projects = Project.query.filter(
+            Project.product_owner_id == user_id).all()
     if user_type in ['scrumMaster', 'developer']:
         projects = Project.query.join(Team).join(TeamMember).filter(TeamMember.user_type == user_type,
                                                                     TeamMember.user_id == user_id).all()
@@ -44,12 +45,32 @@ def get_projects(user_id, user_type):
 def get_project_role(user_id, project_id):
     product_owner_flag = Project.query.filter(Project.id == project_id,
                                               Project.product_owner_id == user_id).one_or_none()
-    if product_owner_flag:
-        return {"user_role": "productOwner"}
 
-    team_member_role = TeamMember.query.join(Team).filter(Team.project_id == project_id,
+    if product_owner_flag is None:
+        team_member_role = TeamMember.query.join(Team).filter(Team.project_id == project_id,
                                                           TeamMember.user_id == user_id).one()
-    return {'user_role': team_member_role.user_type}
+
+    def get_user_trello_board_ids():
+        teams_and_members = Team.query.join(TeamMember).filter(
+            Team.project_id == project_id, Team.trello_board_id != None).all()
+        return [
+            {
+                'trello_board_id': team.trello_board_id,
+                'is_added_by_user': next(
+                    filter(lambda item: item.user_id == user_id, team.team_members)).user_type == 'scrumMaster'
+            }
+            for team in teams_and_members
+        ]
+
+    trello_boards = get_user_trello_board_ids()
+    project_role = {}
+    if product_owner_flag:
+        project_role["user_role"] = "productOwner"
+    else:
+        project_role["user_role"] = team_member_role.user_type
+
+    project_role['trello_boards'] = trello_boards
+    return project_role
 
 
 def update_project(project_id, input_obj):

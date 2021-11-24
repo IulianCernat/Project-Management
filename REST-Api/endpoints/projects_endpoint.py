@@ -8,7 +8,8 @@ from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, projects_sorting_arguments
 from utils.custom_exceptions import AuthorizationFailed
 
-projects_namespace = api.namespace('projects', description='Operations related to projects')
+projects_namespace = api.namespace(
+    'projects', description='Operations related to projects')
 
 
 @projects_namespace.route('/')

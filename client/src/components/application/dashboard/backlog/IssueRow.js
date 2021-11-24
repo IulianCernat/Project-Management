@@ -31,7 +31,6 @@ import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
 import { format } from "date-fns";
-import TrelloClient, { Trello } from "react-trello-client";
 
 const useStyles = makeStyles({
 	table: {
@@ -90,10 +89,17 @@ IssueRow.propTypes = {
 };
 const generatePriorityStars = (priorityNumber) => {
 	let starsArray = [];
-	for (let i = 0; i < priorityNumber; i++) starsArray.push(<Star key={`star${i}`} />);
+	for (let i = 0; i < priorityNumber; i++)
+		starsArray.push(<Star style={{ color: "hsl(31, 100%, 61%)" }} key={`star${i}`} />);
 
 	for (let i = 0; i < 5 - priorityNumber; i++)
-		starsArray.push(<StarOutline key={`emptyStar${i}`} />);
+		starsArray.push(
+			<StarOutline
+				style={{ color: "hsl(31, 100%, 61%)" }}
+				color="primary"
+				key={`emptyStar${i}`}
+			/>
+		);
 
 	return starsArray;
 };
@@ -143,35 +149,17 @@ export default function IssueRow(props) {
 		selectedRows,
 		handleSelectionClick,
 		isBacklogIssue,
-		isBeingDeleted,
 		handleMoveIssueClick,
 		handleCopyIssueToTrelloClick,
 		handleDeleteIssueClick,
+		idOfIssueToBeMovedToBacklog,
+		idOfIssueToBeCopiedToTrello,
+		isLoadingPostTrelloCard,
+		isLoadingIssueUpdate,
 	} = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
-	const [requestBodyForUpdate, setRequestBodyForUpdate] = useState(null);
 	const isSelected = selectedRows ? selectedRows.indexOf(row.id) !== -1 : false;
 	const classes = useStyles();
-	const futureIssueState = useRef(null);
-	const [issueStatus, setNewIssueStatus] = useState(row.status);
-
-	const {
-		error: updateError,
-		isLoading: isLoadingUpdate,
-		isResolved: isResolvedUpdate,
-		isRejected: isRejectedUpdate,
-	} = usePatchFetch(`api/issues/${row.id}`, requestBodyForUpdate);
-
-	const handleChangeStatusClick = (event) => {
-		setRequestBodyForUpdate(JSON.stringify({ status: event.target.value }));
-		futureIssueState.current = { futureState: event.target.value };
-	};
-
-	useEffect(() => {
-		if (!isResolvedUpdate) return;
-
-		setNewIssueStatus(futureIssueState.current.futureState);
-	}, [isResolvedUpdate]);
 
 	return (
 		<>
@@ -188,32 +176,40 @@ export default function IssueRow(props) {
 					</TableCell>
 				) : (
 					<TableCell padding="checkbox">
-						<IconButton
-							onClick={(event) => handleCopyIssueToTrelloClick(row)}
-							disabled={
-								UIRestrictionForRoles.includes(currentUserRole) ||
-								row.trello_issue_card_status !== "Unknown"
-							}
-						>
-							<Tooltip
-								arrow
-								title={
-									<Typography variant="subtitle2">
-										Copy issue to Trello
-									</Typography>
+						{isLoadingPostTrelloCard && row.id === idOfIssueToBeCopiedToTrello ? (
+							<CircularProgress size={"2rem"} thickness={5} />
+						) : (
+							<IconButton
+								onClick={(event) => handleCopyIssueToTrelloClick(row)}
+								disabled={
+									UIRestrictionForRoles.includes(currentUserRole) ||
+									row.trello_card_list_name !== "Unknown" ||
+									isLoadingIssueUpdate ||
+									isLoadingPostTrelloCard
 								}
 							>
-								<Launch
-									fontSize="small"
-									color={
-										UIRestrictionForRoles.includes(currentUserRole) ||
-										row.trello_issue_card_status !== "Unknown"
-											? "disabled"
-											: "secondary"
+								<Tooltip
+									arrow
+									title={
+										<Typography variant="subtitle2">
+											Copy issue to Trello
+										</Typography>
 									}
-								/>
-							</Tooltip>
-						</IconButton>
+								>
+									<Launch
+										fontSize="small"
+										color={
+											UIRestrictionForRoles.includes(currentUserRole) ||
+											row.trello_card_list_name !== "Unknown" ||
+											isLoadingIssueUpdate ||
+											isLoadingPostTrelloCard
+												? "disabled"
+												: "secondary"
+										}
+									/>
+								</Tooltip>
+							</IconButton>
+						)}
 					</TableCell>
 				)}
 				<TableCell align="center" padding="none">
@@ -235,27 +231,64 @@ export default function IssueRow(props) {
 						<IssueTypesChip type="bug" />
 					)}
 				</TableCell>
-				<TableCell style={{ width: "100ch" }} align="left">
+				<TableCell style={{ maxWidth: "60ch" }} align="left">
 					{row.title}
 				</TableCell>
 				{!isBacklogIssue ? (
-					<TableCell align="center">
-						<Chip color="primary" label={row.trello_issue_card_status} />
-					</TableCell>
+					<>
+						<TableCell align="center">
+							<Chip color="primary" label={row.trello_card_list_name} />
+						</TableCell>
+						<TableCell align="center">
+							<Chip
+								color="primary"
+								label={
+									typeof row.trello_card_due_is_completed === "string"
+										? row.trello_card_due_is_completed
+										: row.trello_card_due_is_completed === true
+										? "Yes"
+										: "No"
+								}
+							/>
+						</TableCell>
+						<TableCell align="center">
+							<Chip
+								color="primary"
+								label={
+									typeof row.trello_card_is_closed === "string"
+										? row.trello_card_is_closed
+										: row.trello_card_is_closed === true
+										? "Yes"
+										: "No"
+								}
+							/>
+						</TableCell>
+					</>
 				) : null}
+
+				<TableCell align="center">
+					<Typography>{format(new Date(row.created_at), "dd/MM/yyyy")}</Typography>
+				</TableCell>
 				<TableCell align="center">{generatePriorityStars(row.priority)}</TableCell>
 
 				<TableCell>
-					<IconButton
-						onClick={(event) =>
-							isBacklogIssue
-								? handleDeleteIssueClick(row.id)
-								: handleMoveIssueClick(row.id)
-						}
-						disabled={UIRestrictionForRoles.includes(currentUserRole) || isSelected}
-					>
-						{isBacklogIssue ? (
-							!isBeingDeleted ? (
+					{isLoadingIssueUpdate && row.id === idOfIssueToBeMovedToBacklog ? (
+						<CircularProgress size={"2rem"} thickness={5} />
+					) : (
+						<IconButton
+							onClick={(event) =>
+								isBacklogIssue
+									? handleDeleteIssueClick(row.id)
+									: handleMoveIssueClick(row.id)
+							}
+							disabled={
+								UIRestrictionForRoles.includes(currentUserRole) ||
+								isSelected ||
+								isLoadingIssueUpdate ||
+								isLoadingPostTrelloCard
+							}
+						>
+							{isBacklogIssue ? (
 								<Tooltip
 									title={
 										<Typography variant="subtitle2">Delete issue</Typography>
@@ -272,24 +305,26 @@ export default function IssueRow(props) {
 									/>
 								</Tooltip>
 							) : (
-								<CircularProgress color="secondary" size={30} />
-							)
-						) : (
-							<Tooltip
-								title={<Typography variant="subtitle2">Move to backlog</Typography>}
-								arrow
-							>
-								<OpenWith
-									color={
-										UIRestrictionForRoles.includes(currentUserRole) ||
-										isSelected
-											? "disabled"
-											: "primary"
+								<Tooltip
+									title={
+										<Typography variant="subtitle2">Move to backlog</Typography>
 									}
-								/>
-							</Tooltip>
-						)}
-					</IconButton>
+									arrow
+								>
+									<OpenWith
+										color={
+											UIRestrictionForRoles.includes(currentUserRole) ||
+											isSelected ||
+											isLoadingIssueUpdate ||
+											isLoadingPostTrelloCard
+												? "disabled"
+												: "primary"
+										}
+									/>
+								</Tooltip>
+							)}
+						</IconButton>
+					)}
 				</TableCell>
 			</TableRow>
 
@@ -305,9 +340,6 @@ export default function IssueRow(props) {
 										</TableCell>
 										<TableCell align="left">
 											<Typography>Created by</Typography>
-										</TableCell>
-										<TableCell align="left">
-											<Typography>Created at</Typography>
 										</TableCell>
 									</TableRow>
 								</TableHead>
@@ -327,11 +359,6 @@ export default function IssueRow(props) {
 												}
 												label={row.creator_user_profile.fullName}
 											/>
-										</TableCell>
-										<TableCell>
-											<Typography>
-												{format(new Date(row.created_at), "dd/MM/yyyy")}
-											</Typography>
 										</TableCell>
 									</TableRow>
 								</TableBody>

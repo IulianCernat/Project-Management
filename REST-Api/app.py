@@ -9,7 +9,8 @@ from endpoints.teams_endpoint import teams_namespace
 from endpoints.teams_members_endpoint import teams_members_namespace
 from endpoints.issues_endpoint import issues_namespace
 from endpoints.sprints_endpoint import sprints_namespace
-
+from endpoints.trello_callback_endpoint import trello_callback_namespace
+from endpoints.trello_endpoint import trello_namespace
 from flask_cors import CORS
 
 
@@ -22,7 +23,6 @@ class FlaskApp(Flask):
         self.config['RESTX_VALIDATE'] = settings.RESTX_VALIDATE
         self.config['RESTX_MASK_SWAGGER'] = settings.RESTX_MASK_SWAGGER
         self.config['ERROR_404_HELP'] = settings.RESTX_ERROR_404_HELP
-
         blueprint = Blueprint('api', __name__, url_prefix='/api')
         api.init_app(blueprint)
 
@@ -32,7 +32,8 @@ class FlaskApp(Flask):
         api.add_namespace(teams_members_namespace)
         api.add_namespace(issues_namespace)
         api.add_namespace(sprints_namespace)
-
+        api.add_namespace(trello_callback_namespace)
+        api.add_namespace(trello_namespace)
         self.register_blueprint(blueprint)
 
         db.init_app(self)
@@ -46,5 +47,6 @@ class FlaskApp(Flask):
 
 app = FlaskApp(__name__)
 
+
 if __name__ == "__main__":
-    app.run(debug=settings.FLASK_DEBUG, host="0.0.0.0")
+    app.run(debug=settings.FLASK_DEBUG)

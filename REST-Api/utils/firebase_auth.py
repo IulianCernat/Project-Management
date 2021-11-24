@@ -18,5 +18,6 @@ except ValueError:
 def verify_id_token(user_token):
     try:
         return auth.verify_id_token(user_token, firebase_app)
+
     except Exception as e:
         raise AuthorizationFailed(e)

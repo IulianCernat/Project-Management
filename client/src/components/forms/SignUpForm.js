@@ -53,7 +53,7 @@ export default function SignUpForm() {
 					try {
 						let userCredential = await signUp(values.email, values.password);
 						let userIdToken = await userCredential.user.getIdToken();
-						headers.current.Authorization = userIdToken;
+						headers.current.Authorization = `firebase_token_id=${userIdToken}`;
 						let requestObj = {};
 						requestObj["fullName"] = values.fullName;
 						requestObj["contact"] = values.email;

@@ -39,3 +39,20 @@ try:
         'GOOGLE_APPLICATION_CREDENTIALS')
 except KeyError:
     log.error("Missing GOOGLE_APPLICATION_CREDENTIALS environment variable")
+
+# Trello
+try:
+    TRELLO_API_KEY = os.environ.get('TRELLO_API_KEY')
+except KeyError:
+    log.error("Missing TRELLO_API_KEY environment variable")
+
+TRELLO_API_URL = "https://api.trello.com/1"
+
+
+# Share localhost api over network for testing purposes
+# Subdomain name resides in tunneling/runJprq.py file
+
+TUNNELED_API_ADDRESS = "https://tunneled_api_q62h9abghr.jprq.io/"
+
+# Real time updates delivering service
+REALTIME_UPDATES_SERVICE_URL = "http://localhost:3001/updatesFeeder"

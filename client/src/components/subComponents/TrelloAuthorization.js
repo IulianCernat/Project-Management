@@ -1,4 +1,4 @@
-import TrelloClient, { Trello } from "react-trello-client";
+import TrelloClient from "react-trello-client";
 
 export default function TrelloAuthorization({ authorizeOnSuccess }) {
 	return (

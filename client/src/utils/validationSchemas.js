@@ -100,9 +100,9 @@ export const sprintDurationValidSchema = Yup.mixed("Choose sprint duration in we
 	.oneOf(["1", "2", "3", "4"])
 	.required("Sprint duration is required");
 
-export const trelloBoardUrlValidSchema = Yup.string("Paste the public trello board link")
-	.url("Enter a valid url")
-	.max(255, "Url must be of maximum 255 characters length");
+export const trelloBoardNameValidSchema = Yup.string("Paste the public trello board link")
+	.min(1, "Trello board name must have at least one character")
+	.max(16384, "Trello board name must be of maximum 16384 characters length");
 
 export const versioningSystemUrlValidShema = Yup.string("Paste the public version control system")
 	.url("Enter a valid url")

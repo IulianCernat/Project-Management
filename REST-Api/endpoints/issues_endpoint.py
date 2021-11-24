@@ -5,8 +5,8 @@ from utils.serializers import issue_input, message, bad_request, issue_output, i
     multiple_issues_update_input
 from utils.parsers import issues_filtering_args
 from controllers.issues_controller import *
-
-issues_namespace = api.namespace('issues', description='Operations related to issues')
+issues_namespace = api.namespace(
+    'issues', description='Operations related to issues')
 
 
 @issues_namespace.route('/')
@@ -56,5 +56,14 @@ class IssueItem(Resource):
     @api.expect(issue_update_input)
     def patch(self, id):
         input_data = request.json
-        update_issue(id, input_data)
+        trello_token = None
+        try:
+            authorization_components = request.headers.get(
+                'Authorization').split(",")
+            trello_token = next(
+                filter(lambda item: "trello_token" in item, authorization_components))
+            trello_token = trello_token.split('=')[1]
+        except Exception as e:
+            pass
+        update_issue(id, input_data, trello_token)
         return {'message': f"Issue with id {id} successfully updated"}, 200
