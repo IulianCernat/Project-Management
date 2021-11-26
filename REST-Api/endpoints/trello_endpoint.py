@@ -37,10 +37,8 @@ class TrelloBoards(Resource):
     @api.expect(trello_board_input)
     def post(self):
         try:
-            authorization_components = request.headers.get(
-                'Authorization').split(",")
-            user_token = next(
-                filter(lambda item: "trello_token" in item, authorization_components))
+            authorization_components = request.headers.get('Authorization').split(",")
+            user_token = next(filter(lambda item: "trello_token" in item, authorization_components))
             user_token = user_token.split('=')[1]
         except Exception as e:
             raise e

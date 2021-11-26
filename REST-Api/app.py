@@ -1,6 +1,5 @@
-import logging.config
-from flask import Flask, Blueprint
 import settings
+from flask import Flask, Blueprint
 from utils.restx import api
 from database import db
 from endpoints.users_endpoint import users_namespace

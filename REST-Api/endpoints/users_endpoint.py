@@ -10,6 +10,7 @@ from utils.custom_exceptions import AuthorizationFailed
 users_namespace = api.namespace(
 	'users', description='Operations related to user profiles')
 
+# TODO: Automate authorization checking
 
 @users_namespace.route('/')
 @api.response(400, 'Bad request', bad_request)
@@ -88,7 +89,7 @@ class LoggedUser(Resource):
 		try:
 
 			authorization_components = request.headers.get('Authorization').split(",")
-			token_id = filter(lambda item: "firebase_token_id" in item, authorization_components)
+			token_id = next(filter(lambda item: "firebase_token_id" in item, authorization_components))
 			token_id = token_id.split("=")[1]
 			decoded_token = verify_id_token(token_id)
 		except AuthorizationFailed as e:
