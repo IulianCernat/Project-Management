@@ -1,14 +1,16 @@
 from flask_restx import Resource
-from flask import request, session
+from flask import request
 from utils.restx import api
 from utils.serializers import user_input, message, bad_request, user_output, user_update
 from controllers.users_controller import *
 from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, user_filtering_args
 from utils.custom_exceptions import AuthorizationFailed
+from utils.authorization import process_firebase_authorization_field
 
 users_namespace = api.namespace(
-	'users', description='Operations related to user profiles')
+	'user_profiles', description='Operations related to user profiles')
+
 
 # TODO: Automate authorization checking
 
@@ -18,16 +20,9 @@ class ProfilesCollection(Resource):
 
 	@api.response(201, 'Profile successfully created', message)
 	@api.response(401, 'Authorization failed', message)
-	@api.expect(user_input)
+	@api.expect(user_input, authorization_header)
 	def post(self):
-		try:
-			authorization_components = request.headers.get('Authorization').split(",")
-			token_id = next(filter(lambda item: "firebase_token_id" in item, authorization_components))
-			token_id = token_id.split("=")[1]
-			decoded_token = verify_id_token(token_id)
-		except AuthorizationFailed as e:
-			raise e
-
+		decoded_token = process_firebase_authorization_field(request)
 		user_profile = request.json
 
 		# for when populating database with script
@@ -70,14 +65,7 @@ class LoggedUser(Resource):
 	@api.expect(authorization_header)
 	@api.marshal_with(user_output)
 	def get(self):
-		try:
-			authorization_components = request.headers.get('Authorization').split(",")
-			token_id = next(filter(lambda item: "firebase_token_id" in item, authorization_components))
-			token_id = token_id.split("=")[1]
-			decoded_token = verify_id_token(token_id)
-
-		except AuthorizationFailed as e:
-			raise e
+		decoded_token = process_firebase_authorization_field(request)
 
 		return get_self(decoded_token['uid']), 200
 
@@ -86,13 +74,6 @@ class LoggedUser(Resource):
 	@api.expect(user_update, authorization_header)
 	def patch(self):
 		input_data = request.json
-		try:
-
-			authorization_components = request.headers.get('Authorization').split(",")
-			token_id = next(filter(lambda item: "firebase_token_id" in item, authorization_components))
-			token_id = token_id.split("=")[1]
-			decoded_token = verify_id_token(token_id)
-		except AuthorizationFailed as e:
-			raise e
+		decoded_token = process_firebase_authorization_field(request)
 
 		return update_user(decoded_token['uid'], input_data), 200
