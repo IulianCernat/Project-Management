@@ -231,7 +231,7 @@ export default function IssueRow(props) {
 						<IssueTypesChip type="bug" />
 					)}
 				</TableCell>
-				<TableCell style={{ maxWidth: "60ch" }} align="left">
+				<TableCell style={{ minWidth: "20ch", maxWidth: "60ch" }} align="left">
 					{row.title}
 				</TableCell>
 				{!isBacklogIssue ? (
