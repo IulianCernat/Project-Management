@@ -3,6 +3,7 @@ import firebase_admin
 import json
 from utils.custom_exceptions import AuthorizationFailed
 from settings import firebase_google_credentials, firebase_claims_values, FIREBASE_APP_ADMIN_EMAIL, log
+from controllers.users_controller import create_user, check_if_user_exists
 
 # credentials are stored in an environment variable called GOOGLE_APPLICATION_CREDENTIALS
 # if the variable is not json, the it's loaded as a file
@@ -27,8 +28,10 @@ except auth.UserNotFoundError:
 except firebase_exceptions.FirebaseError:
 	log.error("Could not fetch admin account")
 
+# Set display name and claims for admin user
 if user_to_be_promoted:
 	try:
+		auth.update_user(user_to_be_promoted.uid, display_name='admin')
 		user_custom_claims = {}
 
 		if user_to_be_promoted.custom_claims is not None:

@@ -49,6 +49,8 @@ def get_self(uid):
     user = User.query.filter(User.uid == uid).one()
     return user
 
+def check_if_user_exists(uid):
+    return User.query.filter(User.uid == uid).scalar()
 
 def get_user_id(uid):
     user = User.query.filter(User.uid == uid).one()
