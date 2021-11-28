@@ -21,13 +21,13 @@ class User(db.Model):
 		self.uid = uid
 		self.fullName = input_obj['fullName']
 		self.avatar_url = input_obj.setdefault('avatar_url', None)
-		self.contact = input_obj.setdefault('contact', False)
+		self.contact = input_obj.setdefault('contact', None)
 
 		self.is_user_admin = input_obj.setdefault('is_user_admin', False)
 		self.is_user_teacher = input_obj.setdefault('is_user_teacher', False)
 		self.is_user_student = input_obj.setdefault('is_user_student', False)
 
-		self.student_group = input_obj.setdefault('student_group', False)
+		self.student_group = input_obj.setdefault('student_group', None)
 
 	def __repr_(self):
 		return "User {}".format(self.id)

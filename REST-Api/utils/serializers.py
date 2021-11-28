@@ -20,7 +20,6 @@ user_input = api.model('User input', {
 
 user_input_created_by_admin = api.inherit('User created by admin', user_input, {
 	'email': String(required=True),
-	'password': String(required=True),
 	'firebase_claims': Nested(api.model('Firebase claim', {
 		"*": Wildcard(String(description="Contains the label's id")),
 	}))

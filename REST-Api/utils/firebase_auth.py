@@ -53,6 +53,7 @@ def check_if_user_is_admin(firebase_user):
 
 	return False
 
+
 def create_custom_claim_for_user(firebase_admin_user, firebase_user_to_receive_claims, claims_dict):
 	if not check_if_user_is_admin(firebase_admin_user):
 		raise AuthorizationFailed("Creator user doesn't have admin rights")
@@ -64,5 +65,14 @@ def create_custom_claim_for_user(firebase_admin_user, firebase_user_to_receive_c
 		return e
 
 
+def get_firebase_user_by_uid(uid):
+	return auth.get_user(uid, firebase_app)
+
+
 def verify_id_token(user_token):
 	return auth.verify_id_token(user_token, firebase_app)
+
+
+def generate_password_reset_link(email):
+	actionCodeSettings = auth.ActionCodeSettings("http://localhost:3000")
+	return auth.generate_password_reset_link(email, actionCodeSettings, firebase_app)

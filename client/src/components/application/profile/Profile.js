@@ -10,6 +10,7 @@ const useStyles = makeStyles({
 });
 
 export default function Profile() {
+	// Admin user doesn't have a custom profile
 	const classes = useStyles();
 	const { additionalUserInfo, currentUser } = useAuth();
 

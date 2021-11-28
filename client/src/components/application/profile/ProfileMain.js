@@ -17,7 +17,7 @@ import ProjectCard from "components/subComponents/ProjectCard";
 import DialogForm from "components/subComponents/DialogForm";
 import ProjectCreationForm from "components/forms/ProjectCreationForm";
 import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
-
+import CreateTeacherAccountForm from "components/forms/CreateTeacherAccountForm";
 const useStyles = makeStyles((theme) => ({
 	main: {
 		[theme.breakpoints.up("md")]: {
@@ -174,12 +174,42 @@ function TabPanel(props) {
 	);
 }
 
+function AdminManageTeachersPanel(props) {
+	return (
+		<Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
+			<CreateTeacherAccountForm currentUser={props.currentUser} />
+		</Box>
+	);
+}
+
+function AdminManageStudentsPanel(props) {
+	return (
+		<Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
+			lol
+		</Box>
+	);
+}
+
+function TabsWrapper(props) {
+	return (
+		<Tabs
+			value={props.currentTab}
+			onChange={props.handleTabChange}
+			textColor="primary"
+			indicatorColor="primary"
+			variant="scrollable"
+			scrollButtons="auto"
+		>
+			{props.children}
+		</Tabs>
+	);
+}
+
 ProfileMain.propTypes = {
 	additionalUserInfo: PropTypes.object.isRequired,
 	currentUser: PropTypes.object.isRequired,
 };
 export default function ProfileMain(props) {
-	// Admin user doesn't have a custom profile
 	const [currentTab, setCurrentTab] = useState(0);
 
 	const classes = useStyles();
@@ -193,42 +223,56 @@ export default function ProfileMain(props) {
 			{props.additionalUserInfo ? (
 				<>
 					<AppBar position="sticky" color="default">
-						<Tabs
-							value={currentTab}
-							onChange={handleTabChange}
-							textColor="primary"
-							indicatorColor="primary"
-							variant="scrollable"
-							scrollButtons="auto"
-						>
-							<Tab label="Product Owner" />
-							<Tab label="Scrum Master" />
-							<Tab label="Developer" />
-						</Tabs>
+						{props.additionalUserInfo.firebaseUserClaims.admin ? (
+							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
+								<Tab label="Manage Teachers" />
+								<Tab label="Manage Students" />
+							</TabsWrapper>
+						) : (
+							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
+								<Tab label="Product Owner" />
+								<Tab label="Scrum Master" />
+								<Tab label="Developer" />
+							</TabsWrapper>
+						)}
 					</AppBar>
-
-					<TabPanel
-						userId={props.additionalUserInfo.id}
-						value={currentTab}
-						withProjectAdditionForm={true}
-						index={0}
-					/>
-					<TabPanel
-						userId={props.additionalUserInfo.id}
-						value={currentTab}
-						index={1}
-						withProjectAdditionForm={false}
-					/>
-					<TabPanel
-						userId={props.additionalUserInfo.id}
-						value={currentTab}
-						index={2}
-						withProjectAdditionForm={false}
-					/>
+					{props.additionalUserInfo.firebaseUserClaims.admin ? (
+						<>
+							<AdminManageTeachersPanel
+								currentUser={props.currentUser}
+								value={currentTab}
+								index={0}
+							/>
+							<AdminManageStudentsPanel
+								currentUser={props.currentUser}
+								value={currentTab}
+								index={1}
+							/>
+						</>
+					) : (
+						<>
+							<TabPanel
+								userId={props.additionalUserInfo.id}
+								value={currentTab}
+								withProjectAdditionForm={true}
+								index={0}
+							/>
+							<TabPanel
+								userId={props.additionalUserInfo.id}
+								value={currentTab}
+								index={1}
+								withProjectAdditionForm={false}
+							/>
+							<TabPanel
+								userId={props.additionalUserInfo.id}
+								value={currentTab}
+								index={2}
+								withProjectAdditionForm={false}
+							/>
+						</>
+					)}
 				</>
-			) : (
-				<Alert severity="error">Failed To load any projects</Alert>
-			)}
+			) : null}
 		</Paper>
 	);
 }
