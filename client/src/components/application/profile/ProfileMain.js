@@ -179,6 +179,7 @@ ProfileMain.propTypes = {
 	currentUser: PropTypes.object.isRequired,
 };
 export default function ProfileMain(props) {
+	// Admin user doesn't have a custom profile
 	const [currentTab, setCurrentTab] = useState(0);
 
 	const classes = useStyles();

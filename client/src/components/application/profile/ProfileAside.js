@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+	Avatar,
 	Box,
 	Typography,
 	Button,
@@ -29,7 +30,7 @@ ProfileAside.propTypes = {
 	additionalUserInfo: PropTypes.object.isRequired,
 	currentUser: PropTypes.object.isRequired,
 };
-export default function ProfileAside(props) {
+export default function ProfileAside({ additionalUserInfo, currentUser }) {
 	const [isTrelloTokenExisting, setIsTrelloTokenExisting] = useState(
 		Boolean(localStorage.getItem("trello_token"))
 	);
@@ -53,18 +54,27 @@ export default function ProfileAside(props) {
 	return (
 		<Paper elevation={5}>
 			<Box p={3} display="flex" flexDirection="column">
-				{props.additionalUserInfo && (
+				{additionalUserInfo && (
 					<Grid container alignItems="center" spacing={2}>
 						<Grid item xs md={12}>
 							<Box className={classes.identity}>
-								<ProfilePageAvatar
-									width="10rem"
-									height="10rem"
-									url={props.additionalUserInfo.avatar_url}
-								/>
+								{additionalUserInfo.firebaseUserClaims.admin ? (
+									<Avatar
+										variant="circular"
+										style={{ width: "10rem", height: "10rem" }}
+									/>
+								) : (
+									<ProfilePageAvatar
+										width="10rem"
+										height="10rem"
+										url={additionalUserInfo.avatar_url}
+									/>
+								)}
 
 								<TextDisplayWrapper paragraph>
-									{props.additionalUserInfo.fullName}
+									{additionalUserInfo.firebaseUserClaims.admin
+										? currentUser.displayName
+										: additionalUserInfo.fullName}
 								</TextDisplayWrapper>
 							</Box>
 							<Hidden mdDown>
@@ -84,32 +94,34 @@ export default function ProfileAside(props) {
 							<Grid item>
 								<Typography variant="h6">Contact</Typography>
 								<Typography>
-									{props.additionalUserInfo.contact || props.currentUser?.email}
+									{additionalUserInfo.contact || currentUser?.email}
 								</Typography>
 							</Grid>
 						</Grid>
 					</Grid>
 				)}
-				<Box mt={2} display="flex" justifyContent="center">
-					{!isTrelloTokenExisting ? (
-						<TrelloAuthorization
-							authorizeOnSuccess={() => {
-								setIsTrelloTokenExisting(true);
-							}}
-						/>
-					) : (
-						<Button
-							fullWidth
-							style={{
-								color: "hsl(82, 0%, 100%)",
-								backgroundColor: "hsl(82,60%, 44%)",
-							}}
-							onClick={handleDisconnectFromTrello}
-						>
-							Disconnect from Trello
-						</Button>
-					)}
-				</Box>
+				{additionalUserInfo.firebaseUserClaims.admin ? null : (
+					<Box mt={2} display="flex" justifyContent="center">
+						{!isTrelloTokenExisting ? (
+							<TrelloAuthorization
+								authorizeOnSuccess={() => {
+									setIsTrelloTokenExisting(true);
+								}}
+							/>
+						) : (
+							<Button
+								fullWidth
+								style={{
+									color: "hsl(82, 0%, 100%)",
+									backgroundColor: "hsl(82,60%, 44%)",
+								}}
+								onClick={handleDisconnectFromTrello}
+							>
+								Disconnect from Trello
+							</Button>
+						)}
+					</Box>
+				)}
 				<Box mt={2}>
 					<Button
 						fullWidth

@@ -36,6 +36,8 @@ export function AuthProvider({ children }) {
 			if (user)
 				try {
 					const userIdToken = await user.getIdToken();
+					const idTokenResult = await user.getIdTokenResult();
+					const firebaseUserClaims = idTokenResult.claims;
 					let { error, receivedData: profile } = await doGet(
 						"api/user_profiles/loggedUser",
 						null,
@@ -44,7 +46,7 @@ export function AuthProvider({ children }) {
 							Authorization: `firebase_id_token=${userIdToken}`,
 						}
 					);
-					setAdditionalUserInfo(profile);
+					setAdditionalUserInfo({ firebaseUserClaims, ...profile });
 				} catch (err) {
 					console.log(err);
 				}
