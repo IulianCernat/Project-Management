@@ -3,9 +3,7 @@ from flask import request
 from utils.restx import api
 from utils.serializers import user_input, message, bad_request, user_output, user_update
 from controllers.users_controller import *
-from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, user_filtering_args
-from utils.custom_exceptions import AuthorizationFailed
 from utils.authorization import process_firebase_authorization_field
 
 users_namespace = api.namespace(

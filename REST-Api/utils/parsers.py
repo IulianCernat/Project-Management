@@ -4,10 +4,10 @@ from flask_restx import inputs
 authorization_header = api.parser()
 authorization_header_help = r"""
 The Authorization field is a string containing comma separated keys with values.
-This string has the following regex form: ^(firebase_id_token=\w+)?,?(trello_token=\w+)?,?$
+This string has the following regex form: ^(firebase_id_token=.+)?,?(trello_token=.+)?,?$
 """
 authorization_header.add_argument('Authorization', location='headers',
-                                  type=inputs.regex(r'^(firebase_id_token=\w+)?,?(trello_token=\w+)?,?$'),
+                                  type=inputs.regex(r'^(firebase_id_token=.+)?,?(trello_token=.+)?,?$'),
                                   required=False,
                                   help=authorization_header_help)
 

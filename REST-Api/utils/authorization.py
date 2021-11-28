@@ -1,6 +1,6 @@
-from parsers import authorization_header
-from firebase_auth import verify_id_token
-from custom_exceptions import AuthorizationFailed
+from utils.parsers import authorization_header
+from utils.firebase_auth import verify_id_token
+from utils.custom_exceptions import AuthorizationFailed
 
 def process_firebase_authorization_field(request):
 	try:

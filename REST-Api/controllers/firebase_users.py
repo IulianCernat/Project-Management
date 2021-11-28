@@ -1,7 +1,7 @@
 from utils.firebase_auth import auth, firebase_exceptions
 from database import db
 from database.models import User
-from utils.firebase_auth import check_if_user_is_admin, create_custom_claim_for_user
+from utils.firebase_auth import check_if_user_is_admin, create_custom_claim_for_use
 from utils.custom_exceptions import AuthorizationFailed
 
 

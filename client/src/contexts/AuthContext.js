@@ -37,11 +37,11 @@ export function AuthProvider({ children }) {
 				try {
 					const userIdToken = await user.getIdToken();
 					let { error, receivedData: profile } = await doGet(
-						"api/users/loggedUser",
+						"api/user_profiles/loggedUser",
 						null,
 						false,
 						{
-							Authorization: `firebase_token_id=${userIdToken}`,
+							Authorization: `firebase_id_token=${userIdToken}`,
 						}
 					);
 					setAdditionalUserInfo(profile);
