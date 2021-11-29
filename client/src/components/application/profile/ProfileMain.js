@@ -8,6 +8,7 @@ import {
 	Paper,
 	Fab,
 	CircularProgress,
+	Button,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
 import AddIcon from "@material-ui/icons/Add";
@@ -175,19 +176,34 @@ function TabPanel(props) {
 }
 
 function AdminManageTeachersPanel(props) {
+	const [openTeacherCreation, setOpenTeacherCreation] = useState(false);
+
+	const handleCancelTeacherCreation = () => {
+		setOpenTeacherCreation(false);
+	};
+	const handleOpenTeacherCreationForm = () => {
+		setOpenTeacherCreation(true);
+	};
 	return (
-		<Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
-			<CreateTeacherAccountForm currentUser={props.currentUser} />
+		<Box p={3} maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
+			<Button variant="outlined" onClick={handleOpenTeacherCreationForm}>
+				Create teacher account
+			</Button>
+
+			<DialogForm
+				title="Create teacher account"
+				open={openTeacherCreation}
+				onClose={handleCancelTeacherCreation}
+				maxWidth="md"
+			>
+				<CreateTeacherAccountForm currentUser={props.currentUser} />
+			</DialogForm>
 		</Box>
 	);
 }
 
 function AdminManageStudentsPanel(props) {
-	return (
-		<Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
-			lol
-		</Box>
-	);
+	return <Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}></Box>;
 }
 
 function TabsWrapper(props) {

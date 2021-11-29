@@ -78,18 +78,6 @@ export default function CreateTeacherAccountForm(props) {
 								<Typography>Create teacher account</Typography>
 							</Button>
 						</Box>
-						<Box flex="1 1 auto">
-							<Button
-								size="small"
-								fullWidth
-								variant="contained"
-								color="secondary"
-								disabled={isLoading}
-								onClick={() => props.hideForm()}
-							>
-								<Typography>Cancel</Typography>
-							</Button>
-						</Box>
 					</Box>
 
 					{isResolved && (
