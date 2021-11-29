@@ -34,11 +34,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const tabs = {
-	0: "productOwner",
-	1: "scrumMaster",
-	2: "developer",
-};
 ProjectComponentList.propTypes = {
 	projectsList: PropTypes.array.isRequired,
 	handleProjectDeletion: PropTypes.func.isRequired,
@@ -67,6 +62,7 @@ TabPanel.propTypes = {
 	value: PropTypes.any.isRequired,
 	userId: PropTypes.number.isRequired,
 	withProjectAdditionForm: PropTypes.bool.isRequired,
+	userType: PropTypes.string.isRequired,
 };
 function TabPanel(props) {
 	const [openProjectCreation, setOpenProjectCreation] = useState(false);
@@ -78,7 +74,7 @@ function TabPanel(props) {
 	);
 	const getParams = useRef({
 		user_id: "",
-		user_type: tabs[props.index],
+		user_type: props.userType,
 	});
 	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
 		"api/projects/",
@@ -274,6 +270,7 @@ export default function ProfileMain(props) {
 							value={currentTab}
 							withProjectAdditionForm={true}
 							index={0}
+							userType="productOwner"
 						/>
 					) : (
 						<>
@@ -282,12 +279,14 @@ export default function ProfileMain(props) {
 								value={currentTab}
 								index={0}
 								withProjectAdditionForm={false}
+								userType="scrumMaster"
 							/>
 							<TabPanel
 								userId={props.additionalUserInfo.id}
 								value={currentTab}
 								index={1}
 								withProjectAdditionForm={false}
+								userType="developer"
 							/>
 						</>
 					)}
