@@ -63,3 +63,6 @@ def update_user(uid, input_obj):
         setattr(user, field, value)
 
     db.session.commit()
+
+def get_all_users():
+    return User.query.all()

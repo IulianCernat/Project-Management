@@ -16,6 +16,7 @@ def create_user(creator_admin_user, user_to_be_created_input_obj, claims_dict_fo
 		created_user = auth.create_user(email=user_to_be_created_input_obj['email'],
 		                                password=user_to_be_created_input_obj['password'])
 
+		user_to_be_created_input_obj['contact'] =  user_to_be_created_input_obj['email']
 		del user_to_be_created_input_obj['email'],
 		del user_to_be_created_input_obj['password']
 

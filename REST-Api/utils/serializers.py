@@ -38,6 +38,7 @@ user_output = api.model('User output', {
 	'is_part_of_project': Boolean(required=False, description="Whether user is part of specified project id"),
 	'trello_boards_ids': List(Nested(trello_board_id, skip_none=True),
 	                          description="The ids of the Trello boards on which the user is a member"),
+	'is_user_teacher': Boolean(required=True),
 	'is_user_student': Boolean(required=True),
 	'student_group': String(required=True)
 })

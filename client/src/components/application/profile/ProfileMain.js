@@ -19,10 +19,10 @@ import DialogForm from "components/subComponents/DialogForm";
 import ProjectCreationForm from "components/forms/ProjectCreationForm";
 import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import CreateTeacherAccountForm from "components/forms/CreateTeacherAccountForm";
+import { DataGrid } from "@mui/x-data-grid";
 const useStyles = makeStyles((theme) => ({
 	main: {
 		[theme.breakpoints.up("md")]: {
-			backgroundColor: grey[200],
 			overflow: "auto",
 			maxHeight: "80vh",
 		},
@@ -33,6 +33,54 @@ const useStyles = makeStyles((theme) => ({
 		wordWrap: "break-word",
 	},
 }));
+
+const usersTableColumns = [
+	{
+		field: "uid",
+		headerName: "UID",
+		flex: 1,
+		editable: false,
+		hide: true,
+	},
+	{
+		field: "fullName",
+		headerName: "Full Name",
+		minWidth: 50,
+		flex: 1,
+	},
+	{
+		field: "is_user_teacher",
+		headerName: "Is user teacher",
+		hide: true,
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "is_user_student",
+		headerName: "Is user student",
+		hide: true,
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "contact",
+		headerName: "email",
+		minWidth: 50,
+		flex: 1,
+		editable: false,
+	},
+	{
+		field: "userType",
+		headerName: "User type",
+		flex: 1,
+		minWidth: 50,
+		valueGetter: (params) => {
+			if (params.getValue(params.id, "is_user_teacher")) return "teacher";
+			if (params.getValue(params.id, "is_user_student")) return "student";
+			return "unknown";
+		},
+	},
+];
 
 ProjectComponentList.propTypes = {
 	projectsList: PropTypes.array.isRequired,
@@ -171,9 +219,15 @@ function TabPanel(props) {
 	);
 }
 
-function AdminManageTeachersPanel(props) {
+function AdminManageUsersPanel(props) {
 	const [openTeacherCreation, setOpenTeacherCreation] = useState(false);
-
+	const {
+		receivedData: getUsersProfiles,
+		error: getUsersProfilesError,
+		isLoading: isLoadingGetUsersProfiles,
+		isResolved: isResolvedGetUsersProfiles,
+		isRejected: isRejectedGetUsersProfiles,
+	} = useGetFetch(`api/user_profiles/`);
 	const handleCancelTeacherCreation = () => {
 		setOpenTeacherCreation(false);
 	};
@@ -185,21 +239,30 @@ function AdminManageTeachersPanel(props) {
 			<Button variant="outlined" onClick={handleOpenTeacherCreationForm}>
 				Create teacher account
 			</Button>
+			{isResolvedGetUsersProfiles ? (
+				<div style={{ marginTop: "10px", height: 400, width: "100%" }}>
+					<DataGrid
+						error={getUsersProfilesError}
+						loading={isLoadingGetUsersProfiles}
+						rows={getUsersProfiles}
+						columns={usersTableColumns}
+						pageSize={10}
+						rowsPerPageOptions={[10]}
+						disableSelectionOnClick
+					/>
+				</div>
+			) : null}
 
 			<DialogForm
 				title="Create teacher account"
 				open={openTeacherCreation}
 				onClose={handleCancelTeacherCreation}
-				maxWidth="md"
+				maxWidth="sm"
 			>
 				<CreateTeacherAccountForm currentUser={props.currentUser} />
 			</DialogForm>
 		</Box>
 	);
-}
-
-function AdminManageStudentsPanel(props) {
-	return <Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}></Box>;
 }
 
 function TabsWrapper(props) {
@@ -237,8 +300,7 @@ export default function ProfileMain(props) {
 					<AppBar position="sticky" color="default">
 						{props.additionalUserInfo.firebaseUserClaims.admin ? (
 							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
-								<Tab label="Manage Teachers" />
-								<Tab label="Manage Students" />
+								<Tab label="Manage accounts" />
 							</TabsWrapper>
 						) : props.additionalUserInfo.firebaseUserClaims.teacher ? (
 							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
@@ -253,15 +315,10 @@ export default function ProfileMain(props) {
 					</AppBar>
 					{props.additionalUserInfo.firebaseUserClaims.admin ? (
 						<>
-							<AdminManageTeachersPanel
+							<AdminManageUsersPanel
 								currentUser={props.currentUser}
 								value={currentTab}
 								index={0}
-							/>
-							<AdminManageStudentsPanel
-								currentUser={props.currentUser}
-								value={currentTab}
-								index={1}
 							/>
 						</>
 					) : props.additionalUserInfo.firebaseUserClaims.teacher ? (

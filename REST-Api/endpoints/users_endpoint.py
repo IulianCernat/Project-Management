@@ -10,7 +10,6 @@ users_namespace = api.namespace(
 	'user_profiles', description='Operations related to user profiles')
 
 
-# TODO: Automate authorization checking
 
 @users_namespace.route('/')
 @api.response(400, 'Bad request', bad_request)
@@ -38,6 +37,9 @@ class ProfilesCollection(Resource):
 		args = user_filtering_args.parse_args(request)
 		search_keyword = args.get('search', None)
 		part_of_project_id = args.get('part_of_project_id', None)
+
+		if search_keyword is None and part_of_project_id is None:
+			return get_all_users(), 200
 		return get_users_by_filters(search_keyword, part_of_project_id), 200
 
 

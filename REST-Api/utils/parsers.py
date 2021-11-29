@@ -23,7 +23,7 @@ teams_members_filtering_args = api.parser()
 teams_members_filtering_args.add_argument('team_id', type=int, location='args', required=True)
 
 user_filtering_args = api.parser()
-user_filtering_args.add_argument('search', type=str, location='args', required=True)
+user_filtering_args.add_argument('search', type=str, location='args', required=False)
 user_filtering_args.add_argument('part_of_project_id', type=int, location='args', required=False)
 
 issues_filtering_args = api.parser()
