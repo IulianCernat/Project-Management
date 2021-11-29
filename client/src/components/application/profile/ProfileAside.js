@@ -76,6 +76,12 @@ export default function ProfileAside({ additionalUserInfo, currentUser }) {
 										? currentUser.displayName
 										: additionalUserInfo.fullName}
 								</TextDisplayWrapper>
+
+								{additionalUserInfo.firebaseUserClaims.teacher ? (
+									<Typography variant="h5">Teacher</Typography>
+								) : additionalUserInfo.is_user_student ? (
+									<Typography variant="h5">Student</Typography>
+								) : null}
 							</Box>
 							<Hidden mdDown>
 								<Divider />
@@ -96,6 +102,14 @@ export default function ProfileAside({ additionalUserInfo, currentUser }) {
 								<Typography>
 									{additionalUserInfo.contact || currentUser?.email}
 								</Typography>
+								{additionalUserInfo.is_user_student ? (
+									<>
+										<Typography variant="h6">Student Group</Typography>
+										<Typography>
+											{`Group ${additionalUserInfo.student_group}`}
+										</Typography>
+									</>
+								) : null}
 							</Grid>
 						</Grid>
 					</Grid>

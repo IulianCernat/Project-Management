@@ -244,9 +244,12 @@ export default function ProfileMain(props) {
 								<Tab label="Manage Teachers" />
 								<Tab label="Manage Students" />
 							</TabsWrapper>
-						) : (
+						) : props.additionalUserInfo.firebaseUserClaims.teacher ? (
 							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
 								<Tab label="Product Owner" />
+							</TabsWrapper>
+						) : (
+							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
 								<Tab label="Scrum Master" />
 								<Tab label="Developer" />
 							</TabsWrapper>
@@ -265,24 +268,25 @@ export default function ProfileMain(props) {
 								index={1}
 							/>
 						</>
+					) : props.additionalUserInfo.firebaseUserClaims.teacher ? (
+						<TabPanel
+							userId={props.additionalUserInfo.id}
+							value={currentTab}
+							withProjectAdditionForm={true}
+							index={0}
+						/>
 					) : (
 						<>
 							<TabPanel
 								userId={props.additionalUserInfo.id}
 								value={currentTab}
-								withProjectAdditionForm={true}
 								index={0}
-							/>
-							<TabPanel
-								userId={props.additionalUserInfo.id}
-								value={currentTab}
-								index={1}
 								withProjectAdditionForm={false}
 							/>
 							<TabPanel
 								userId={props.additionalUserInfo.id}
 								value={currentTab}
-								index={2}
+								index={1}
 								withProjectAdditionForm={false}
 							/>
 						</>

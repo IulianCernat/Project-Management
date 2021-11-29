@@ -37,7 +37,9 @@ user_output = api.model('User output', {
 	'contact': String(required=True, description="User's contact information (email)"),
 	'is_part_of_project': Boolean(required=False, description="Whether user is part of specified project id"),
 	'trello_boards_ids': List(Nested(trello_board_id, skip_none=True),
-	                          description="The ids of the Trello boards on which the user is a member")
+	                          description="The ids of the Trello boards on which the user is a member"),
+	'is_user_student': Boolean(required=True),
+	'student_group': String(required=True)
 })
 
 user_update = api.model('User update', {
