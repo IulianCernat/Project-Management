@@ -1,4 +1,5 @@
 import { useReducer, useEffect } from "react";
+import useGetHeaders from "customHooks/useGetHeaders";
 
 const initialState = {
 	status: "idle",
@@ -117,12 +118,13 @@ export async function doGet(url, parameters = null, foreignUrl = false, headers 
 	}
 }
 
-async function doDelete(url) {
+async function doDelete(url, headers) {
 	try {
 		url = process.env.REACT_APP_API_URL + "/" + url;
 
 		let response = await fetch(url, {
 			method: "DELETE",
+			headers,
 		});
 
 		return await processResponse(response);
@@ -163,12 +165,14 @@ export function useGetFetch(
 }
 export function useDeleteFetch(url) {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const headers = useGetHeaders();
 	useEffect(() => {
 		if (!url) return;
 
 		async function doFetch() {
 			dispatch({ type: "started" });
-			let fetchResponse = await doDelete(url);
+
+			let fetchResponse = await doDelete(url, headers);
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;
