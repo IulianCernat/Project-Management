@@ -7,8 +7,11 @@ export default function useGetHeaders() {
 	const { currentUser } = useAuth();
 
 	useEffect(() => {
-		const getCurrentUserIdToken = async () => await currentUser.getIdToken();
-		setFirebaseIdToken(getCurrentUserIdToken());
+		const getCurrentUserIdToken = async () => {
+			const idToken = await currentUser.getIdToken();
+			setFirebaseIdToken(idToken);
+		};
+		getCurrentUserIdToken();
 		setTrelloToken(localStorage.getItem("trello_token"));
 	}, [currentUser]);
 

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
 	Box,
 	makeStyles,
@@ -11,15 +11,15 @@ import {
 	Button,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
-import AddIcon from "@material-ui/icons/Add";
-import { grey } from "@material-ui/core/colors";
+import { Delete as DeleteIcon, Add as AddIcon } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
 import ProjectCard from "components/subComponents/ProjectCard";
 import DialogForm from "components/subComponents/DialogForm";
 import ProjectCreationForm from "components/forms/ProjectCreationForm";
 import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import CreateTeacherAccountForm from "components/forms/CreateTeacherAccountForm";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+
 const useStyles = makeStyles((theme) => ({
 	main: {
 		[theme.breakpoints.up("md")]: {
@@ -33,56 +33,6 @@ const useStyles = makeStyles((theme) => ({
 		wordWrap: "break-word",
 	},
 }));
-
-const usersTableColumns = [
-	{
-		field: "uid",
-		headerName: "UID",
-		flex: 1,
-		editable: false,
-		hide: true,
-	},
-	{
-		field: "fullName",
-		headerName: "Full Name",
-		minWidth: 50,
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "is_user_teacher",
-		headerName: "Is user teacher",
-		hide: true,
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "is_user_student",
-		headerName: "Is user student",
-		hide: true,
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "contact",
-		headerName: "email",
-		minWidth: 50,
-		flex: 1,
-		editable: false,
-	},
-	{
-		field: "userType",
-		headerName: "User type",
-		flex: 1,
-		minWidth: 50,
-		valueGetter: (params) => {
-			if (params.getValue(params.id, "is_user_teacher")) return "teacher";
-			if (params.getValue(params.id, "is_user_student")) return "student";
-			return "unknown";
-		},
-		editable: false,
-	},
-];
 
 ProjectComponentList.propTypes = {
 	projectsList: PropTypes.array.isRequired,
@@ -223,20 +173,92 @@ function TabPanel(props) {
 
 function AdminManageUsersPanel(props) {
 	const [openTeacherCreation, setOpenTeacherCreation] = useState(false);
-	const {
+	const [userProfiles, setUserProfiles] = useState();
+	let {
 		receivedData: getUsersProfiles,
 		error: getUsersProfilesError,
 		isLoading: isLoadingGetUsersProfiles,
 		isResolved: isResolvedGetUsersProfiles,
 		isRejected: isRejectedGetUsersProfiles,
 	} = useGetFetch(`api/user_profiles/`);
+	const [urlOfDeletedUser, setUrlOfDeletedUser] = useState(null);
+	const [uidOfDeletedUser, setUidOfDeletedUser] = useState(null);
+	const userDeletionOperationStatus = useDeleteFetch(urlOfDeletedUser);
+	const usersTableColumns = [
+		{
+			field: "fullName",
+			headerName: "Full Name",
+			minWidth: 50,
+			flex: 1,
+			editable: false,
+		},
+		{
+			field: "is_user_teacher",
+			headerName: "Is user teacher",
+			hide: true,
+			flex: 1,
+			editable: false,
+		},
+		{
+			field: "is_user_student",
+			headerName: "Is user student",
+			hide: true,
+			flex: 1,
+			editable: false,
+		},
+		{
+			field: "contact",
+			headerName: "email",
+			minWidth: 50,
+			flex: 1,
+			editable: false,
+		},
+		{
+			field: "userType",
+			headerName: "User type",
+			flex: 1,
+			minWidth: 50,
+			valueGetter: (params) => {
+				if (params.getValue(params.id, "is_user_teacher")) return "teacher";
+				if (params.getValue(params.id, "is_user_student")) return "student";
+				return "unknown";
+			},
+			editable: false,
+		},
+		{
+			field: "actions",
+			type: "actions",
+			width: 80,
+			getActions: (params) => [
+				<GridActionsCellItem
+					icon={<DeleteIcon color="secondary" />}
+					label="Delete"
+					onClick={() => {
+						handleUserDeletionClick(params.row.uid);
+					}}
+				/>,
+			],
+		},
+	];
 	const handleCancelTeacherCreation = () => {
 		setOpenTeacherCreation(false);
 	};
 	const handleOpenTeacherCreationForm = () => {
 		setOpenTeacherCreation(true);
 	};
-	const handleUserDeletionClick = (userUid) => {};
+	const handleUserDeletionClick = (userUid) => {
+		setUidOfDeletedUser(userUid);
+		setUrlOfDeletedUser(`api/firebase_users/${userUid}`);
+	};
+	useEffect(() => {
+		if (isResolvedGetUsersProfiles) setUserProfiles([...getUsersProfiles]);
+	}, [getUsersProfiles, isResolvedGetUsersProfiles]);
+
+	useEffect(() => {
+		if (userDeletionOperationStatus.isResolved)
+			setUserProfiles([...getUsersProfiles.filter((item) => item.uid !== uidOfDeletedUser)]);
+	}, [userDeletionOperationStatus.isResolved, getUsersProfiles, uidOfDeletedUser]);
+
 	return (
 		<Box p={3} maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
 			<Button variant="outlined" onClick={handleOpenTeacherCreationForm}>
@@ -247,7 +269,7 @@ function AdminManageUsersPanel(props) {
 					<DataGrid
 						error={getUsersProfilesError}
 						loading={isLoadingGetUsersProfiles}
-						rows={getUsersProfiles}
+						rows={userProfiles}
 						columns={usersTableColumns}
 						pageSize={10}
 						rowsPerPageOptions={[10]}
