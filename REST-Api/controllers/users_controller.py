@@ -17,7 +17,7 @@ def get_other_user(user_id):
     return user
 
 def get_other_user_by_uid(user_uid):
-    return User.query.fikter(User.uid == user_uid).one()
+    return User.query.filter(User.uid == user_uid).one()
 
 def get_users_by_filters(keyword, part_of_project_id=None):
     keyword_filtered_users = User.query.filter(

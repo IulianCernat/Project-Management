@@ -32,6 +32,7 @@ trello_board_id = api.model('Trello board id', {
 
 user_output = api.model('User output', {
     'id': Integer(required=True, description="User's database id"),
+    'uid': String(required=True),
     'fullName': String(required=True, description="User's full name"),
     'avatar_url': String(required=True, description="User's avatar url"),
     'contact': String(required=True, description="User's contact information (email)"),

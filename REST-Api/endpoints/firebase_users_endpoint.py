@@ -34,6 +34,7 @@ class FirebaseUsersCollection(Resource):
 @firebase_users_namespace.route('/<uid>')
 class FirebaseUserItem(Resource):
 	@api.response(200, 'Firebase user successfully deleted')
+	@api.expect(authorization_header)
 	def delete(self, uid):
 		decoded_token = process_firebase_authorization_field(request)
 		admin_user = get_firebase_user_by_uid(decoded_token['uid'])
