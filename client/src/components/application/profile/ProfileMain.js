@@ -47,6 +47,7 @@ const usersTableColumns = [
 		headerName: "Full Name",
 		minWidth: 50,
 		flex: 1,
+		editable: false,
 	},
 	{
 		field: "is_user_teacher",
@@ -79,6 +80,7 @@ const usersTableColumns = [
 			if (params.getValue(params.id, "is_user_student")) return "student";
 			return "unknown";
 		},
+		editable: false,
 	},
 ];
 
@@ -234,6 +236,7 @@ function AdminManageUsersPanel(props) {
 	const handleOpenTeacherCreationForm = () => {
 		setOpenTeacherCreation(true);
 	};
+	const handleUserDeletionClick = (userUid) => {};
 	return (
 		<Box p={3} maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
 			<Button variant="outlined" onClick={handleOpenTeacherCreationForm}>
