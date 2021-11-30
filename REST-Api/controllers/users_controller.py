@@ -16,6 +16,8 @@ def get_other_user(user_id):
 
     return user
 
+def get_other_user_by_uid(user_uid):
+    return User.query.fikter(User.uid == user_uid).one()
 
 def get_users_by_filters(keyword, part_of_project_id=None):
     keyword_filtered_users = User.query.filter(
@@ -49,8 +51,10 @@ def get_self(uid):
     user = User.query.filter(User.uid == uid).one()
     return user
 
+
 def check_if_user_exists(uid):
     return User.query.filter(User.uid == uid).scalar()
+
 
 def get_user_id(uid):
     user = User.query.filter(User.uid == uid).one()
@@ -64,5 +68,18 @@ def update_user(uid, input_obj):
 
     db.session.commit()
 
+
 def get_all_users():
     return User.query.all()
+
+
+def delete_user(user_id=None, user_uid=None):
+    if user_id is None and user_uid is None:
+        return
+    if user_uid is not None:
+        user_to_be_deleted = get_other_user_by_uid(user_uid)
+    else:
+        user_to_be_deleted = get_other_user(user_id)
+
+    db.session.delete(user_to_be_deleted)
+    db.session.commit()
