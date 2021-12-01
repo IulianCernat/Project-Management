@@ -54,12 +54,13 @@ async function processResponse(response) {
 
 	let status = response.status;
 	let result = await response.json();
-
 	switch (status) {
 		case 200:
 			return { error: null, receivedData: result };
 		case 201:
-			return { error: null, location: result["location"] };
+			if (result.hasOwnProperty("location"))
+				return { error: null, location: result["location"] };
+			return { error: null, receivedData: result };
 		default:
 			return { error: result.message, receivedData: null };
 	}
@@ -203,7 +204,10 @@ export function usePostFetch(url, bodyContent, headers) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;
 			}
-			dispatch({ type: "success", receivedData: fetchResponse.location });
+			dispatch({
+				type: "success",
+				receivedData: fetchResponse.location ? "undefined" : fetchResponse.receivedData,
+			});
 		}
 
 		doFetch(url, bodyContent);

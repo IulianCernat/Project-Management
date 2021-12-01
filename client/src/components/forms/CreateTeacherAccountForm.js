@@ -13,6 +13,10 @@ const validationSchema = Yup.object({
 	fullName: fullNameValidationSchema,
 });
 
+CreateTeacherAccountForm.propTypes = {
+	currentUser: PropTypes.object.isRequired,
+	insertNewProfile: PropTypes.func.isRequired,
+};
 export default function CreateTeacherAccountForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
 	const headers = useRef({
@@ -23,6 +27,13 @@ export default function CreateTeacherAccountForm(props) {
 		requestBody,
 		headers.current
 	);
+
+	useEffect(() => {
+		if (isResolved) {
+			props.insertNewProfile(receivedData);
+			console.log(receivedData);
+		}
+	}, [isResolved, receivedData]);
 
 	return (
 		<>

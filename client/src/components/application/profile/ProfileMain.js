@@ -184,72 +184,86 @@ function AdminManageUsersPanel(props) {
 	const [urlOfDeletedUser, setUrlOfDeletedUser] = useState(null);
 	const [uidOfDeletedUser, setUidOfDeletedUser] = useState(null);
 	const userDeletionOperationStatus = useDeleteFetch(urlOfDeletedUser);
-	const usersTableColumns = [
-		{
-			field: "fullName",
-			headerName: "Full Name",
-			minWidth: 50,
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "is_user_teacher",
-			headerName: "Is user teacher",
-			hide: true,
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "is_user_student",
-			headerName: "Is user student",
-			hide: true,
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "contact",
-			headerName: "email",
-			minWidth: 50,
-			flex: 1,
-			editable: false,
-		},
-		{
-			field: "userType",
-			headerName: "User type",
-			flex: 1,
-			minWidth: 50,
-			valueGetter: (params) => {
-				if (params.getValue(params.id, "is_user_teacher")) return "teacher";
-				if (params.getValue(params.id, "is_user_student")) return "student";
-				return "unknown";
+	const usersTableColumns = useMemo(
+		() => [
+			{
+				field: "fullName",
+				headerName: "Full Name",
+				minWidth: 50,
+				flex: 1,
 			},
-			editable: false,
-		},
-		{
-			field: "actions",
-			type: "actions",
-			width: 80,
-			getActions: (params) => [
-				<GridActionsCellItem
-					icon={<DeleteIcon color="secondary" />}
-					label="Delete"
-					onClick={() => {
-						handleUserDeletionClick(params.row.uid);
-					}}
-				/>,
-			],
-		},
-	];
+			{
+				field: "is_user_teacher",
+				headerName: "Is user teacher",
+				hide: true,
+				flex: 1,
+			},
+			{
+				field: "is_user_student",
+				headerName: "Is user student",
+				hide: true,
+				flex: 1,
+			},
+			{
+				field: "contact",
+				headerName: "email",
+				minWidth: 50,
+				flex: 1,
+			},
+			{
+				field: "userType",
+				headerName: "User type",
+				flex: 1,
+				minWidth: 50,
+				valueGetter: (params) => {
+					if (params.getValue(params.id, "is_user_teacher")) return "teacher";
+					if (params.getValue(params.id, "is_user_student")) return "student";
+					return "unknown";
+				},
+			},
+			{
+				field: "actions",
+				type: "actions",
+				width: 80,
+				getActions: (params) => [
+					<GridActionsCellItem
+						icon={
+							<DeleteIcon
+								color={
+									userDeletionOperationStatus.isLoading ? "disabled" : "secondary"
+								}
+							/>
+						}
+						label="Delete"
+						onClick={() => {
+							handleUserDeletionClick(params.row.uid);
+						}}
+						disabled={userDeletionOperationStatus.isLoading}
+					/>,
+				],
+			},
+		],
+		[userDeletionOperationStatus.isLoading]
+	);
+
 	const handleCancelTeacherCreation = () => {
 		setOpenTeacherCreation(false);
 	};
+
 	const handleOpenTeacherCreationForm = () => {
 		setOpenTeacherCreation(true);
 	};
+
 	const handleUserDeletionClick = (userUid) => {
 		setUidOfDeletedUser(userUid);
 		setUrlOfDeletedUser(`api/firebase_users/${userUid}`);
 	};
+
+	const insertNewCreatedUserProfile = (newUserProfile) => {
+		setOpenTeacherCreation(false);
+		setUserProfiles([newUserProfile, ...userProfiles]);
+	};
+
 	useEffect(() => {
 		if (isResolvedGetUsersProfiles) setUserProfiles([...getUsersProfiles]);
 	}, [getUsersProfiles, isResolvedGetUsersProfiles]);
@@ -264,19 +278,22 @@ function AdminManageUsersPanel(props) {
 			<Button variant="outlined" onClick={handleOpenTeacherCreationForm}>
 				Create teacher account
 			</Button>
-			{isResolvedGetUsersProfiles ? (
-				<div style={{ marginTop: "10px", height: 400, width: "100%" }}>
-					<DataGrid
-						error={getUsersProfilesError}
-						loading={isLoadingGetUsersProfiles}
-						rows={userProfiles}
-						columns={usersTableColumns}
-						pageSize={10}
-						rowsPerPageOptions={[10]}
-						disableSelectionOnClick
-					/>
-				</div>
-			) : null}
+
+			<div style={{ marginTop: "10px", height: 400, width: "100%" }}>
+				<DataGrid
+					disableSelectionOnClick
+					loading={isLoadingGetUsersProfiles}
+					error={getUsersProfilesError}
+					rows={userProfiles}
+					columns={usersTableColumns}
+					pageSize={10}
+					rowsPerPageOptions={[10]}
+					disableDensitySelector
+					componentsProps={{
+						cell: { "& :focus": { border: "unset" } },
+					}}
+				/>
+			</div>
 
 			<DialogForm
 				title="Create teacher account"
@@ -284,7 +301,10 @@ function AdminManageUsersPanel(props) {
 				onClose={handleCancelTeacherCreation}
 				maxWidth="sm"
 			>
-				<CreateTeacherAccountForm currentUser={props.currentUser} />
+				<CreateTeacherAccountForm
+					currentUser={props.currentUser}
+					insertNewProfile={insertNewCreatedUserProfile}
+				/>
 			</DialogForm>
 		</Box>
 	);

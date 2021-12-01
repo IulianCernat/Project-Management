@@ -1,6 +1,7 @@
 from database import db
 from database.models import User, TeamMember, Team, Project
 from sqlalchemy import literal
+from sqlalchemy import desc
 
 
 def create_user(uid, data):
@@ -16,8 +17,10 @@ def get_other_user(user_id):
 
     return user
 
+
 def get_other_user_by_uid(user_uid):
     return User.query.filter(User.uid == user_uid).one()
+
 
 def get_users_by_filters(keyword, part_of_project_id=None):
     keyword_filtered_users = User.query.filter(
@@ -70,7 +73,8 @@ def update_user(uid, input_obj):
 
 
 def get_all_users():
-    return User.query.all()
+    return User.query.order_by(
+        desc(User.is_user_teacher)).all()
 
 
 def delete_user(user_id=None, user_uid=None):
