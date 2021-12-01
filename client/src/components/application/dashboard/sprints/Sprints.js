@@ -554,10 +554,12 @@ export default function Sprints() {
 		};
 
 		return () => {
-			websockeWithRealtimeService.current.send(
-				JSON.stringify({ action: "leave", sessioId: websocketSessionId })
-			);
-			websockeWithRealtimeService.current.close();
+			if (websockeWithRealtimeService.current.readyState === 1) {
+				websockeWithRealtimeService.current.send(
+					JSON.stringify({ action: "leave", sessioId: websocketSessionId })
+				);
+				websockeWithRealtimeService.current.close();
+			}
 		};
 	}, []);
 

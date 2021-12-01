@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
 	Box,
 	makeStyles,
@@ -8,20 +8,21 @@ import {
 	Paper,
 	Fab,
 	CircularProgress,
+	Button,
 } from "@material-ui/core";
 import PropTypes from "prop-types";
-import AddIcon from "@material-ui/icons/Add";
-import { grey } from "@material-ui/core/colors";
+import { Delete as DeleteIcon, Add as AddIcon } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
 import ProjectCard from "components/subComponents/ProjectCard";
 import DialogForm from "components/subComponents/DialogForm";
 import ProjectCreationForm from "components/forms/ProjectCreationForm";
 import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
+import CreateTeacherAccountForm from "components/forms/CreateTeacherAccountForm";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 
 const useStyles = makeStyles((theme) => ({
 	main: {
 		[theme.breakpoints.up("md")]: {
-			backgroundColor: grey[200],
 			overflow: "auto",
 			maxHeight: "80vh",
 		},
@@ -33,11 +34,6 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const tabs = {
-	0: "productOwner",
-	1: "scrumMaster",
-	2: "developer",
-};
 ProjectComponentList.propTypes = {
 	projectsList: PropTypes.array.isRequired,
 	handleProjectDeletion: PropTypes.func.isRequired,
@@ -66,6 +62,7 @@ TabPanel.propTypes = {
 	value: PropTypes.any.isRequired,
 	userId: PropTypes.number.isRequired,
 	withProjectAdditionForm: PropTypes.bool.isRequired,
+	userType: PropTypes.string.isRequired,
 };
 function TabPanel(props) {
 	const [openProjectCreation, setOpenProjectCreation] = useState(false);
@@ -77,7 +74,7 @@ function TabPanel(props) {
 	);
 	const getParams = useRef({
 		user_id: "",
-		user_type: tabs[props.index],
+		user_type: props.userType,
 	});
 	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
 		"api/projects/",
@@ -174,6 +171,160 @@ function TabPanel(props) {
 	);
 }
 
+function AdminManageUsersPanel(props) {
+	const [openTeacherCreation, setOpenTeacherCreation] = useState(false);
+	const [userProfiles, setUserProfiles] = useState();
+	let {
+		receivedData: getUsersProfiles,
+		error: getUsersProfilesError,
+		isLoading: isLoadingGetUsersProfiles,
+		isResolved: isResolvedGetUsersProfiles,
+		isRejected: isRejectedGetUsersProfiles,
+	} = useGetFetch(`api/user_profiles/`);
+	const [urlOfDeletedUser, setUrlOfDeletedUser] = useState(null);
+	const [uidOfDeletedUser, setUidOfDeletedUser] = useState(null);
+	const userDeletionOperationStatus = useDeleteFetch(urlOfDeletedUser);
+	const usersTableColumns = useMemo(
+		() => [
+			{
+				field: "fullName",
+				headerName: "Full Name",
+				minWidth: 50,
+				flex: 1,
+			},
+			{
+				field: "is_user_teacher",
+				headerName: "Is user teacher",
+				hide: true,
+				flex: 1,
+			},
+			{
+				field: "is_user_student",
+				headerName: "Is user student",
+				hide: true,
+				flex: 1,
+			},
+			{
+				field: "contact",
+				headerName: "email",
+				minWidth: 50,
+				flex: 1,
+			},
+			{
+				field: "userType",
+				headerName: "User type",
+				flex: 1,
+				minWidth: 50,
+				valueGetter: (params) => {
+					if (params.getValue(params.id, "is_user_teacher")) return "teacher";
+					if (params.getValue(params.id, "is_user_student")) return "student";
+					return "unknown";
+				},
+			},
+			{
+				field: "actions",
+				type: "actions",
+				width: 80,
+				getActions: (params) => [
+					<GridActionsCellItem
+						icon={
+							<DeleteIcon
+								color={
+									userDeletionOperationStatus.isLoading ? "disabled" : "secondary"
+								}
+							/>
+						}
+						label="Delete"
+						onClick={() => {
+							handleUserDeletionClick(params.row.uid);
+						}}
+						disabled={userDeletionOperationStatus.isLoading}
+					/>,
+				],
+			},
+		],
+		[userDeletionOperationStatus.isLoading]
+	);
+
+	const handleCancelTeacherCreation = () => {
+		setOpenTeacherCreation(false);
+	};
+
+	const handleOpenTeacherCreationForm = () => {
+		setOpenTeacherCreation(true);
+	};
+
+	const handleUserDeletionClick = (userUid) => {
+		setUidOfDeletedUser(userUid);
+		setUrlOfDeletedUser(`api/firebase_users/${userUid}`);
+	};
+
+	const insertNewCreatedUserProfile = (newUserProfile) => {
+		setOpenTeacherCreation(false);
+		setUserProfiles([newUserProfile, ...userProfiles]);
+	};
+
+	useEffect(() => {
+		if (isResolvedGetUsersProfiles) setUserProfiles([...getUsersProfiles]);
+	}, [getUsersProfiles, isResolvedGetUsersProfiles]);
+
+	useEffect(() => {
+		if (userDeletionOperationStatus.isResolved)
+			setUserProfiles([...getUsersProfiles.filter((item) => item.uid !== uidOfDeletedUser)]);
+	}, [userDeletionOperationStatus.isResolved, getUsersProfiles, uidOfDeletedUser]);
+
+	return (
+		<Box p={3} maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
+			<Button variant="outlined" onClick={handleOpenTeacherCreationForm}>
+				Create teacher account
+			</Button>
+
+			<div style={{ marginTop: "10px", height: 400, width: "100%" }}>
+				<DataGrid
+					disableSelectionOnClick
+					loading={isLoadingGetUsersProfiles}
+					error={getUsersProfilesError}
+					rows={userProfiles}
+					columns={usersTableColumns}
+					pageSize={10}
+					rowsPerPageOptions={[10]}
+					disableDensitySelector
+					componentsProps={{
+						cell: { "& :focus": { border: "unset" } },
+					}}
+				/>
+			</div>
+
+			<DialogForm
+				title="Create teacher account"
+				open={openTeacherCreation}
+				onClose={handleCancelTeacherCreation}
+				maxWidth="sm"
+			>
+				<CreateTeacherAccountForm
+					currentUser={props.currentUser}
+					insertNewProfile={insertNewCreatedUserProfile}
+				/>
+			</DialogForm>
+		</Box>
+	);
+}
+
+function TabsWrapper(props) {
+	return (
+		<Tabs
+			value={props.currentTab}
+			onChange={props.handleTabChange}
+			textColor="primary"
+			indicatorColor="primary"
+			variant="scrollable"
+			scrollButtons="auto"
+		>
+			{props.children}
+		</Tabs>
+	);
+}
+
 ProfileMain.propTypes = {
 	additionalUserInfo: PropTypes.object.isRequired,
 	currentUser: PropTypes.object.isRequired,
@@ -192,42 +343,57 @@ export default function ProfileMain(props) {
 			{props.additionalUserInfo ? (
 				<>
 					<AppBar position="sticky" color="default">
-						<Tabs
-							value={currentTab}
-							onChange={handleTabChange}
-							textColor="primary"
-							indicatorColor="primary"
-							variant="scrollable"
-							scrollButtons="auto"
-						>
-							<Tab label="Product Owner" />
-							<Tab label="Scrum Master" />
-							<Tab label="Developer" />
-						</Tabs>
+						{props.additionalUserInfo.firebaseUserClaims.admin ? (
+							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
+								<Tab label="Manage accounts" />
+							</TabsWrapper>
+						) : props.additionalUserInfo.firebaseUserClaims.teacher ? (
+							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
+								<Tab label="Product Owner" />
+							</TabsWrapper>
+						) : (
+							<TabsWrapper currentTab={currentTab} handleTabChange={handleTabChange}>
+								<Tab label="Scrum Master" />
+								<Tab label="Developer" />
+							</TabsWrapper>
+						)}
 					</AppBar>
-
-					<TabPanel
-						userId={props.additionalUserInfo.id}
-						value={currentTab}
-						withProjectAdditionForm={true}
-						index={0}
-					/>
-					<TabPanel
-						userId={props.additionalUserInfo.id}
-						value={currentTab}
-						index={1}
-						withProjectAdditionForm={false}
-					/>
-					<TabPanel
-						userId={props.additionalUserInfo.id}
-						value={currentTab}
-						index={2}
-						withProjectAdditionForm={false}
-					/>
+					{props.additionalUserInfo.firebaseUserClaims.admin ? (
+						<>
+							<AdminManageUsersPanel
+								currentUser={props.currentUser}
+								value={currentTab}
+								index={0}
+							/>
+						</>
+					) : props.additionalUserInfo.firebaseUserClaims.teacher ? (
+						<TabPanel
+							userId={props.additionalUserInfo.id}
+							value={currentTab}
+							withProjectAdditionForm={true}
+							index={0}
+							userType="productOwner"
+						/>
+					) : (
+						<>
+							<TabPanel
+								userId={props.additionalUserInfo.id}
+								value={currentTab}
+								index={0}
+								withProjectAdditionForm={false}
+								userType="scrumMaster"
+							/>
+							<TabPanel
+								userId={props.additionalUserInfo.id}
+								value={currentTab}
+								index={1}
+								withProjectAdditionForm={false}
+								userType="developer"
+							/>
+						</>
+					)}
 				</>
-			) : (
-				<Alert severity="error">Failed To load any projects</Alert>
-			)}
+			) : null}
 		</Paper>
 	);
 }

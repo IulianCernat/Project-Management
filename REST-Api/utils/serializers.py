@@ -18,6 +18,13 @@ user_input = api.model('User input', {
     'avatar_url': String(required=False, description="User's profile picture")
 })
 
+user_input_created_by_admin = api.inherit('User created by admin', user_input, {
+    'email': String(required=True),
+    'firebase_claims': Nested(api.model('Firebase claim', {
+        "*": Wildcard(String(description="Contains the label's id")),
+    }))
+})
+
 trello_board_id = api.model('Trello board id', {
     'project_id': Integer(required=True, description="The id of the project in which the trello board sits"),
     'trello_board_id': String(required=True, description="The trello effective id")
@@ -25,12 +32,16 @@ trello_board_id = api.model('Trello board id', {
 
 user_output = api.model('User output', {
     'id': Integer(required=True, description="User's database id"),
+    'uid': String(required=True),
     'fullName': String(required=True, description="User's full name"),
     'avatar_url': String(required=True, description="User's avatar url"),
     'contact': String(required=True, description="User's contact information (email)"),
     'is_part_of_project': Boolean(required=False, description="Whether user is part of specified project id"),
     'trello_boards_ids': List(Nested(trello_board_id, skip_none=True),
-                              description="The ids of the Trello boards on which the user is a member")
+                              description="The ids of the Trello boards on which the user is a member"),
+    'is_user_teacher': Boolean(required=True),
+    'is_user_student': Boolean(required=True),
+    'student_group': String(required=True)
 })
 
 user_update = api.model('User update', {
@@ -171,7 +182,8 @@ user_role_output = api.model("Project user role", {
                         description="What role does a user had inside a project"),
     "trello_boards": List(Nested(api.model("Trello Boards", {
         "trello_board_id": String(required=True),
-        "is_added_by_user": Boolean(required=True, description="Whether the board is added by user if he's a Scrum Master")
+        "is_added_by_user": Boolean(required=True,
+                                    description="Whether the board is added by user if he's a Scrum Master")
     })), description="A list with all the trello boards available in a project")
 })
 

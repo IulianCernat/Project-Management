@@ -1,4 +1,5 @@
 import { useReducer, useEffect } from "react";
+import useGetHeaders from "customHooks/useGetHeaders";
 
 const initialState = {
 	status: "idle",
@@ -53,12 +54,13 @@ async function processResponse(response) {
 
 	let status = response.status;
 	let result = await response.json();
-
 	switch (status) {
 		case 200:
 			return { error: null, receivedData: result };
 		case 201:
-			return { error: null, location: result["location"] };
+			if (result.hasOwnProperty("location"))
+				return { error: null, location: result["location"] };
+			return { error: null, receivedData: result };
 		default:
 			return { error: result.message, receivedData: null };
 	}
@@ -117,12 +119,13 @@ export async function doGet(url, parameters = null, foreignUrl = false, headers 
 	}
 }
 
-async function doDelete(url) {
+async function doDelete(url, headers) {
 	try {
 		url = process.env.REACT_APP_API_URL + "/" + url;
 
 		let response = await fetch(url, {
 			method: "DELETE",
+			headers,
 		});
 
 		return await processResponse(response);
@@ -163,12 +166,14 @@ export function useGetFetch(
 }
 export function useDeleteFetch(url) {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const headers = useGetHeaders();
 	useEffect(() => {
 		if (!url) return;
 
 		async function doFetch() {
 			dispatch({ type: "started" });
-			let fetchResponse = await doDelete(url);
+
+			let fetchResponse = await doDelete(url, headers);
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;
@@ -199,7 +204,10 @@ export function usePostFetch(url, bodyContent, headers) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;
 			}
-			dispatch({ type: "success", receivedData: fetchResponse.location });
+			dispatch({
+				type: "success",
+				receivedData: fetchResponse.location ? "undefined" : fetchResponse.receivedData,
+			});
 		}
 
 		doFetch(url, bodyContent);

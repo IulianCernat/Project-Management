@@ -231,7 +231,7 @@ export default function IssueRow(props) {
 						<IssueTypesChip type="bug" />
 					)}
 				</TableCell>
-				<TableCell style={{ maxWidth: "60ch" }} align="left">
+				<TableCell style={{ minWidth: "20ch", maxWidth: "60ch" }} align="left">
 					{row.title}
 				</TableCell>
 				{!isBacklogIssue ? (
@@ -240,28 +240,26 @@ export default function IssueRow(props) {
 							<Chip color="primary" label={row.trello_card_list_name} />
 						</TableCell>
 						<TableCell align="center">
-							<Chip
-								color="primary"
-								label={
-									typeof row.trello_card_due_is_completed === "string"
-										? row.trello_card_due_is_completed
-										: row.trello_card_due_is_completed === true
-										? "Yes"
-										: "No"
-								}
-							/>
+							{typeof row.trello_card_due_is_completed === "string" ? (
+								<Chip color="primary" label={row.trello_card_due_is_completed} />
+							) : (
+								<Checkbox
+									disableRipple
+									checked={row.trello_card_due_is_completed}
+									inputProps={{ "aria-label": "primary checkbox" }}
+								/>
+							)}
 						</TableCell>
 						<TableCell align="center">
-							<Chip
-								color="primary"
-								label={
-									typeof row.trello_card_is_closed === "string"
-										? row.trello_card_is_closed
-										: row.trello_card_is_closed === true
-										? "Yes"
-										: "No"
-								}
-							/>
+							{typeof row.trello_card_is_closed === "string" ? (
+								<Chip color="primary" label={row.trello_card_is_closed} />
+							) : (
+								<Checkbox
+									disableRipple
+									checked={row.trello_card_is_closed}
+									inputProps={{ "aria-label": "primary checkbox" }}
+								/>
+							)}
 						</TableCell>
 					</>
 				) : null}

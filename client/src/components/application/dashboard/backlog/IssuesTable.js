@@ -456,12 +456,8 @@ export default function IssuesTable(props) {
 		switch (columnValue) {
 			case null:
 				return "Unknown";
-			case false:
-				return "No";
-			case true:
-				return "Yes";
 			default:
-				return String(columnValue);
+				return columnValue;
 		}
 	};
 
