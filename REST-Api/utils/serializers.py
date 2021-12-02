@@ -15,13 +15,16 @@ bad_request = api.inherit('Bad request', message, {
 user_input = api.model('User input', {
     'fullName': String(required=True, description="User's full name name"),
     'contact': String(required=False, description="User's contact info (email)"),
-    'avatar_url': String(required=False, description="User's profile picture")
+    'avatar_url': String(required=False, description="User's profile picture"),
+    "student_group_id": String(required=False),
+    "is_user_teacher": Boolean(required=False),
+    "is_user_student": Boolean(required=False)
 })
 
 user_input_created_by_admin = api.inherit('User created by admin', user_input, {
     'email': String(required=True),
     'firebase_claims': Nested(api.model('Firebase claim', {
-        "*": Wildcard(String(description="Contains the label's id")),
+        "*": Wildcard(String(description="Firebase claim name")),
     }))
 })
 

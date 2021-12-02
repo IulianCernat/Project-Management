@@ -1,5 +1,11 @@
 [
 	{
+		"name": "Cernat Iulian Constantin",
+		"email": "iulian.cernat98@yahoo.com",
+		"photo": null
+	},
+
+	{
 		"name": "Kent Sosa",
 		"email": "kent.sosa@gmail.com",
 		"position": "Call Center Representative",
@@ -306,6 +312,11 @@
 	{
 		"name": "Gregory Drake",
 		"email": "harrismichael@yahoo.com",
+		"photo": null
+	},
+	{
+		"name": "Alexandru Mihai",
+		"email": "iulian.cernat@protonmail.com",
 		"photo": null
 	}
 ]
