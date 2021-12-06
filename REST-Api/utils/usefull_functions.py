@@ -1,6 +1,9 @@
 import string
 import random
-import yagmail
+import requests
+from pathlib import Path
+from utils.custom_exceptions import AuthFileCouldNotBeFound
+from settings import FIREBASE_WEB_API_KEY
 
 
 def generate_random_string(length):
@@ -12,7 +15,7 @@ def generate_random_string(length):
     return random_string
 
 
-def send_email(recipient_email, subject, contents):
-    return
-    # yag = yagmail.SMTP()
-    # yag.send(recipient_email, subject, contents)
+def send_firebase_reset_password_link(recipient_email):
+    requests.post("https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode",
+                  params={"key": FIREBASE_WEB_API_KEY},
+                  data={"email": recipient_email, "requestType": "PASSWORD_RESET"})

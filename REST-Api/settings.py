@@ -91,3 +91,9 @@ try:
 except KeyError:
     log.error("Missing FIREBASE_APP_ADMIN_EMAIL environment variable")
     sys.exit(1)
+
+try:
+    FIREBASE_WEB_API_KEY = os.environ['FIREBASE_WEB_API_KEY']
+except KeyError:
+    log.error("Missing FIREBSAE_WEB_API_KEY environment variable")
+    sys.exit(1)

@@ -14,3 +14,8 @@ class TrelloResourceUnavailable(Exception):
     def __init__(self, reason):
         self.message = f"Trello resource unavailable: {reason}"
         super().__init__(self.message)
+
+
+class AuthFileCouldNotBeFound(Exception):
+    def __init__(self):
+        super().__init__("Auth file for email service could not be found")
