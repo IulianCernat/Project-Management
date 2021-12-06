@@ -3,7 +3,7 @@ import { WebSocketServer } from "ws";
 import { v4 as uuidv4 } from "uuid";
 
 const PORT = process.env.PORT || 3001;
-const HOST = "localhost";
+const HOST = process.env.HOST || "localhost";
 const roomsWithSameBoard = {};
 
 class ValidationError extends Error {
