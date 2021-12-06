@@ -59,7 +59,7 @@ async function processResponse(response) {
 			return { error: null, receivedData: result };
 		case 201:
 			if (result.hasOwnProperty("location"))
-				return { error: null, location: result["location"] };
+				return { error: null, receivedData: result["location"] };
 			return { error: null, receivedData: result };
 		default:
 			return { error: result.message, receivedData: null };

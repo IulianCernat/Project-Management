@@ -35,7 +35,7 @@ export default function TrelloBoardAdditionForm(props) {
 		setTrelloBoards([...trelloBoards, { trello_board_id: newBoardId, is_added_by_user: true }]);
 		props.setAddedBoardId(newBoardId);
 		props.hideForm();
-	}, [isResolved]);
+	}, [isResolved, receivedData, setTrelloBoards, props, trelloBoards]);
 
 	return (
 		<>

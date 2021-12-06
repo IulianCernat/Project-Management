@@ -31,7 +31,6 @@ export default function CreateTeacherAccountForm(props) {
 	useEffect(() => {
 		if (isResolved) {
 			props.insertNewProfile(receivedData);
-			console.log(receivedData);
 		}
 	}, [isResolved, receivedData]);
 
