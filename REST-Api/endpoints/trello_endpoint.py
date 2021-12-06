@@ -36,8 +36,7 @@ class TrelloBoards(Resource):
     def post(self):
         user_token = process_trello_authorization_field(request)
         input_data = request.json
-        created_trello_board = create_trello_board(
-            input_data, user_token)
+        created_trello_board = create_trello_board(input_data, user_token)
         return {'location': f"https://trello.com/boards/{created_trello_board['id']}"}, 201
 
 

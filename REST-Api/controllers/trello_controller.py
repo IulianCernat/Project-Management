@@ -98,8 +98,8 @@ def get_board_cards(board_id):
 
     cards = []
     for card in board_info['cards']:
-        card['list_name'] = next(filter(lambda board_list: board_list['id'] == card['idList'], board_info['lists']))[
-            'name']
+        card['list_name'] = next(filter(lambda board_list: board_list['id']
+                                 == card['idList'], board_info['lists']))['name']
         cards.append(card)
 
     return cards
@@ -177,7 +177,7 @@ def create_trello_webhook(trello_model_id, user_token, issue_obj):
     headers = create_headers(user_token)
     payload = {
         'idModel': trello_model_id,
-        'callbackURL': f"{settings.TUNNELED_API_ADDRESS}api/trello_callback/"
+        'callbackURL': f"{settings.TUNNELED_API_ADDRESS}/api/trello_callback/"
     }
 
     try:
