@@ -25,15 +25,11 @@ services:
         build: ./Database
         ports:
             - 3306:3306
-        volumes:
-            - projectsmanager-mariadb-data:/var/lib/mariadb
         mem_limit: 500m
         mem_reservation: 500m
         image: mariadb:latest
         volumes:
             - projectsmanager-mariadb-data:/var/lib/mariadb
-     
-    
 
     client:
         mem_limit: 1g

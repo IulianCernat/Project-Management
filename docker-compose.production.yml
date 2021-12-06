@@ -10,14 +10,36 @@ services:
         volumes:
             - ./REST-Api:/REST-Api
         environment:
-            FLASK_ENV: development
+            FLASK_ENV: production
             DB_USER: root
             DB_PASS: root
             DB_HOST: database
             DB_PORT: 3306
             DB_NAME: projectsmanager
+            REALTIME_UPDATES_SERVICE_URL: "http://realtime_updates_feeder:3001/updatesFeeder"
+            TUNNELED_API_ADDRESS: https://fdgnvbngjhtkorestapitunnel.loca.lt
             FLASK_APP: app
-        command: gunicorn -w 4 -b 0.0.0.0:5000 app:app
+        command: waitress-serve --listen=0.0.0.0:5000 app:app
+
+    expose_port_over_internet:
+        ports:
+            - 80:80
+        build: ./exposeDomainOverInternet
+        depends_on:
+            - restapi
+        environment:
+            LOCAL_HOST: restapi
+        command: npm start
+
+    realtime_updates_feeder:
+        build:
+            context: ./RealTimeUpdatesFeeder
+        ports:
+            - 3001:3001
+        environment:
+            PORT: 3001
+            HOST: 0.0.0.0
+        command: npm start
 
     database:
         build: ./Database
@@ -33,10 +55,11 @@ services:
         # depends_on:
         #     - restapi
         ports:
-            - 80:80
+            - 3000:3000
+        # command:serve -s staticContent -l 3000
         command: nginx -g "daemon off;"
 
-# For populating de database with existing script run:
-# docker exec -i database_image_id mysql  -uroot -proot projectsmanager < projectsManagerExportedDB.sql
+# For populating de database with existing data run:
+# docker exec -i 933b4a829367  mysql -uroot -proot projectsmanager < Database/projectsManagerExportedDB.sql
 volumes:
     projectsmanager-mariadb-data:
