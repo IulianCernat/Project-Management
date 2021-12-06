@@ -11,13 +11,13 @@ import time
 import os
 from datetime import datetime
 import ast
+
 # Load environment variables from .env file
 # without overwriting existing ones
 load_dotenv()
 
-# credentials are stored in an environment variable called GOOGLE_APPLICATION_CREDENTIALS
-# if the variable is not json, the it's loaded as a file
-# Firebase
+# credentials for firebase
+# are stored in an environment variable called GOOGLE_APPLICATION_CREDENTIALS
 
 faker = Faker()
 faker.add_provider(lorem)
@@ -39,10 +39,10 @@ def get_admin_id_token():
 	return id_token
 
 
-
 api_path_base_url = 'http://127.0.0.1:5000/api'
 
 student_groups = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6']
+
 
 def delete_firebase_users():
 	with open('firebaseUsersUIDS.txt') as f:
@@ -51,6 +51,7 @@ def delete_firebase_users():
 		uid_list = ast.literal_eval(content)
 		# print(type(uid_list))
 		auth.delete_users(uid_list)
+
 
 def create_profiles(profile_list, admin_id_token):
 	uid_list = []
@@ -94,7 +95,7 @@ def create_profiles(profile_list, admin_id_token):
 		response = requests.post(
 			api_path, json=post_request_data, headers=headers)
 		created_profile = response.json()
-		created_students_ids.append(int(created_profile ['id']))
+		created_students_ids.append(int(created_profile['id']))
 		uid_list.append(created_profile['uid'])
 
 	return created_teachers_ids, created_students_ids, uid_list
@@ -153,10 +154,12 @@ def create_teams(projects_created_by_users, users_ids):
 						'scrum_master_id': scrum_master_id,
 					}
 				)
-			projects_with_teams.append({'project_id': project_id,
-			                            'product_owner_id': project_creator_id,
-			                            'teams': teams_for_project
-			                            })
+			projects_with_teams.append(
+				{
+					'project_id': project_id,
+					'product_owner_id': project_creator_id,
+					'teams': teams_for_project
+				})
 	return projects_with_teams
 
 
@@ -171,17 +174,23 @@ def add_team_members(projects_with_teams, users_ids):
 				filter(lambda user_id: user_id != project_with_team['product_owner_id']
 				                       and user_id not in already_added_members
 				                       and user_id not in already_added_scrum_masters,
-				       users_ids))
+				       users_ids
+				       ))
 
 			team_members_ids = random.sample(
 				possible_team_members, random.randint(1, 8))
 
 			already_added_members.extend(team_members_ids)
 			post_request_data = {
-				'team_members': [{'user_id': team_member_id,
-				                  'team_id': team['team_id'],
-				                  'user_type': 'developer',
-				                  'created_at': datetime.now().isoformat()} for team_member_id in team_members_ids]
+				'team_members': [
+					{
+						'user_id': team_member_id,
+						'team_id': team['team_id'],
+						'user_type': 'developer',
+						'created_at': datetime.now().isoformat()
+					}
+					for team_member_id in
+					team_members_ids]
 
 			}
 
@@ -193,9 +202,11 @@ def generate_issues(projects_with_teams):
 	created_issues_for_projects = []
 	for project_with_teams in projects_with_teams:
 		for team in project_with_teams['teams']:
-			project_issues = {'project_id': project_with_teams['project_id'],
-			                  'project_scrum_master_id': team['scrum_master_id'],
-			                  'issues_ids': []}
+			project_issues = {
+				'project_id': project_with_teams['project_id'],
+				'project_scrum_master_id': team['scrum_master_id'],
+				'issues_ids': []
+			}
 			for _ in range(5):
 				post_request_data = {
 					'title': faker.text()[:255],
@@ -223,7 +234,8 @@ def generate_sprints(projects_issues):
 	for project_with_issues in projects_issues:
 		try:
 			found_project = next(
-				filter(lambda item: next(iter(item.keys())) == project_with_issues['project_id'], projects))
+				filter(lambda item: next(iter(item.keys())) == project_with_issues['project_id'],
+				       projects))
 			project_id_key = next(iter(found_project.keys()))
 
 			found_project[project_id_key]['scrum_masters'].append(
@@ -277,7 +289,7 @@ if __name__ == '__main__':
 	create_projects(created_teachers_ids)
 
 	print("generated profiles")
-	projects = create_projects(created_teachers_ids,)
+	projects = create_projects(created_teachers_ids, )
 	print("generated projects")
 	projects_with_teams = create_teams(projects, created_students_ids)
 	print("generated teams")
