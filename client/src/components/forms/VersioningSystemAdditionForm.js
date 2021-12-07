@@ -4,12 +4,12 @@ import * as Yup from "yup";
 import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
-import { versioningSystemUrlValidShema } from "utils/validationSchemas";
+import { versioningSystemUrlValidSchema } from "utils/validationSchemas";
 import { usePatchFetch } from "customHooks/useFetch.js";
 import PropTypes from "prop-types";
 
 const validationSchema = Yup.object({
-	version_control_link: versioningSystemUrlValidShema,
+	version_control_link: versioningSystemUrlValidSchema,
 });
 
 VersioningSystemAdditionForm.propTypes = {
