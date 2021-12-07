@@ -278,7 +278,6 @@ function AdminManageUsersPanel(props) {
 			<Button variant="outlined" onClick={handleOpenTeacherCreationForm}>
 				Create teacher account
 			</Button>
-
 			<div style={{ marginTop: "10px", height: 400, width: "100%" }}>
 				<DataGrid
 					disableSelectionOnClick

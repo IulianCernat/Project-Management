@@ -52,7 +52,13 @@ export function DatetimePickerWrapper({ runChangeEffect, ...props }) {
 	);
 }
 
-export function TextFieldSelectWrapper({ label, menuOptions, runChangeEffect, ...props }) {
+export function TextFieldSelectWrapper({
+	label,
+	menuOptions,
+	runChangeEffect,
+	selectComponentMenuProps,
+	...props
+}) {
 	const [field, meta] = useField(props);
 
 	return (
@@ -66,6 +72,7 @@ export function TextFieldSelectWrapper({ label, menuOptions, runChangeEffect, ..
 			onChange={(event) => {
 				runChangeEffect(event.target.value);
 			}}
+			SelectProps={{ MenuProps: selectComponentMenuProps }}
 		>
 			{menuOptions.map((option) => (
 				<MenuItem key={option.label} value={option.value}>

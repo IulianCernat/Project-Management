@@ -4,22 +4,26 @@ from utils.restx import api
 location = api.model('Resource location', {
     'location': String(required=True, description="Resource location after creation")
 })
-message = api.model('Message', {
-    'message': String(required=True, description="Generic message returned for operations that don't return content")
-})
+message = api.model('Message', {'message': String(
+    required=True, description="Generic message returned for operations that don't return content")})
 
 bad_request = api.inherit('Bad request', message, {
     'errors': Wildcard(String)
 })
 
-user_input = api.model('User input', {
-    'fullName': String(required=True, description="User's full name name"),
-    'contact': String(required=False, description="User's contact info (email)"),
-    'avatar_url': String(required=False, description="User's profile picture"),
-    "student_group_id": String(required=False),
-    "is_user_teacher": Boolean(required=False),
-    "is_user_student": Boolean(required=False)
-})
+user_input = api.model(
+    'User input',
+    {'fullName': String(required=True, description="User's full name name"),
+     'contact': String(required=False, description="User's contact info (email)"),
+     'avatar_url': String(required=False, description="User's profile picture"),
+     'student_group': String(
+         required=False,
+         enum=['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6'],
+    ),
+        "student_group_id": String(required=False),
+        "is_user_teacher": Boolean(required=False),
+        "is_user_student": Boolean(required=False)
+    })
 
 user_input_created_by_admin = api.inherit('User created by admin', user_input, {
     'email': String(required=True),
@@ -176,9 +180,8 @@ sprint_update_input = api.model('Sprint fields to be updated', {
     'completed': Boolean(description="Whether sprint should be marked as completed or not")
 })
 
-ids_list_input = api.model("General ids list", {
-    'ids': List(Integer, required=True, description="A general ids list that will be will have operations done on")
-})
+ids_list_input = api.model("General ids list", {'ids': List(
+    Integer, required=True, description="A general ids list that will be will have operations done on")})
 
 user_role_output = api.model("Project user role", {
     "user_role": String(required=True, enum=["developer", "scrumMaster", "productOwner"],

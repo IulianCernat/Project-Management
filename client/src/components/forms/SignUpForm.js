@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { Typography, Button } from "@material-ui/core";
-import { TextFieldWrapper } from "./InputFieldsWrappers";
+import { Typography, Button, Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { TextFieldWrapper, TextFieldSelectWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
@@ -11,15 +12,25 @@ import {
 	emailValidationSchema,
 	passwordValidationSchema,
 	fullNameValidationSchema,
+	studentGroupValidSchema,
+	studentGroupOptions,
 } from "utils/validationSchemas";
 
 const validationSchema = Yup.object().shape({
 	email: emailValidationSchema,
 	fullName: fullNameValidationSchema,
 	password: passwordValidationSchema,
+	studentGroup: studentGroupValidSchema,
 });
 
+const useStyles = makeStyles((theme) => ({
+	menuPaper: {
+		maxHeight: 100,
+	},
+}));
+
 export default function SignUpForm() {
+	const classes = useStyles();
 	const { signUp, logout } = useAuth();
 	const history = useHistory();
 	const [firebaseError, setFirebaseError] = useState("");
@@ -28,7 +39,7 @@ export default function SignUpForm() {
 		Authorization: "",
 	});
 	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
-		"api/users/",
+		"api/user_profiles/",
 		requestBody,
 		headers.current
 	);
@@ -47,6 +58,7 @@ export default function SignUpForm() {
 					email: "",
 					fullName: "",
 					password: "",
+					studentGroup: "",
 				}}
 				validationSchema={validationSchema}
 				onSubmit={async (values, { setSubmitting }) => {
@@ -57,14 +69,16 @@ export default function SignUpForm() {
 						let requestObj = {};
 						requestObj["fullName"] = values.fullName;
 						requestObj["contact"] = values.email;
+						requestObj["student_group"] = values.studentGroup;
+						requestObj["is_user_student"] = true;
 						setRequestBody(JSON.stringify(requestObj));
-						setSubmitting(false);
+						setSubmitting(true);
 					} catch (err) {
 						setFirebaseError(err.toString());
 					}
 				}}
 			>
-				{({ values, isSubmitting }) => (
+				{({ values, isSubmitting, setFieldValue }) => (
 					<Form>
 						<TextFieldWrapper
 							variant="outlined"
@@ -76,17 +90,34 @@ export default function SignUpForm() {
 							name="email"
 							autoComplete="email"
 						/>
-
-						<TextFieldWrapper
-							variant="outlined"
-							margin="normal"
-							required
-							fullWidth
-							name="fullName"
-							label="Full name"
-							type="text"
-							id="fullName"
-						/>
+						<Box display="flex" style={{ gap: "5px" }}>
+							<TextFieldWrapper
+								variant="outlined"
+								margin="normal"
+								required
+								fullWidth
+								name="fullName"
+								label="Full name"
+								type="text"
+								id="fullName"
+							/>
+							<TextFieldSelectWrapper
+								margin="normal"
+								required
+								variant="outlined"
+								id="studentGroup"
+								label="Student Group"
+								name="studentGroup"
+								menuOptions={studentGroupOptions}
+								disabled={isLoading}
+								runChangeEffect={(studentGroup) => {
+									setFieldValue("studentGroup", studentGroup);
+								}}
+								selectComponentMenuProps={{
+									classes: { paper: classes.menuPaper },
+								}}
+							/>
+						</Box>
 
 						<TextFieldWrapper
 							variant="outlined"

@@ -104,6 +104,27 @@ export const trelloBoardNameValidSchema = Yup.string("Paste the public trello bo
 	.min(1, "Trello board name must have at least one character")
 	.max(16384, "Trello board name must be of maximum 16384 characters length");
 
-export const versioningSystemUrlValidShema = Yup.string("Paste the public version control system")
+export const versioningSystemUrlValidSchema = Yup.string("Paste the public version control system")
 	.url("Enter a valid url")
 	.max(255, "Url must be of maximum 255 characters length");
+
+export const studentGroupValidSchema = Yup.mixed("Student group")
+	.oneOf(["A1", "A2", "A3", "A4", "A5", "A6", "A7", "B1", "B2", "B3", "B4", "B5", "B6", "B7"])
+	.required("Student group is required");
+
+export const studentGroupOptions = [
+	"A1",
+	"A2",
+	"A3",
+	"A4",
+	"A5",
+	"A6",
+	"A7",
+	"B1",
+	"B2",
+	"B3",
+	"B4",
+	"B5",
+	"B6",
+	"B7",
+].map((group) => ({ label: group, value: group }));
