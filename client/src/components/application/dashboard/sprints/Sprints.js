@@ -505,7 +505,6 @@ export default function Sprints() {
 	}, [isResolvedGetSprints, getSprintsReceivedData]);
 
 	useEffect(() => {
-		console.log("useEffect run");
 		if (!websockeWithRealtimeService.current) return;
 		websockeWithRealtimeService.current.onmessage = (event) => {
 			const parsedMessageObj = JSON.parse(event.data);
