@@ -11,6 +11,7 @@ from endpoints.sprints_endpoint import sprints_namespace
 from endpoints.trello_callback_endpoint import trello_callback_namespace
 from endpoints.trello_endpoint import trello_namespace
 from endpoints.firebase_users_endpoint import firebase_users_namespace
+from endpoints.team_messages_endpoint import team_messages_namespace
 from flask_cors import CORS
 
 
@@ -35,6 +36,7 @@ class FlaskApp(Flask):
         api.add_namespace(trello_callback_namespace)
         api.add_namespace(trello_namespace)
         api.add_namespace(firebase_users_namespace)
+        api.add_namespace(team_messages_namespace)
         self.register_blueprint(blueprint)
 
         db.init_app(self)

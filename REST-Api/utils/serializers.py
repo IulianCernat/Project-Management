@@ -4,9 +4,8 @@ from utils.restx import api
 location = api.model('Resource location', {
     'location': String(required=True, description="Resource location after creation")
 })
-message = api.model('Message', {
-    'message': String(required=True, description="Generic message returned for operations that don't return content")
-})
+message = api.model('Message', {'message': String(
+    required=True, description="Generic message returned for operations that don't return content")})
 
 bad_request = api.inherit('Bad request', message, {
     'errors': Wildcard(String)
@@ -176,9 +175,8 @@ sprint_update_input = api.model('Sprint fields to be updated', {
     'completed': Boolean(description="Whether sprint should be marked as completed or not")
 })
 
-ids_list_input = api.model("General ids list", {
-    'ids': List(Integer, required=True, description="A general ids list that will be will have operations done on")
-})
+ids_list_input = api.model("General ids list", {'ids': List(
+    Integer, required=True, description="A general ids list that will be will have operations done on")})
 
 user_role_output = api.model("Project user role", {
     "user_role": String(required=True, enum=["developer", "scrumMaster", "productOwner"],
@@ -240,4 +238,14 @@ trello_card_input = api.model("Input for copying an issue to a trello board", {
     'due': String(required=True, description="The date until the issue must be completed"),
     'issue_id': Integer(required=True, descritption="The issue's id which will pe represented on Trello"),
     'board_list_name': String(required=True, description="The name of the board list where the card will be created")
+})
+
+team_message_input = api.model("Input for creating a team message", {
+    'body': String(description="The message text content", required=True),
+    'team_id': Integer(required=True, description="The id of team which will see this message"),
+    'created_at': DateTime(required=True, description="The date when this message was created"),
+})
+
+team_message_output = api.inherit("Team message output", team_message_input, {
+    'id': Integer(require=True, description="The id of message")
 })

@@ -15,8 +15,9 @@ authorization_header.add_argument('Authorization', location='headers',
 projects_sorting_arguments = api.parser()
 projects_sorting_arguments.add_argument(
     'user_id', type=int, location='args', required=True)
-projects_sorting_arguments.add_argument('user_type', type=str, choices=['productOwner', 'scrumMaster', 'developer'],
-                                        location='args', required=True)
+projects_sorting_arguments.add_argument(
+    'user_type', type=str, choices=['productOwner', 'scrumMaster', 'developer'],
+    location='args', required=True)
 
 team_filtering_args = api.parser()
 team_filtering_args.add_argument(
@@ -46,3 +47,6 @@ trello_board_args = api.parser()
 trello_board_args.add_argument('data_arrangement', type=inputs.regex(
     r'(board_cards)?,?(board_lists)?,?(board_lists_ids_and_names)?,?(board_labels)?,?'),
     location="args", required=True)
+
+team_messages_filtering_args = api.parser()
+team_messages_filtering_args.add_argument('team_id', type=int, location="args", required=True)
