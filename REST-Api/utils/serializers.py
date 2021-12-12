@@ -247,5 +247,5 @@ team_message_input = api.model("Input for creating a team message", {
 })
 
 team_message_output = api.inherit("Team message output", team_message_input, {
-    'id': Integer(require=True, description="The id of message")
+    'id': Integer(required=True, description="The id of message")
 })
