@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "react";
+import { useReducer, useEffect, useState } from "react";
 import useGetHeaders from "customHooks/useGetHeaders";
 
 const initialState = {
@@ -142,7 +142,7 @@ export function useGetFetch(
 	headers = null
 ) {
 	const [state, dispatch] = useReducer(reducer, initialState);
-
+	const [transformedState, setTransformedState] = useState(state);
 	useEffect(() => {
 		if (!start) return;
 
@@ -162,8 +162,13 @@ export function useGetFetch(
 		doFetch();
 	}, [url, parameters, start, foreignUrl, headers]);
 
-	return transformState(state);
+	useEffect(() => {
+		setTransformedState(transformState(state));
+	}, [state]);
+
+	return transformedState;
 }
+
 export function useDeleteFetch(url) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const headers = useGetHeaders();

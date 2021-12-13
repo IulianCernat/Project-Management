@@ -19,6 +19,8 @@ export const maxIssueDescriptionLen = 5000;
 export const maxSprintNameLen = 500;
 export const maxSprintGoalLen = 5000;
 
+export const minMessageBodyLen = 2;
+export const maxMessageBodyLen = 5000;
 export const generalInputString = Yup.string().required();
 
 export const emailValidationSchema = Yup.string("Enter your email")
@@ -128,3 +130,7 @@ export const studentGroupOptions = [
 	"B6",
 	"B7",
 ].map((group) => ({ label: group, value: group }));
+
+export const messageValidSchema = Yup.string("")
+	.min(minMessageBodyLen, "Trello board name must have at least one character")
+	.max(maxMessageBodyLen, "Trello board name must be of maximum 16384 characters length");

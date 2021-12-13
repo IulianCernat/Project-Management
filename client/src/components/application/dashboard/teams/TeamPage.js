@@ -3,6 +3,7 @@ import { AppBar, Tabs, Tab, Box, LinearProgress } from "@material-ui/core";
 import { useParams } from "react-router-dom";
 import { useGetFetch } from "customHooks/useFetch";
 import TeamMembers from "./TeamMembers";
+import TeamMessages from "./TeamMessages";
 import Board from "./Board";
 import { Alert } from "@material-ui/lab";
 import { useProjectContext } from "contexts/ProjectContext";
@@ -46,6 +47,7 @@ export default function TeamPage() {
 							<Tab label="Info" />
 							<Tab label="Board" />
 							<Tab label="Members" />
+							<Tab label="Messages" />
 						</Tabs>
 					</AppBar>
 
@@ -68,6 +70,9 @@ export default function TeamPage() {
 					</TabPanel>
 					<TabPanel value={currentTab} index={2}>
 						<TeamMembers />
+					</TabPanel>
+					<TabPanel value={currentTab} index={3}>
+						<TeamMessages teamId={Number(receivedData.id)} />
 					</TabPanel>
 				</>
 			) : null}

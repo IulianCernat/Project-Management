@@ -244,3 +244,13 @@ trello_card_input = api.model("Input for copying an issue to a trello board", {
     'issue_id': Integer(required=True, descritption="The issue's id which will pe represented on Trello"),
     'board_list_name': String(required=True, description="The name of the board list where the card will be created")
 })
+
+team_message_input = api.model("Input for creating a team message", {
+    'body': String(description="The message text content", required=True),
+    'team_id': Integer(required=True, description="The id of team which will see this message"),
+    'created_at': DateTime(required=True, description="The date when this message was created"),
+})
+
+team_message_output = api.inherit("Team message output", team_message_input, {
+    'id': Integer(required=True, description="The id of message")
+})
