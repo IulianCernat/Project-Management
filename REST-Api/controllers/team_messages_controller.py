@@ -1,5 +1,6 @@
 from database.models import TeamMessage
 from database import db
+from flask_sqlalchemy import sqlalchemy
 
 
 def create_team_message(team_message_input):
@@ -20,4 +21,5 @@ def delete_team_message(team_message_id):
 
 
 def get_all_team_messages(team_id):
-    return TeamMessage.query.filter(TeamMessage.team_id == team_id).all()
+    return TeamMessage.query.filter(TeamMessage.team_id == team_id).order_by(
+        sqlalchemy.desc(TeamMessage.created_at)).all()

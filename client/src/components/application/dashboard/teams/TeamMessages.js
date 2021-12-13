@@ -4,15 +4,10 @@ import { useGetFetch } from "customHooks/useFetch";
 import TeamMessageCard from "components/subComponents/TeamMessageCard";
 import DialogForm from "components/subComponents/DialogForm";
 import TeamMessageCreationForm from "components/forms/CreateTeamMessageForm";
-import { ClassNames } from "@emotion/react";
 
 function TeamMessagesComponentList({ teamMessages }) {
-	useEffect(() => {
-		console.log(teamMessages);
-	}, [teamMessages]);
-
 	return (
-		<Box>
+		<Box display="flex" flexDirection="column" style={{ gap: "10px" }}>
 			{teamMessages.map((message) => (
 				<TeamMessageCard key={message.id} body={message.body} />
 			))}
@@ -31,13 +26,15 @@ export default function TeamMessages({ teamId }) {
 	};
 
 	useEffect(() => {
-		console.log(fetchMessageStatusObj);
 		if (fetchMessageStatusObj.isResolved) setTeamMessages(fetchMessageStatusObj.receivedData);
 	}, [fetchMessageStatusObj]);
 
 	return (
 		<>
 			<Button
+				style={{ marginBottom: "10px" }}
+				variant="contained"
+				color="primary"
 				onClick={() => {
 					setOpenTeamMessageDialogForm(true);
 				}}
