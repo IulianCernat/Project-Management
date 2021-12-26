@@ -5,7 +5,7 @@ import { Button, Typography } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { projectNameValidSchema, projectDescriptionValidSchema } from "utils/validationSchemas";
-import { usePostFetch, useGetFetch } from "customHooks/useFetch.js";
+import { usePostFetch } from "customHooks/useFetch.js";
 import PropTypes from "prop-types";
 import { maxProjectDescriptionLen } from "utils/validationSchemas";
 
@@ -18,35 +18,16 @@ projectDescriptionValidSchema.propTypes = {
 	productOwnerid: PropTypes.number.isRequired,
 	insertNewCreatedProject: PropTypes.func.isRequired,
 };
-export default function ProjectCreationForm(props) {
+export default function ProjectCreationForm({ productOwnerId, insertNewCreatedProject }) {
 	const [requestBody, setRequestBody] = useState(null);
-	const [createdProjectId, setCreateProjectId] = useState();
-	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] = useState(false);
-
-	const {
-		receivedData: projectCreationReceivedData,
-		error: projectCreationError,
-		isLoading: isLoadingProjectCreation,
-		isRejected: isRejectedProjectCreation,
-		isResolved: isResolvedProjectCreation,
-	} = usePostFetch("api/projects/", requestBody);
-	const {
-		receivedData: fetchedNewCreatedResource,
-		error: fetchedNewCreatedResourceError,
-		isLoading: fetchedNewCreatedResourceIsLoading,
-		isRejected: fetchedNewCreatedResourceIsRejected,
-		isResolved: fetchedNewCreatedResourceIsResolved,
-	} = useGetFetch(`api/projects/${createdProjectId}`, null, startFetchingNewCreatedResource);
-	useEffect(() => {
-		if (!isResolvedProjectCreation) return;
-		setCreateProjectId(projectCreationReceivedData.split("/").pop());
-		setStartFetchingNewCreatedResource(true);
-	}, [isResolvedProjectCreation]);
+	const projectCreationStatus = usePostFetch("api/projects/", requestBody);
 
 	useEffect(() => {
-		if (fetchedNewCreatedResourceIsResolved)
-			props.insertNewCreatedProject(fetchedNewCreatedResource);
-	}, [fetchedNewCreatedResourceIsResolved]);
+		console.log(`form rerun ${projectCreationStatus.isResolved}`);
+		if (!projectCreationStatus.isResolved) return;
+		if (projectCreationStatus.isResolved)
+			insertNewCreatedProject(projectCreationStatus.receivedData);
+	}, [projectCreationStatus, insertNewCreatedProject]);
 
 	return (
 		<>
@@ -58,7 +39,7 @@ export default function ProjectCreationForm(props) {
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
 					values["created_at"] = new Date().toISOString();
-					values["product_owner_id"] = props.productOwnerId;
+					values["product_owner_id"] = productOwnerId;
 					const stringifiedData = JSON.stringify(values);
 					setRequestBody(stringifiedData);
 				}}
@@ -72,7 +53,7 @@ export default function ProjectCreationForm(props) {
 						id="name"
 						label="Name"
 						name="name"
-						disabled={isLoadingProjectCreation}
+						disabled={projectCreationStatus.isLoading}
 					/>
 
 					<TextFieldWrapper
@@ -86,7 +67,7 @@ export default function ProjectCreationForm(props) {
 						id="description"
 						label="description"
 						name="description"
-						disabled={isLoadingProjectCreation}
+						disabled={projectCreationStatus.isLoading}
 					/>
 
 					<Button
@@ -94,18 +75,18 @@ export default function ProjectCreationForm(props) {
 						fullWidth
 						variant="contained"
 						color="primary"
-						disabled={isLoadingProjectCreation}
+						disabled={projectCreationStatus.isLoading}
 					>
 						<Typography>Create project</Typography>
 					</Button>
-					{isResolvedProjectCreation && (
+					{projectCreationStatus.isResolved && (
 						<Alert severity="success">
 							<Typography>New project created</Typography>
 						</Alert>
 					)}
-					{isRejectedProjectCreation && (
+					{projectCreationStatus.isRejected && (
 						<Alert severity="error">
-							<Typography>{projectCreationError}</Typography>
+							<Typography>{projectCreationStatus.error}</Typography>
 						</Alert>
 					)}
 				</Form>

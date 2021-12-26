@@ -1,6 +1,6 @@
 import { useReducer, useEffect, useState } from "react";
-import useGetHeaders from "customHooks/useGetHeaders";
-
+import { useAuth } from "contexts/AuthContext";
+import { buildHeadersForApi } from "utils/buildHeadersForApi";
 const initialState = {
 	status: "idle",
 	receivedData: null,
@@ -39,6 +39,7 @@ function reducer(state, action) {
 function transformState(state) {
 	return {
 		...state,
+		isIdle: state.status === "idle",
 		isLoading: state.status === "pending",
 		isResolved: state.status === "resolved",
 		isRejected: state.status === "rejected",
@@ -66,7 +67,7 @@ async function processResponse(response) {
 	}
 }
 
-export async function doPost(url, stringifiedData, headers = null) {
+export async function doPost(url, stringifiedData, headers) {
 	try {
 		url = process.env.REACT_APP_API_URL + "/" + url;
 		let response = await fetch(url, {
@@ -84,7 +85,7 @@ export async function doPost(url, stringifiedData, headers = null) {
 	}
 }
 
-export async function doPatch(url, stringifiedData, headers = null) {
+export async function doPatch(url, stringifiedData, headers) {
 	try {
 		url = process.env.REACT_APP_API_URL + "/" + url;
 		let response = await fetch(url, {
@@ -102,10 +103,13 @@ export async function doPatch(url, stringifiedData, headers = null) {
 	}
 }
 
-export async function doGet(url, parameters = null, foreignUrl = false, headers = null) {
+export async function doGet(url, parameters = null, headers) {
 	try {
-		if (!foreignUrl) url = process.env.REACT_APP_API_URL + "/" + url;
-		if (parameters) url += "?" + new URLSearchParams(parameters).toString();
+		if (parameters)
+			url = `${process.env.REACT_APP_API_URL}/${url}?${new URLSearchParams(
+				parameters
+			).toString()}`;
+		else url = `${process.env.REACT_APP_API_URL}/${url}`;
 
 		let response = await fetch(url, {
 			method: "GET",
@@ -115,7 +119,7 @@ export async function doGet(url, parameters = null, foreignUrl = false, headers 
 		});
 		return await processResponse(response);
 	} catch (err) {
-		return { error: err, receivedData: null };
+		return { error: `Cannot fetch: ${err}`, receivedData: null };
 	}
 }
 
@@ -125,7 +129,9 @@ async function doDelete(url, headers) {
 
 		let response = await fetch(url, {
 			method: "DELETE",
-			headers,
+			headers: {
+				...headers,
+			},
 		});
 
 		return await processResponse(response);
@@ -134,21 +140,20 @@ async function doDelete(url, headers) {
 	}
 }
 
-export function useGetFetch(
-	url,
-	parameters = null,
-	start = true,
-	foreignUrl = false,
-	headers = null
-) {
+export function useGetFetch(url, parameters = null, start = true) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const [transformedState, setTransformedState] = useState(state);
+	const { currentUser } = useAuth();
 	useEffect(() => {
-		if (!start) return;
+		if (!start) {
+			dispatch({ type: "idle" });
+			return;
+		}
 
 		async function doFetch() {
+			const headers = await buildHeadersForApi(currentUser);
 			dispatch({ type: "started" });
-			let fetchResponse = await doGet(url, parameters, foreignUrl, headers);
+			let fetchResponse = await doGet(url, parameters, headers);
 
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
@@ -160,7 +165,7 @@ export function useGetFetch(
 		}
 
 		doFetch();
-	}, [url, parameters, start, foreignUrl, headers]);
+	}, [url, parameters, start]);
 
 	useEffect(() => {
 		setTransformedState(transformState(state));
@@ -171,13 +176,17 @@ export function useGetFetch(
 
 export function useDeleteFetch(url) {
 	const [state, dispatch] = useReducer(reducer, initialState);
-	const headers = useGetHeaders();
+	const { currentUser } = useAuth();
+
 	useEffect(() => {
-		if (!url) return;
+		if (!url) {
+			dispatch({ type: "idle" });
+			return;
+		}
 
 		async function doFetch() {
 			dispatch({ type: "started" });
-
+			const headers = await buildHeadersForApi(currentUser);
 			let fetchResponse = await doDelete(url, headers);
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
@@ -193,16 +202,18 @@ export function useDeleteFetch(url) {
 
 	return transformState(state);
 }
-export function usePostFetch(url, bodyContent, headers) {
+export function usePostFetch(url, bodyContent) {
 	const [state, dispatch] = useReducer(reducer, initialState);
-
+	const [transformedState, setTransformedState] = useState(state);
+	const { currentUser } = useAuth();
 	useEffect(() => {
+		if (!bodyContent) {
+			return;
+		}
 		async function doFetch() {
-			if (!bodyContent) {
-				dispatch({ type: "idle" });
-				return;
-			}
 			dispatch({ type: "started" });
+			const headers = await buildHeadersForApi(currentUser);
+
 			let fetchResponse = await doPost(url, bodyContent, headers);
 
 			if (fetchResponse.error) {
@@ -211,18 +222,23 @@ export function usePostFetch(url, bodyContent, headers) {
 			}
 			dispatch({
 				type: "success",
-				receivedData: fetchResponse.location ? "undefined" : fetchResponse.receivedData,
+				receivedData: fetchResponse.receivedData,
 			});
 		}
 
 		doFetch(url, bodyContent);
-	}, [url, bodyContent, headers]);
+	}, [url, bodyContent]);
 
-	return transformState(state);
+	useEffect(() => {
+		setTransformedState(transformState(state));
+	}, [state]);
+
+	return transformedState;
 }
 
-export function usePatchFetch(url, bodyContent, headers = null) {
+export function usePatchFetch(url, bodyContent) {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const { currentUser } = useAuth();
 	useEffect(() => {
 		async function doFetch() {
 			if (!bodyContent) {
@@ -230,16 +246,18 @@ export function usePatchFetch(url, bodyContent, headers = null) {
 				return;
 			}
 			dispatch({ type: "started" });
+			const headers = await buildHeadersForApi(currentUser);
+
 			let fetchResponse = await doPatch(url, bodyContent, headers);
 			if (fetchResponse.error) {
 				dispatch({ type: "error", error: fetchResponse.error.toString() });
 				return;
 			}
-			dispatch({ type: "success", receivedData: fetchResponse.location });
+			dispatch({ type: "success", receivedData: fetchResponse.receivedData });
 		}
 
 		doFetch(url, bodyContent);
-	}, [url, bodyContent, headers]);
+	}, [url, bodyContent]);
 
 	return transformState(state);
 }

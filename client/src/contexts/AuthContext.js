@@ -39,7 +39,6 @@ export function AuthProvider({ children }) {
 					let { error, receivedData: profile } = await doGet(
 						"api/user_profiles/loggedUser",
 						null,
-						false,
 						{
 							Authorization: `firebase_id_token=${userIdToken}`,
 						}

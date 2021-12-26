@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
 	Dialog,
 	DialogContent,
@@ -20,6 +21,9 @@ export default function DialogForm({ title, onClose, children, open, ...other })
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+	useEffect(() => {
+		console.log("dialog running");
+	});
 	return (
 		<Dialog
 			fullScreen={fullScreen}

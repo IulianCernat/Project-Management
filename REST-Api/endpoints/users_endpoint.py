@@ -65,7 +65,6 @@ class LoggedUser(Resource):
     @api.marshal_with(user_output)
     def get(self):
         decoded_token = process_firebase_authorization_field(request)
-
         return get_self(decoded_token['uid']), 200
 
     @api.response(200, 'User profile successfully updated', message)

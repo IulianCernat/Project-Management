@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import {
 	Box,
 	makeStyles,
@@ -68,44 +68,41 @@ function TabPanel(props) {
 	const [openProjectCreation, setOpenProjectCreation] = useState(false);
 	const [startGetFetch, setStartGetFetch] = useState(false);
 	const [projectIdToBeDeleted, setProjectIdToBeDeleted] = useState();
-	const [projectsList, setProjectsList] = useState();
-	const { isResolved: isResolvedDeleteProject } = useDeleteFetch(
+	const [projectsList, setProjectsList] = useState([]);
+	const projectDeletionStatus = useDeleteFetch(
 		projectIdToBeDeleted ? `api/projects/${projectIdToBeDeleted}` : null
 	);
 	const getParams = useRef({
 		user_id: "",
 		user_type: props.userType,
 	});
-	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
-		"api/projects/",
-		getParams.current,
-		startGetFetch
-	);
+	const projectsFetchingStatus = useGetFetch("api/projects/", getParams.current, startGetFetch);
 
 	const handleProjectDeletion = (projectId) => {
 		setProjectIdToBeDeleted(projectId);
 	};
 
 	useEffect(() => {
-		if (!isResolvedDeleteProject) return;
+		if (!projectDeletionStatus.isResolved) return;
 
 		setProjectsList((projectsList) =>
 			projectsList.filter((item) => item.id !== projectIdToBeDeleted)
 		);
-	}, [isResolvedDeleteProject]);
+		setProjectIdToBeDeleted(null);
+	}, [projectDeletionStatus, projectIdToBeDeleted]);
 
-	const openProjectCreationForm = () => {
+	const openProjectCreationForm = useCallback(() => {
 		setOpenProjectCreation(true);
-	};
+	}, []);
 
-	const handleCancelProjectCreation = () => {
+	const handleCancelProjectCreation = useCallback(() => {
 		setOpenProjectCreation(false);
-	};
+	}, []);
 
-	const insertNewCreatedProject = (newProjectObj) => {
-		handleCancelProjectCreation();
-		setProjectsList((prevProjectList) => [newProjectObj].concat(prevProjectList));
-	};
+	const insertNewCreatedProject = useCallback((newProjectObj) => {
+		setOpenProjectCreation(false);
+		setProjectsList((prevProjectsList) => [newProjectObj, ...prevProjectsList]);
+	}, []);
 
 	useEffect(() => {
 		if (props.index !== props.value) {
@@ -114,15 +111,18 @@ function TabPanel(props) {
 		}
 		getParams.current.user_id = props.userId;
 		setStartGetFetch(true);
-	}, [props.value, props.userId]);
+	}, [props.value, props.userId, props.index]);
 
 	useEffect(() => {
-		if (isResolved) {
+		if (projectsFetchingStatus.isResolved) {
+			setProjectsList(projectsFetchingStatus.receivedData);
 			setStartGetFetch(false);
-			setProjectsList(receivedData);
 		}
-	}, [isResolved, receivedData]);
+	}, [projectsFetchingStatus]);
 
+	useEffect(() => {
+		console.log(projectsList);
+	});
 	return (
 		<Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
 			{props.value === props.index && (
@@ -135,8 +135,10 @@ function TabPanel(props) {
 					alignItems="center"
 					style={{ gap: "1rem" }}
 				>
-					{isLoading ? <CircularProgress /> : null}
-					{isRejected ? <Alert severity="error">{error} </Alert> : null}
+					{projectsFetchingStatus.isLoading ? <CircularProgress /> : null}
+					{projectsFetchingStatus.isRejected ? (
+						<Alert severity="error">{projectsFetchingStatus.error} </Alert>
+					) : null}
 					{props.withProjectAdditionForm && (
 						<Box alignSelf="center" width="100%">
 							<Box display="flex" justifyContent="center">
@@ -158,7 +160,7 @@ function TabPanel(props) {
 							</DialogForm>
 						</Box>
 					)}
-					{isResolved && projectsList ? (
+					{projectsList.length ? (
 						<ProjectComponentList
 							handleProjectDeletion={handleProjectDeletion}
 							projectsList={projectsList}

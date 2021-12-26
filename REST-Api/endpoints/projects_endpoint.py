@@ -7,26 +7,29 @@ from controllers.users_controller import get_user_id
 from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, projects_sorting_arguments
 from utils.custom_exceptions import AuthorizationFailed
-
-projects_namespace = api.namespace(
-    'projects', description='Operations related to projects')
+from utils.authorization import process_firebase_authorization_field, process_trello_authorization_field
+projects_namespace = api.namespace('projects', description='Operations related to projects')
 
 
 @projects_namespace.route('/')
 @api.response(400, 'Bad request', bad_request)
 class ProjectsCollection(Resource):
-    @api.response(201, 'Project successfully created', location)
+    @api.response(201, 'Project successfully created', project_output)
     @api.response(404, "Foreign key check failure (product_owner_id doesn't exist)")
-    @api.expect(project_input)
+    @api.marshal_with(project_output)
+    @api.expect(project_input, authorization_header)
     def post(self):
+        process_firebase_authorization_field(request)
         input_data = request.json
-        project_id = add_project(input_data)
-        return {"location": f"{api.base_url}{projects_namespace.path[1:]}/{project_id}"}, 201
+        new_project = add_project(input_data)
+        return new_project, 201
 
     @api.response(200, 'Projects successfully queried', [project_output])
     @api.marshal_list_with(project_output)
-    @api.expect(projects_sorting_arguments)
+    @api.expect(projects_sorting_arguments, authorization_header)
     def get(self):
+
+        process_firebase_authorization_field(request)
         args = projects_sorting_arguments.parse_args(request)
         user_id = args.get('user_id', None)
         user_type = args.get('user_type', None)
@@ -38,11 +41,15 @@ class ProjectsCollection(Resource):
 class ProjectItem(Resource):
     @api.response(200, 'Projects successfully queried', project_output)
     @api.marshal_with(project_output)
+    @api.expect(authorization_header)
     def get(self, id):
+        process_firebase_authorization_field(request)
         return get_project(id)
 
     @api.response(200, 'Projects successfully queried', message)
+    @api.expect(authorization_header)
     def delete(self, id):
+        process_firebase_authorization_field(request)
         delete_project(id)
         return {"message": "Project successfully deleted"}, 200
 
@@ -55,10 +62,7 @@ class ProjectItemRole(Resource):
     @api.marshal_with(user_role_output)
     @api.expect(authorization_header)
     def get(self, id):
-        try:
-            token_id = request.headers.get('Authorization')
-            decoded_token = verify_id_token(token_id)
-        except AuthorizationFailed as e:
-            raise e
+        process_firebase_authorization_field(request)
+        decoded_token = process_firebase_authorization_field(request)
         user_id = get_user_id(decoded_token['uid'])
         return get_project_role(user_id, id)
