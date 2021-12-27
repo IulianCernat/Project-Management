@@ -4,10 +4,8 @@ from utils.restx import api
 from utils.serializers import project_input, message, bad_request, project_output, location, user_role_output
 from controllers.projects_controller import *
 from controllers.users_controller import get_user_id
-from utils.firebase_auth import verify_id_token
 from utils.parsers import authorization_header, projects_sorting_arguments
-from utils.custom_exceptions import AuthorizationFailed
-from utils.authorization import process_firebase_authorization_field, process_trello_authorization_field
+from utils.authorization import process_firebase_authorization_field
 projects_namespace = api.namespace('projects', description='Operations related to projects')
 
 

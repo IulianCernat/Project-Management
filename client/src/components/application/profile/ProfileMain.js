@@ -91,13 +91,13 @@ function TabPanel(props) {
 		setProjectIdToBeDeleted(null);
 	}, [projectDeletionStatus, projectIdToBeDeleted]);
 
-	const openProjectCreationForm = useCallback(() => {
+	const openProjectCreationForm = () => {
 		setOpenProjectCreation(true);
-	}, []);
+	};
 
-	const handleCancelProjectCreation = useCallback(() => {
+	const handleCancelProjectCreation = () => {
 		setOpenProjectCreation(false);
-	}, []);
+	};
 
 	const insertNewCreatedProject = useCallback((newProjectObj) => {
 		setOpenProjectCreation(false);
@@ -120,9 +120,6 @@ function TabPanel(props) {
 		}
 	}, [projectsFetchingStatus]);
 
-	useEffect(() => {
-		console.log(projectsList);
-	});
 	return (
 		<Box maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
 			{props.value === props.index && (

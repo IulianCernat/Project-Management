@@ -1,12 +1,5 @@
-import { useRef, useState, useEffect } from "react";
-import {
-	Box,
-	Typography,
-	makeStyles,
-	Button,
-	CircularProgress,
-	LinearProgress,
-} from "@material-ui/core";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { Box, Typography, makeStyles, Button, CircularProgress, LinearProgress } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import TeamCard from "components/subComponents/TeamCard";
 import DialogForm from "components/subComponents/DialogForm";
@@ -31,10 +24,9 @@ function TeamComponentList({ teamList, handleDelete, renderTeamCardActions }) {
 			{teamList.length
 				? teamList.map((item) => {
 						return (
-							<Box maxWidth="50ch" flex="1 1 40ch">
+							<Box key={item.id} maxWidth="50ch" flex="1 1 40ch">
 								<TeamCard
 									linkTo={`${match.path}/${item.id}`}
-									key={item.id}
 									{...item}
 									renderActions={renderTeamCardActions}
 									handleDelete={handleDelete}
@@ -47,59 +39,44 @@ function TeamComponentList({ teamList, handleDelete, renderTeamCardActions }) {
 	);
 }
 
-export default function Teams(props) {
+export default function Teams() {
 	const { currentUserRole, projectId } = useProjectContext();
 	let match = useRouteMatch();
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
-	const [startFetchingTeams, setStartFetchingTeams] = useState(true);
-	const [teamCreationSuccess, setTeamCreationSuccess] = useState(false);
 	const [teamIdToBeDeleted, setTeamIdToBeDeleted] = useState();
-	const [teamsList, setTeamsList] = useState();
+	const [teamsList, setTeamsList] = useState([]);
 
 	const getParams = useRef({ project_id: projectId });
-	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
-		"api/teams/",
-		getParams.current,
-		startFetchingTeams
-	);
+	const getTeamsFetchStatus = useGetFetch("api/teams/", getParams.current);
 
-	const { isResolved: isResolvedDeleteTeam } = useDeleteFetch(
-		teamIdToBeDeleted ? `api/teams/${teamIdToBeDeleted}` : null
-	);
+	const deleteTeamStatus = useDeleteFetch(teamIdToBeDeleted ? `api/teams/${teamIdToBeDeleted}` : null);
 
 	function openTeamCreationForm() {
 		setOpenTeamCreation(true);
 	}
-	function handleCancel() {
+	function handleCancelTeamCreation() {
 		setOpenTeamCreation(false);
 	}
 
 	function handleTeamDeletion(teamId) {
 		setTeamIdToBeDeleted(teamId);
 	}
-	useEffect(() => {
-		if (isResolved) setTeamsList(receivedData);
-	}, [isResolved, receivedData]);
+
+	const insertNewTeam = useCallback((newTeamObj) => {
+		handleCancelTeamCreation();
+		setTeamsList((prevTeamsList) => [newTeamObj, ...prevTeamsList]);
+	}, []);
 
 	useEffect(() => {
-		if (!teamIdToBeDeleted) return;
-
-		setTeamsList((projectsList) =>
-			projectsList.filter((item) => item.id !== teamIdToBeDeleted)
-		);
-	}, [isResolvedDeleteTeam]);
+		if (getTeamsFetchStatus.isResolved) setTeamsList(getTeamsFetchStatus.receivedData);
+	}, [getTeamsFetchStatus]);
 
 	useEffect(() => {
-		if (teamCreationSuccess) {
-			setStartFetchingTeams(true);
-			handleCancel();
-			setTeamCreationSuccess(false);
+		if (deleteTeamStatus.isResolved) {
+			setTeamsList((projectsList) => projectsList.filter((item) => item.id !== teamIdToBeDeleted));
+			setTeamIdToBeDeleted(null);
 		}
-	}, [teamCreationSuccess]);
-
-	useEffect(() => {
-		if (startFetchingTeams) setStartFetchingTeams(false);
-	}, [startFetchingTeams]);
+	}, [deleteTeamStatus, teamIdToBeDeleted]);
 
 	return (
 		<Box mt={1}>
@@ -123,13 +100,10 @@ export default function Teams(props) {
 					<DialogForm
 						title="Add new team"
 						open={openTeamCreation}
-						onClose={handleCancel}
+						onClose={handleCancelTeamCreation}
 						maxWidth="sm"
 					>
-						<TeamCreationForm
-							setTeamCreationSuccess={setTeamCreationSuccess}
-							projectId={projectId}
-						/>
+						<TeamCreationForm insertNewTeam={insertNewTeam} projectId={projectId} />
 					</DialogForm>
 
 					<Box
@@ -141,17 +115,17 @@ export default function Teams(props) {
 						alignItems="center"
 						style={{ gap: "1rem" }}
 					>
-						{isResolved && teamsList ? (
+						{teamsList.length ? (
 							<TeamComponentList
 								teamList={teamsList}
 								handleDelete={handleTeamDeletion}
-								renderTeamCardActions={
-									!UIRestrictionForRoles.includes(currentUserRole)
-								}
+								renderTeamCardActions={!UIRestrictionForRoles.includes(currentUserRole)}
 							/>
 						) : null}
-						{isLoading ? <LinearProgress style={{ width: "100%" }} /> : null}
-						{isRejected ? <Alert severity="error">{error} </Alert> : null}
+						{getTeamsFetchStatus.isLoading ? <LinearProgress style={{ width: "100%" }} /> : null}
+						{getTeamsFetchStatus.isRejected ? (
+							<Alert severity="error">{getTeamsFetchStatus.error} </Alert>
+						) : null}
 					</Box>
 				</Route>
 			</Switch>

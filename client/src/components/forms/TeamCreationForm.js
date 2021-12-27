@@ -22,19 +22,16 @@ const validationSchema = Yup.object({
 });
 
 TeamCreationForm.propTypes = {
-	setTeamCreationSuccess: PropTypes.func.isRequired,
+	insertNewTeam: PropTypes.func.isRequired,
 	projectId: PropTypes.number.isRequired,
 };
-export default function TeamCreationForm(props) {
+export default function TeamCreationForm({ insertNewTeam, projectId }) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
-		"api/teams/",
-		requestBody
-	);
+	const teamCreationStatus = usePostFetch("api/teams/", requestBody);
 
 	useEffect(() => {
-		if (isResolved) props.setTeamCreationSuccess(true);
-	}, [isResolved]);
+		if (teamCreationStatus.isResolved) insertNewTeam(teamCreationStatus.receivedData);
+	}, [teamCreationStatus, insertNewTeam]);
 
 	return (
 		<>
@@ -50,7 +47,7 @@ export default function TeamCreationForm(props) {
 					requestObj["name"] = values.name;
 					requestObj["description"] = values.description;
 					requestObj["created_at"] = new Date().toISOString();
-					requestObj["project_id"] = props.projectId;
+					requestObj["project_id"] = projectId;
 					requestObj["scrum_master_id"] = JSON.parse(values.scrum_master).id;
 
 					const stringifiedData = JSON.stringify(requestObj);
@@ -68,12 +65,12 @@ export default function TeamCreationForm(props) {
 							id="name"
 							label="Name"
 							name="name"
-							disabled={isLoading}
+							disabled={teamCreationStatus.isLoading}
 						/>
 						<SearchField
-							fetchUrl="api/users/"
-							partOfProjectId={props.projectId}
-							setSelecteResource={(resource) => {
+							fetchUrl="api/user_profiles/"
+							partOfProjectId={projectId}
+							setSelectedResource={(resource) => {
 								setFieldValue("scrum_master", resource);
 							}}
 							inputNode={
@@ -94,24 +91,16 @@ export default function TeamCreationForm(props) {
 									justifyContent="space-between"
 									px={4}
 								>
-									<Avatar src={option.avatar_url}>
-										{option.fullName.slice(0, 2)}
-									</Avatar>
+									<Avatar src={option.avatar_url}>{option.fullName.slice(0, 2)}</Avatar>
 									<Typography>{option.fullName}</Typography>
-									<Typography>
-										{option.is_part_of_project ? "joined" : null}
-									</Typography>
+									<Typography>{option.is_part_of_project ? "joined" : null}</Typography>
 								</Box>
 							)}
 							optionLabel="fullName"
 							isOptionDisabled={(option) => option.is_part_of_project}
 						/>
 						<Hidden xsUp>
-							<TextFieldWrapper
-								id="scrum_master"
-								label="userId"
-								name="scrum_master"
-							/>
+							<TextFieldWrapper id="scrum_master" label="userId" name="scrum_master" />
 						</Hidden>
 
 						<TextFieldWrapper
@@ -125,7 +114,7 @@ export default function TeamCreationForm(props) {
 							label="description"
 							name="description"
 							maxTextWidth={maxTeamDescriptionLen}
-							disabled={isLoading}
+							disabled={teamCreationStatus.isLoading}
 						/>
 
 						<Button
@@ -133,19 +122,19 @@ export default function TeamCreationForm(props) {
 							fullWidth
 							variant="contained"
 							color="primary"
-							disabled={isLoading}
+							disabled={teamCreationStatus.isLoading}
 						>
 							<Typography>Create team</Typography>
 						</Button>
 
-						{isResolved && (
+						{teamCreationStatus.isResolved && (
 							<Alert severity="success">
 								<Typography>New Team created</Typography>
 							</Alert>
 						)}
-						{isRejected && (
+						{teamCreationStatus.isRejected && (
 							<Alert severity="error">
-								<Typography>{error}</Typography>
+								<Typography>{teamCreationStatus.error}</Typography>
 							</Alert>
 						)}
 					</Form>

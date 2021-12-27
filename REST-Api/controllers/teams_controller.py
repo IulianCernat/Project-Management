@@ -15,7 +15,7 @@ def add_team(input_data):
             'created_at': input_data['created_at']
         }]})
 
-    return new_team.id
+    return new_team
 
 
 def get_team(team_id):

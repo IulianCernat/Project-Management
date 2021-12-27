@@ -32,7 +32,7 @@ SearchField.propTypes = {
 	 * Function that sets the id of the searched resources in a hidden
 	 * textfield
 	 */
-	setSelecteResource: PropTypes.func.isRequired,
+	setSelectedResource: PropTypes.func.isRequired,
 	/**
 	 * The url which which will be called with user's search input
 	 */
@@ -44,7 +44,7 @@ export function SearchField({
 	isOptionDisabled,
 	optionWireFrame,
 	inputNode,
-	setSelecteResource,
+	setSelectedResource,
 	fetchUrl,
 	partOfProjectId,
 	...other
@@ -55,15 +55,12 @@ export function SearchField({
 	const [startFetching, setStartFetching] = useState(false);
 	const getParams = useRef({ search: "", part_of_project_id: partOfProjectId });
 
-	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
-		fetchUrl,
-		getParams.current,
-		startFetching
-	);
+	const getItemsStatus = useGetFetch(fetchUrl, getParams.current, startFetching);
 
 	useEffect(() => {
-		setOptions((prev) => (receivedData ? receivedData : []));
-	}, [isResolved, receivedData]);
+		if (getItemsStatus.isResolved)
+			setOptions((prev) => (getItemsStatus.receivedData ? getItemsStatus.receivedData : []));
+	}, [getItemsStatus]);
 
 	useEffect(() => {
 		if (!searchTerm) {
@@ -89,15 +86,15 @@ export function SearchField({
 				}}
 				onChange={(event, value) => {
 					if (!value) {
-						setSelecteResource("");
+						setSelectedResource("");
 						return;
 					}
 					if (typeof value === "object") {
-						setSelecteResource(JSON.stringify(value));
+						setSelectedResource(JSON.stringify(value));
 						return;
 					}
 
-					setSelecteResource(value.id);
+					setSelectedResource(value.id);
 				}}
 				onInputChange={async (event, value, reason) => {
 					await sleep();
@@ -109,7 +106,7 @@ export function SearchField({
 				getOptionLabel={(option) => option[optionLabel]}
 				getOptionDisabled={isOptionDisabled}
 				options={options}
-				loading={isLoading}
+				loading={getItemsStatus.isLoading}
 				renderOption={optionWireFrame}
 				renderInput={(params) => cloneElement(inputNode, params)}
 				fullWidth
