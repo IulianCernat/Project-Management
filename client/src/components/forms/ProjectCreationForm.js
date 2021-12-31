@@ -23,10 +23,8 @@ export default function ProjectCreationForm({ productOwnerId, insertNewCreatedPr
 	const projectCreationStatus = usePostFetch("api/projects/", requestBody);
 
 	useEffect(() => {
-		console.log(`form rerun ${projectCreationStatus.isResolved}`);
 		if (!projectCreationStatus.isResolved) return;
-		if (projectCreationStatus.isResolved)
-			insertNewCreatedProject(projectCreationStatus.receivedData);
+		if (projectCreationStatus.isResolved) insertNewCreatedProject(projectCreationStatus.receivedData);
 	}, [projectCreationStatus, insertNewCreatedProject]);
 
 	return (

@@ -5,18 +5,20 @@ from sqlalchemy import desc
 
 
 def add_team_members(input_data):
-    ids = []
+    new_team_members = []
     for team_member in input_data['team_members']:
         new_team_member = TeamMember(team_member)
         db.session.add(new_team_member)
         db.session.commit()
-        ids.append(new_team_member.id)
+        new_team_members.append(new_team_member)
 
-    return ids
+    return new_team_members
 
 
 def get_team_members(team_id):
-    return TeamMember.query.filter(TeamMember.team_id == team_id).order_by(desc(TeamMember.user_type)).all()
+    return TeamMember.query.filter(
+        TeamMember.team_id == team_id).order_by(
+        desc(TeamMember.user_type)).all()
 
 
 def get_team_member(team_member_id):

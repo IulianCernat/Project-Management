@@ -1,15 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import {
-	Box,
-	makeStyles,
-	AppBar,
-	Tabs,
-	Tab,
-	Paper,
-	Fab,
-	CircularProgress,
-	Button,
-} from "@material-ui/core";
+import { Box, makeStyles, AppBar, Tabs, Tab, Paper, Fab, CircularProgress, Button } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { Delete as DeleteIcon, Add as AddIcon } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
@@ -69,9 +59,7 @@ function TabPanel(props) {
 	const [startGetFetch, setStartGetFetch] = useState(false);
 	const [projectIdToBeDeleted, setProjectIdToBeDeleted] = useState();
 	const [projectsList, setProjectsList] = useState([]);
-	const projectDeletionStatus = useDeleteFetch(
-		projectIdToBeDeleted ? `api/projects/${projectIdToBeDeleted}` : null
-	);
+	const projectDeletionStatus = useDeleteFetch(projectIdToBeDeleted ? `api/projects/${projectIdToBeDeleted}` : null);
 	const getParams = useRef({
 		user_id: "",
 		user_type: props.userType,
@@ -81,15 +69,6 @@ function TabPanel(props) {
 	const handleProjectDeletion = (projectId) => {
 		setProjectIdToBeDeleted(projectId);
 	};
-
-	useEffect(() => {
-		if (!projectDeletionStatus.isResolved) return;
-
-		setProjectsList((projectsList) =>
-			projectsList.filter((item) => item.id !== projectIdToBeDeleted)
-		);
-		setProjectIdToBeDeleted(null);
-	}, [projectDeletionStatus, projectIdToBeDeleted]);
 
 	const openProjectCreationForm = () => {
 		setOpenProjectCreation(true);
@@ -103,6 +82,13 @@ function TabPanel(props) {
 		setOpenProjectCreation(false);
 		setProjectsList((prevProjectsList) => [newProjectObj, ...prevProjectsList]);
 	}, []);
+
+	useEffect(() => {
+		if (!projectDeletionStatus.isResolved) return;
+
+		setProjectsList((projectsList) => projectsList.filter((item) => item.id !== projectIdToBeDeleted));
+		setProjectIdToBeDeleted(null);
+	}, [projectDeletionStatus, projectIdToBeDeleted]);
 
 	useEffect(() => {
 		if (props.index !== props.value) {
@@ -226,13 +212,7 @@ function AdminManageUsersPanel(props) {
 				width: 80,
 				getActions: (params) => [
 					<GridActionsCellItem
-						icon={
-							<DeleteIcon
-								color={
-									userDeletionOperationStatus.isLoading ? "disabled" : "secondary"
-								}
-							/>
-						}
+						icon={<DeleteIcon color={userDeletionOperationStatus.isLoading ? "disabled" : "secondary"} />}
 						label="Delete"
 						onClick={() => {
 							handleUserDeletionClick(params.row.uid);
@@ -358,11 +338,7 @@ export default function ProfileMain(props) {
 					</AppBar>
 					{props.additionalUserInfo.firebaseUserClaims.admin ? (
 						<>
-							<AdminManageUsersPanel
-								currentUser={props.currentUser}
-								value={currentTab}
-								index={0}
-							/>
+							<AdminManageUsersPanel currentUser={props.currentUser} value={currentTab} index={0} />
 						</>
 					) : props.additionalUserInfo.firebaseUserClaims.teacher ? (
 						<TabPanel

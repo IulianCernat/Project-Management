@@ -59,8 +59,7 @@ async function processResponse(response) {
 		case 200:
 			return { error: null, receivedData: result };
 		case 201:
-			if (result.hasOwnProperty("location"))
-				return { error: null, receivedData: result["location"] };
+			if (result.hasOwnProperty("location")) return { error: null, receivedData: result["location"] };
 			return { error: null, receivedData: result };
 		default:
 			return { error: result.message, receivedData: null };
@@ -105,10 +104,7 @@ export async function doPatch(url, stringifiedData, headers) {
 
 export async function doGet(url, parameters = null, headers) {
 	try {
-		if (parameters)
-			url = `${process.env.REACT_APP_API_URL}/${url}?${new URLSearchParams(
-				parameters
-			).toString()}`;
+		if (parameters) url = `${process.env.REACT_APP_API_URL}/${url}?${new URLSearchParams(parameters).toString()}`;
 		else url = `${process.env.REACT_APP_API_URL}/${url}`;
 
 		let response = await fetch(url, {
@@ -176,6 +172,7 @@ export function useGetFetch(url, parameters = null, start = true) {
 
 export function useDeleteFetch(url) {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const [transformedState, setTransformedState] = useState(transformState(state));
 	const { currentUser } = useAuth();
 
 	useEffect(() => {
@@ -183,7 +180,6 @@ export function useDeleteFetch(url) {
 			dispatch({ type: "idle" });
 			return;
 		}
-
 		async function doFetch() {
 			dispatch({ type: "started" });
 			const headers = await buildHeadersForApi(currentUser);
@@ -200,7 +196,11 @@ export function useDeleteFetch(url) {
 		doFetch();
 	}, [url]);
 
-	return transformState(state);
+	useEffect(() => {
+		setTransformedState(transformState(state));
+	}, [state]);
+
+	return transformedState;
 }
 export function usePostFetch(url, bodyContent) {
 	const [state, dispatch] = useReducer(reducer, initialState);
@@ -238,6 +238,7 @@ export function usePostFetch(url, bodyContent) {
 
 export function usePatchFetch(url, bodyContent) {
 	const [state, dispatch] = useReducer(reducer, initialState);
+	const [transformedState, setTransformedState] = useState(state);
 	const { currentUser } = useAuth();
 	useEffect(() => {
 		async function doFetch() {
@@ -259,16 +260,14 @@ export function usePatchFetch(url, bodyContent) {
 		doFetch(url, bodyContent);
 	}, [url, bodyContent]);
 
-	return transformState(state);
+	useEffect(() => {
+		setTransformedState(transformState(state));
+	}, [state]);
+
+	return transformedState;
 }
 
-export function doTrelloApiFetch({
-	method,
-	apiUri,
-	apiParams = null,
-	successHandler,
-	errorHandler,
-}) {
+export function doTrelloApiFetch({ method, apiUri, apiParams = null, successHandler, errorHandler }) {
 	const key = process.env.REACT_APP_TRELLO_API_KEY;
 	const token = localStorage.getItem("trello_token");
 

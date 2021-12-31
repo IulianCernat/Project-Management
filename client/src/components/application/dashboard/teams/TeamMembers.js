@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Typography, Button, Box, Paper, makeStyles, LinearProgress } from "@material-ui/core";
 import { useParams } from "react-router-dom";
-import { useGetFetch } from "customHooks/useFetch";
+import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
 import UserProfile from "components/subComponents/UserProfileCard";
 import { indigo } from "@material-ui/core/colors";
@@ -25,20 +25,19 @@ const developersAdditionRestrictionForRoles = ["productOwner", "developer"];
 
 export default function TeamMembers() {
 	const { additionalUserInfo } = useAuth();
+	const classes = useStyles();
 	const { projectId, currentUserRole } = useProjectContext();
 	const { teamId } = useParams();
-	const [scrumMasterChangingSuccess, setScrumMasterChangingSuccess] = useState(false);
-	const [devAdditionSuccess, setDevAdditionSuccess] = useState(false);
-	const [startFetchingDevs, setStartFetchingDevs] = useState(true);
-	const classes = useStyles();
+
 	const [openDevAddition, setOpenDevAddition] = useState(false);
 	const [openScrumMasterChangingFrom, setOpenScrumMasterChangingFrom] = useState(false);
 	const getParams = useRef({ team_id: teamId });
-	const { receivedData, error, isLoading, isResolved, isRejected } = useGetFetch(
-		`api/teams_members/`,
-		getParams.current,
-		startFetchingDevs
-	);
+
+	const [teamDevelopers, setTeamDevelopers] = useState([]);
+	const [developerUriToDelete, setDeveloperUriToDelete] = useState();
+	const [scrumMaster, setScrumMaster] = useState();
+	const teamMembersFetchingStatus = useGetFetch(`api/teams_members/`, getParams.current);
+	const devDeletionStatus = useDeleteFetch(developerUriToDelete);
 
 	function openDevsAdditionForm() {
 		setOpenDevAddition(true);
@@ -47,52 +46,52 @@ export default function TeamMembers() {
 	function openScrumMasterChangingForm() {
 		setOpenScrumMasterChangingFrom(true);
 	}
+
 	function handleCancelOpenScrumMasterChanging() {
 		setOpenScrumMasterChangingFrom(false);
 	}
+
 	function handleCancelDevAddition() {
 		setOpenDevAddition(false);
 	}
 
-	useEffect(() => {
-		if (devAdditionSuccess) {
-			setStartFetchingDevs(true);
-			handleCancelDevAddition();
-			setDevAdditionSuccess(false);
-		}
-	}, [devAdditionSuccess]);
+	const handleDevDeletion = useCallback((deletedDevId) => {
+		setDeveloperUriToDelete(`api/teams_members/${deletedDevId}`);
+	}, []);
+
+	const insertNewTeamDevs = useCallback((newTeamDevsObjs) => {
+		handleCancelDevAddition();
+		setTeamDevelopers((prevTeamDevelopersList) => [...newTeamDevsObjs, ...prevTeamDevelopersList]);
+	}, []);
 
 	useEffect(() => {
-		if (scrumMasterChangingSuccess) {
-			setStartFetchingDevs(true);
-			handleCancelOpenScrumMasterChanging();
-			setScrumMasterChangingSuccess(false);
+		if (teamMembersFetchingStatus.isResolved) {
+			setTeamDevelopers(teamMembersFetchingStatus.receivedData.slice(1));
+			setScrumMaster(teamMembersFetchingStatus.receivedData[0]);
 		}
-	}, [scrumMasterChangingSuccess]);
+	}, [teamMembersFetchingStatus]);
 
 	useEffect(() => {
-		if (startFetchingDevs) setStartFetchingDevs(false);
-	}, [startFetchingDevs]);
+		if (!developerUriToDelete) return;
+		if (devDeletionStatus.isResolved) {
+			const deletedDevId = Number(developerUriToDelete.split("/").pop());
+			setTeamDevelopers((prevTeamDevs) => prevTeamDevs.filter((item) => item.id !== deletedDevId));
+			setDeveloperUriToDelete(null);
+		}
+	}, [devDeletionStatus, developerUriToDelete]);
 
 	return (
 		<Box className={classes.membersTab}>
-			{isLoading ? <LinearProgress style={{ width: "100%" }} /> : null}
+			{teamMembersFetchingStatus.isLoading ? <LinearProgress style={{ width: "100%" }} /> : null}
 
-			{isRejected ? <Alert severity="error">{error} </Alert> : null}
-
-			{isResolved && (
+			{teamMembersFetchingStatus.isRejected ? (
+				<Alert severity="error">{teamMembersFetchingStatus.error} </Alert>
+			) : null}
+			<DialogForm title="Add new team member" open={openDevAddition} onClose={handleCancelDevAddition}>
+				<AddingDevsForm teamId={teamId} insertNewTeamDevs={insertNewTeamDevs} projectId={projectId} />
+			</DialogForm>
+			{!teamDevelopers.length ? null : (
 				<>
-					<DialogForm
-						title="Add new team member"
-						open={openDevAddition}
-						onClose={handleCancelDevAddition}
-					>
-						<AddingDevsForm
-							teamId={teamId}
-							setDevAdditionSuccess={setDevAdditionSuccess}
-							projectId={projectId}
-						/>
-					</DialogForm>
 					<DialogForm
 						title="Change Scrum master"
 						open={openScrumMasterChangingFrom}
@@ -101,8 +100,8 @@ export default function TeamMembers() {
 						<ChangingScrumMasterForm
 							teamId={teamId}
 							projectId={projectId}
-							currentScrumMasterId={receivedData[0].id}
-							setScrumMasterChangingSuccess={setScrumMasterChangingSuccess}
+							currentScrumMasterId={scrumMaster.user_id}
+							setNewScrumMaster={setScrumMaster}
 						/>
 					</DialogForm>
 					<Box flex="0 0 auto">
@@ -124,39 +123,30 @@ export default function TeamMembers() {
 									onClick={() => {
 										openScrumMasterChangingForm();
 									}}
-									disabled={scrumMasterChangeRestrictionForRoles.includes(
-										currentUserRole
-									)}
+									disabled={scrumMasterChangeRestrictionForRoles.includes(currentUserRole)}
 								>
 									<Typography>Change</Typography>
 								</Button>
 							</Box>
 						</Paper>
 						<Box display="flex" justifyContent="center">
-							{receivedData?.length ? (
-								<UserProfile width={"30ch"} {...receivedData[0]} />
-							) : null}
+							{scrumMaster ? <UserProfile width={"30ch"} {...scrumMaster} /> : null}
 						</Box>
 					</Box>
 					<Box flex={"1 1 0"}>
 						<Paper elevation={2}>
-							<Box
-								display="flex"
-								justifyContent="space-between"
-								mb={2}
-								p={1}
-								bgcolor={indigo["A100"]}
-							>
+							<Box display="flex" justifyContent="space-between" mb={2} p={1} bgcolor={indigo["A100"]}>
 								<Typography variant="h6">Developers</Typography>
 								<Button
 									size="small"
 									variant="contained"
 									color="primary"
-									onClick={() => openDevsAdditionForm()}
+									onClick={() => {
+										openDevsAdditionForm();
+									}}
 									disabled={
-										developersAdditionRestrictionForRoles.includes(
-											currentUserRole
-										) || !(receivedData[0].user_id === additionalUserInfo.id)
+										developersAdditionRestrictionForRoles.includes(currentUserRole) ||
+										!(scrumMaster.user_id === additionalUserInfo.id)
 									}
 								>
 									<Typography>Add new developers</Typography>
@@ -172,13 +162,12 @@ export default function TeamMembers() {
 							justifyContent="flex-start"
 							flexWrap="wrap"
 						>
-							{isResolved && receivedData?.length ? (
+							{teamDevelopers.length ? (
 								<DevelopersList
 									currentUserRole={currentUserRole}
-									developers={receivedData.slice(1)}
-									isCurrentUserScrumMasterOfThisTeam={
-										receivedData[0].user_id === additionalUserInfo.id
-									}
+									developers={teamDevelopers}
+									isCurrentUserScrumMasterOfThisTeam={scrumMaster.user_id === additionalUserInfo.id}
+									handleDevDeletion={handleDevDeletion}
 								/>
 							) : null}
 						</Box>

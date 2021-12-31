@@ -1,12 +1,5 @@
 import { useEffect } from "react";
-import {
-	Dialog,
-	DialogContent,
-	DialogTitle,
-	IconButton,
-	useMediaQuery,
-	Box,
-} from "@material-ui/core";
+import { Dialog, DialogContent, DialogTitle, IconButton, useMediaQuery, Box } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import CancelIcon from "@material-ui/icons/Cancel";
 import PropTypes from "prop-types";
@@ -21,9 +14,6 @@ export default function DialogForm({ title, onClose, children, open, ...other })
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-	useEffect(() => {
-		console.log("dialog running");
-	});
 	return (
 		<Dialog
 			fullScreen={fullScreen}
