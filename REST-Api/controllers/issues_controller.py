@@ -8,7 +8,7 @@ def add_issue(input_obj):
     new_issue = Issue(input_obj)
     db.session.add(new_issue)
     db.session.commit()
-    return new_issue.id
+    return new_issue
 
 
 def get_issues(project_id):
@@ -21,11 +21,13 @@ def get_nr_of_issues_for_project(project_id):
 
 
 def get_nr_of_finished_issues_for_sprint(sprint_id):
-    return Issue.query.filter(Issue.sprint_id == sprint_id, Issue.trello_card_due_is_completed == True).count()
+    return Issue.query.filter(
+        Issue.sprint_id == sprint_id, Issue.trello_card_due_is_completed == True).count()
 
 
 def get_nr_of_finished_issues_for_project(project_id):
-    return Issue.query.filter(Issue.project_id == project_id, Issue.trello_card_due_is_completed == True).count()
+    return Issue.query.filter(
+        Issue.project_id == project_id, Issue.trello_card_due_is_completed == True).count()
 
 
 def get_issue(issue_id):

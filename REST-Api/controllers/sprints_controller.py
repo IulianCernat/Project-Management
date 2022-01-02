@@ -18,7 +18,7 @@ def add_sprint(input_obj):
             'sprint_id': new_sprint.id
         })
 
-    return new_sprint.id
+    return new_sprint
 
 
 def get_sprint(sprint_id):

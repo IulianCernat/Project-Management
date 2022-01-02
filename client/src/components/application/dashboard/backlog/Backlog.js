@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { makeStyles, Box, LinearProgress, lighten, Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import IssuesTable from "./IssuesTable";
@@ -59,10 +59,10 @@ export default function Backlog() {
 		setOpenTransferIssuesToSprintForm(false);
 	}
 
-	const insertNewIssues = (newIssueObj) => {
-		setIssuesList([newIssueObj, ...issuesList]);
+	const insertNewIssues = useCallback((newIssueObj) => {
+		setIssuesList((prevIssueList) => [newIssueObj, ...prevIssueList]);
 		handleCancelIssueCreation();
-	};
+	}, []);
 
 	const handleDeleteIssueClick = (issueId) => {
 		setIssueUrlToBeDeleted(`api/issues/${issueId}`);
@@ -109,10 +109,7 @@ export default function Backlog() {
 				open={openTransferIssuesToSprintForm}
 				onClose={handleCancelTransferIssuesToSprint}
 			>
-				<AddingIssuesToExistingSprintForm
-					projectId={projectId}
-					issuesIds={selectedIssues}
-				/>
+				<AddingIssuesToExistingSprintForm projectId={projectId} issuesIds={selectedIssues} />
 			</DialogForm>
 
 			<Box>

@@ -2,7 +2,7 @@ from flask_restx.fields import Integer, String, Wildcard, DateTime, List, Nested
 from utils.restx import api
 
 location = api.model('Resource location', {
-    'location': String(required=True, description="Resource location after creation")
+    'location': String(required=True, description="Resource id after creation")
 })
 message = api.model('Message', {'message': String(
     required=True, description="Generic message returned for operations that don't return content")})
@@ -132,9 +132,9 @@ issue_input = api.model('Issue input', {
 
 })
 issue_update_input = api.model('Issue input for updating', {
-    'trello_card_id': String(description="The new Trello card's id which contains this issue"),
-    'status': String(enum=['pending', 'inProgress', 'done'], description="The current situation of issue"),
-    'sprint_id': Integer(description="The id of new sprint, 0 if you want issues to go back to backlog")
+    # 'is_trello_update_related': Boolean(description="Necessary for doing Trello related operations"),
+    'sprint_id': Integer(description="The id of new sprint, 0 if you want issues to go back to backlog"),
+
 })
 
 multiple_issues_update_input = api.model('List of issues', {

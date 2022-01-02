@@ -160,9 +160,7 @@ function SprintHeader({
 					>
 						<Tooltip
 							title={
-								<Typography variant="subtitle2">
-									Delete sprint and move issues to backlog
-								</Typography>
+								<Typography variant="subtitle2">Delete sprint and move issues to backlog</Typography>
 							}
 							arrow
 						>
@@ -191,8 +189,7 @@ function SprintHeader({
 						position: "absolute",
 						transform: "translate(0, -100%)",
 						height: !showMoreGoalInfo && goal.length > 500 ? "6rem" : "0rem",
-						backgroundImage:
-							"linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 100))",
+						backgroundImage: "linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 100))",
 					}}
 				></div>
 				<Box display="flex" justifyContent="center">
@@ -255,9 +252,6 @@ function SprintTable({
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 	const [newTrelloCardPayload, setNewTrelloCardPayload] = useState();
 	const [snackbarMessage, setSnackbarMessage] = useState();
-	const headersForTrello = useRef({
-		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
-	});
 
 	const handleCloseSnackbar = (event, reason) => {
 		setOpenSnackbar(false);
@@ -268,11 +262,7 @@ function SprintTable({
 		isLoading: isLoadingIssueUpdate,
 		isResolved: isResolvedIssueUpdate,
 		isRejected: isRejectedIssueUpdate,
-	} = usePatchFetch(
-		`api/issues/${idOfIssueToBeMovedToBacklog}`,
-		requestBodyForIssueUpdate,
-		headersForTrello.current
-	);
+	} = usePatchFetch(`api/issues/${idOfIssueToBeMovedToBacklog}`, requestBodyForIssueUpdate);
 
 	let {
 		receivedData: postTrelloCardReceivedData,
@@ -280,7 +270,7 @@ function SprintTable({
 		isLoading: isLoadingPostTrelloCard,
 		isResolved: isResolvedPostTrelloCard,
 		isRejected: isRejectedPostTrelloCard,
-	} = usePostFetch("api/trello/cards/", newTrelloCardPayload, headersForTrello.current);
+	} = usePostFetch("api/trello/cards/", newTrelloCardPayload);
 
 	const handleMoveIssueClick = (issueId) => {
 		setIdOfIssueToBeMovedToBacklog(issueId);
@@ -358,12 +348,7 @@ function SprintTable({
 				message={snackbarMessage}
 				action={
 					<>
-						<IconButton
-							size="small"
-							aria-label="close"
-							color="inherit"
-							onClick={handleCloseSnackbar}
-						>
+						<IconButton size="small" aria-label="close" color="inherit" onClick={handleCloseSnackbar}>
 							<Close fontSize="small" />
 						</IconButton>
 					</>
@@ -411,7 +396,6 @@ export default function Sprints() {
 		() => trelloBoards.map((trelloBoard) => trelloBoard.trello_board_id),
 		[trelloBoards]
 	);
-	const [trelloToken, setTrelloToken] = useState(localStorage.getItem("trello_token"));
 	const [sprintsList, setSprintsList] = useState([]);
 	const [sprintIdToBeDeleted, setSprintIdToBeDeleted] = useState();
 	const [startFetchingSprints, setStartFetchingSprints] = useState(true);
@@ -422,11 +406,7 @@ export default function Sprints() {
 
 	const [startedSprintId, setStartedSprintId] = useState();
 
-	function doUpdateIssueForSprint({
-		issueForUpdateId,
-		newIssueProperties = null,
-		deleteIssue = false,
-	}) {
+	function doUpdateIssueForSprint({ issueForUpdateId, newIssueProperties = null, deleteIssue = false }) {
 		let indexOfIssueForUpdate;
 		let indexOfSprintForUpdate;
 		for (const [sprintIndex, sprint] of Object.entries(sprintsList)) {
@@ -452,13 +432,8 @@ export default function Sprints() {
 			}
 
 			// trigger rerender by changing object references
-			sprintsList[indexOfSprintForUpdate].issues = [
-				...sprintsList[indexOfSprintForUpdate].issues,
-			];
-			sprintsList[indexOfSprintForUpdate] = Object.assign(
-				{},
-				sprintsList[indexOfSprintForUpdate]
-			);
+			sprintsList[indexOfSprintForUpdate].issues = [...sprintsList[indexOfSprintForUpdate].issues];
+			sprintsList[indexOfSprintForUpdate] = Object.assign({}, sprintsList[indexOfSprintForUpdate]);
 			setSprintsList([...sprintsList]);
 		}
 	}
@@ -480,8 +455,7 @@ export default function Sprints() {
 	} = useGetFetch(
 		`api/trello/boards/${added_trello_board_id_by_user}`,
 		getTrelloDataParams.current,
-		Boolean(added_trello_board_id_by_user),
-		false
+		Boolean(added_trello_board_id_by_user)
 	);
 
 	const {
@@ -530,13 +504,8 @@ export default function Sprints() {
 	}, [isResolvedDeleteSprint]);
 
 	useEffect(() => {
-		const trelloToken = localStorage.getItem("trello_token");
-		setTrelloToken(trelloToken);
-
 		// Initialize websocket connection
-		websockeWithRealtimeService.current = new WebSocket(
-			process.env.REACT_APP_REAL_TIME_TRELLO_UPDATES_SERVICE_URL
-		);
+		websockeWithRealtimeService.current = new WebSocket(process.env.REACT_APP_REAL_TIME_TRELLO_UPDATES_SERVICE_URL);
 
 		websockeWithRealtimeService.current.onopen = () => {
 			websockeWithRealtimeService.current.send(
@@ -547,8 +516,7 @@ export default function Sprints() {
 			);
 			websockeWithRealtimeService.current.onmessage = (event) => {
 				const parsedMessageObj = JSON.parse(event.data);
-				if ("sessionId" in parsedMessageObj)
-					setWebsocketSessionId(parsedMessageObj.sessionId);
+				if ("sessionId" in parsedMessageObj) setWebsocketSessionId(parsedMessageObj.sessionId);
 			};
 		};
 
@@ -565,9 +533,7 @@ export default function Sprints() {
 	return (
 		<>
 			{isRejectedGetTrelloData ? <Alert severity="error">{getTrelloDataError}</Alert> : null}
-			{isLoadingGetSprints || isLoadingGetTrelloData ? (
-				<LinearProgress style={{ width: "100%" }} />
-			) : null}
+			{isLoadingGetSprints || isLoadingGetTrelloData ? <LinearProgress style={{ width: "100%" }} /> : null}
 			<Box my={2}>
 				<Button color="primary" variant="contained" onClick={handleSyncWithTrelloClick}>
 					Sync with Trello
@@ -575,9 +541,7 @@ export default function Sprints() {
 			</Box>
 
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
-			{isResolvedGetSprints &&
-			getSprintsReceivedData.length &&
-			(added_trello_board_id_by_user ? (getTrelloData ? true : false) : true) ? (
+			{sprintsList.length && (added_trello_board_id_by_user ? (getTrelloData ? true : false) : true) ? (
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable
@@ -599,16 +563,12 @@ export default function Sprints() {
 									? getTrelloData.trello_board_lists_ids_and_names[0].name
 									: null
 							}
-							trelloLabelsObj={
-								added_trello_board_id_by_user
-									? getTrelloData.trello_board_labels
-									: null
-							}
+							trelloLabelsObj={added_trello_board_id_by_user ? getTrelloData.trello_board_labels : null}
 						/>
 					))}
 				</Box>
 			) : null}
-			{!isLoadingGetSprints && !getSprintsReceivedData?.length && (
+			{isLoadingGetSprints || sprintsList.length ? null : (
 				<Typography variant="h5" color="primary">
 					Currently there are no sprints created
 				</Typography>
