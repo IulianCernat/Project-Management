@@ -1,33 +1,43 @@
 import { useState, useRef, useEffect } from "react";
 import { Box, Button } from "@material-ui/core";
-import { useGetFetch } from "customHooks/useFetch";
+import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
 import TeamMessageCard from "components/subComponents/TeamMessageCard";
 import DialogForm from "components/subComponents/DialogForm";
 import TeamMessageCreationForm from "components/forms/CreateTeamMessageForm";
 
-function TeamMessagesComponentList({ teamMessages }) {
-	return (
-		<Box display="flex" flexDirection="column" style={{ gap: "10px" }}>
-			{teamMessages.map((message) => (
-				<TeamMessageCard key={message.id} body={message.body} />
-			))}
-		</Box>
-	);
-}
-export default function TeamMessages({ teamId }) {
+const UIRestrictionForRoles = ["developer"];
+
+export default function TeamMessages({ teamId, currentUserTeamRole }) {
 	const [teamMessages, setTeamMessages] = useState([]);
 	const [openTeamMessageDialogForm, setOpenTeamMessageDialogForm] = useState(false);
-
 	const getTeamMessagesParams = useRef({ team_id: teamId });
-	const fetchMessageStatusObj = useGetFetch("api/team_messages", getTeamMessagesParams.current);
-
+	const [messageIdToDelete, setMessageIdToDelete] = useState();
+	const [startFetchingMessages, setStartFetchingMessages] = useState(true);
+	const fetchMessageStatusObj = useGetFetch(
+		"api/team_messages/",
+		getTeamMessagesParams.current,
+		startFetchingMessages
+	);
+	const deleteMessageStatusObj = useDeleteFetch(messageIdToDelete ? `api/team_messages/${messageIdToDelete}` : null);
 	const addNewTeamMessage = (newTeamMessage) => {
 		setTeamMessages([newTeamMessage, ...teamMessages]);
 	};
 
+	const handleDeleteMessageClick = (messageId) => {
+		setMessageIdToDelete(messageId);
+	};
+
 	useEffect(() => {
-		if (fetchMessageStatusObj.isResolved) setTeamMessages(fetchMessageStatusObj.receivedData);
+		if (fetchMessageStatusObj.isResolved) {
+			setStartFetchingMessages(false);
+			setTeamMessages(fetchMessageStatusObj.receivedData);
+		}
 	}, [fetchMessageStatusObj]);
+
+	useEffect(() => {
+		if (deleteMessageStatusObj.isResolved)
+			setTeamMessages((prevTeamMessages) => prevTeamMessages.filter((item) => messageIdToDelete !== item.id));
+	}, [deleteMessageStatusObj, messageIdToDelete]);
 
 	return (
 		<>
@@ -56,7 +66,19 @@ export default function TeamMessages({ teamId }) {
 					insertCreation={addNewTeamMessage}
 				/>
 			</DialogForm>
-			{teamMessages.length ? <TeamMessagesComponentList teamMessages={teamMessages} /> : null}
+			{teamMessages.length ? (
+				<Box display="flex" flexDirection="column" style={{ gap: "20px" }}>
+					{teamMessages.map((message) => (
+						<TeamMessageCard
+							currentUserTeamRole={currentUserTeamRole}
+							handleDeleteMessageClick={handleDeleteMessageClick}
+							key={message.id}
+							body={message.body}
+							id={message.id}
+						/>
+					))}
+				</Box>
+			) : null}
 		</>
 	);
 }

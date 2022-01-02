@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { makeStyles, Box, LinearProgress, lighten, Snackbar } from "@material-ui/core";
+import { Box, LinearProgress, Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 import IssuesTable from "./IssuesTable";
 import { useGetFetch, useDeleteFetch } from "customHooks/useFetch";
@@ -11,7 +11,7 @@ import DialogForm from "components/subComponents/DialogForm";
 import { useProjectContext } from "contexts/ProjectContext";
 
 export default function Backlog() {
-	const { projectId, currentUserRole } = useProjectContext();
+	const { projectId } = useProjectContext();
 	const getParams = useRef({ project_id: projectId });
 	const [issueUrlToBeDeleted, setIssueUrlToBeDeleted] = useState(null);
 	const [selectedIssues, setSelectedIssues] = useState([]);

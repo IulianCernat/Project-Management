@@ -541,7 +541,7 @@ export default function Sprints() {
 			</Box>
 
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
-			{sprintsList.length && (added_trello_board_id_by_user ? (getTrelloData ? true : false) : true) ? (
+			{sprintsList.length && (added_trello_board_id_by_user ? (isResolvedGetTrelloData ? true : false) : true) ? (
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable

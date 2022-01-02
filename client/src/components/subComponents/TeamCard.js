@@ -10,7 +10,6 @@ import {
 	Box,
 	Badge,
 	Avatar,
-	Paper,
 } from "@material-ui/core";
 import { People } from "@material-ui/icons";
 import PropTypes from "prop-types";
@@ -55,9 +54,7 @@ export default function TeamCard(props) {
 			className={clsx(
 				styles.root,
 				additionalUserInfo.id === scrumMasterProfile.id ||
-					props.team_members.find(
-						(item) => item.user_profile.id === additionalUserInfo.id
-					)
+					props.team_members.find((item) => item.user_profile.id === additionalUserInfo.id)
 					? styles.paperHighlight
 					: ""
 			)}
@@ -68,9 +65,7 @@ export default function TeamCard(props) {
 					title={
 						<Box display="flex" justifyContent="space-between">
 							<Typography color="primary" variant="h6">
-								{props.name.length > 70
-									? props.name.slice(0, 70) + "..."
-									: props.name}
+								{props.name.length > 70 ? props.name.slice(0, 70) + "..." : props.name}
 							</Typography>
 							<Badge badgeContent={nrOfTeammates} color="primary" showZero>
 								<People fontSize="large" />
@@ -81,9 +76,7 @@ export default function TeamCard(props) {
 				/>
 				<CardContent>
 					<TextDisplayWrapper gutterBottom>
-						{props.description.length > 200
-							? props.description.slice(0, 200) + "..."
-							: props.description}
+						{props.description.length > 200 ? props.description.slice(0, 200) + "..." : props.description}
 					</TextDisplayWrapper>
 					<Box display="flex" justifyContent="center" alignItems="center" p={1}>
 						<Box mr={1}>
@@ -94,9 +87,7 @@ export default function TeamCard(props) {
 								Scrum master
 							</Typography>
 							<Typography align="center">
-								{scrumMasterProfile
-									? scrumMasterProfile.fullName
-									: "No scrum master"}
+								{scrumMasterProfile ? scrumMasterProfile.fullName : "No scrum master"}
 							</Typography>
 						</Box>
 					</Box>
