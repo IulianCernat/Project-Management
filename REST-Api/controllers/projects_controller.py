@@ -12,7 +12,7 @@ def add_project(input_data):
     new_project = Project(input_data)
     db.session.add(new_project)
     db.session.commit()
-    return new_project.id
+    return new_project
 
 
 def get_additional_project_info(project_id):
@@ -34,8 +34,8 @@ def get_projects(user_id, user_type):
         projects = Project.query.filter(
             Project.product_owner_id == user_id).all()
     if user_type in ['scrumMaster', 'developer']:
-        projects = Project.query.join(Team).join(TeamMember).filter(TeamMember.user_type == user_type,
-                                                                    TeamMember.user_id == user_id).all()
+        projects = Project.query.join(Team).join(TeamMember).filter(
+            TeamMember.user_type == user_type, TeamMember.user_id == user_id).all()
     for project in projects:
         for key, value in get_additional_project_info(project.id).items():
             setattr(project, key, value)
@@ -48,7 +48,7 @@ def get_project_role(user_id, project_id):
 
     if product_owner_flag is None:
         team_member_role = TeamMember.query.join(Team).filter(Team.project_id == project_id,
-                                                          TeamMember.user_id == user_id).one()
+                                                              TeamMember.user_id == user_id).one()
 
     def get_user_trello_board_ids():
         teams_and_members = Team.query.join(TeamMember).filter(

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import {
 	TableRow,
 	TableHead,
@@ -28,7 +28,6 @@ import {
 
 import { green, pink, blue } from "@material-ui/core/colors";
 import PropTypes from "prop-types";
-import { usePatchFetch } from "customHooks/useFetch";
 import { useProjectContext } from "contexts/ProjectContext";
 import { format } from "date-fns";
 
@@ -93,13 +92,7 @@ const generatePriorityStars = (priorityNumber) => {
 		starsArray.push(<Star style={{ color: "hsl(31, 100%, 61%)" }} key={`star${i}`} />);
 
 	for (let i = 0; i < 5 - priorityNumber; i++)
-		starsArray.push(
-			<StarOutline
-				style={{ color: "hsl(31, 100%, 61%)" }}
-				color="primary"
-				key={`emptyStar${i}`}
-			/>
-		);
+		starsArray.push(<StarOutline style={{ color: "hsl(31, 100%, 61%)" }} color="primary" key={`emptyStar${i}`} />);
 
 	return starsArray;
 };
@@ -111,32 +104,11 @@ export function IssueTypesChip({ type, ...chipProps }) {
 	const classes = useStyles();
 	switch (type) {
 		case "task":
-			return (
-				<Chip
-					color="primary"
-					classes={{ colorPrimary: classes.taskColor }}
-					label="task"
-					{...chipProps}
-				/>
-			);
+			return <Chip color="primary" classes={{ colorPrimary: classes.taskColor }} label="task" {...chipProps} />;
 		case "story":
-			return (
-				<Chip
-					color="primary"
-					classes={{ colorPrimary: classes.storyColor }}
-					label="story"
-					{...chipProps}
-				/>
-			);
+			return <Chip color="primary" classes={{ colorPrimary: classes.storyColor }} label="story" {...chipProps} />;
 		case "bug":
-			return (
-				<Chip
-					color="primary"
-					classes={{ colorPrimary: classes.bugColor }}
-					label="bug"
-					{...chipProps}
-				/>
-			);
+			return <Chip color="primary" classes={{ colorPrimary: classes.bugColor }} label="bug" {...chipProps} />;
 		default:
 			return null;
 	}
@@ -190,11 +162,7 @@ export default function IssueRow(props) {
 							>
 								<Tooltip
 									arrow
-									title={
-										<Typography variant="subtitle2">
-											Copy issue to Trello
-										</Typography>
-									}
+									title={<Typography variant="subtitle2">Copy issue to Trello</Typography>}
 								>
 									<Launch
 										fontSize="small"
@@ -213,11 +181,7 @@ export default function IssueRow(props) {
 					</TableCell>
 				)}
 				<TableCell align="center" padding="none">
-					<IconButton
-						align="center"
-						size="small"
-						onClick={() => setOpenMoreInfo(!openMoreInfo)}
-					>
+					<IconButton align="center" size="small" onClick={() => setOpenMoreInfo(!openMoreInfo)}>
 						{openMoreInfo ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
 					</IconButton>
 				</TableCell>
@@ -275,9 +239,7 @@ export default function IssueRow(props) {
 					) : (
 						<IconButton
 							onClick={(event) =>
-								isBacklogIssue
-									? handleDeleteIssueClick(row.id)
-									: handleMoveIssueClick(row.id)
+								isBacklogIssue ? handleDeleteIssueClick(row.id) : handleMoveIssueClick(row.id)
 							}
 							disabled={
 								UIRestrictionForRoles.includes(currentUserRole) ||
@@ -287,28 +249,17 @@ export default function IssueRow(props) {
 							}
 						>
 							{isBacklogIssue ? (
-								<Tooltip
-									title={
-										<Typography variant="subtitle2">Delete issue</Typography>
-									}
-									arrow
-								>
+								<Tooltip title={<Typography variant="subtitle2">Delete issue</Typography>} arrow>
 									<DeleteForever
 										color={
-											UIRestrictionForRoles.includes(currentUserRole) ||
-											isSelected
+											UIRestrictionForRoles.includes(currentUserRole) || isSelected
 												? "disabled"
 												: "secondary"
 										}
 									/>
 								</Tooltip>
 							) : (
-								<Tooltip
-									title={
-										<Typography variant="subtitle2">Move to backlog</Typography>
-									}
-									arrow
-								>
+								<Tooltip title={<Typography variant="subtitle2">Move to backlog</Typography>} arrow>
 									<OpenWith
 										color={
 											UIRestrictionForRoles.includes(currentUserRole) ||

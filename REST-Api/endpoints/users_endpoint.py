@@ -31,8 +31,9 @@ class ProfilesCollection(Resource):
 
     @api.response(200, 'Users successfully queried')
     @api.marshal_list_with(user_output)
-    @api.expect(user_filtering_args)
+    @api.expect(user_filtering_args, authorization_header)
     def get(self):
+        process_firebase_authorization_field(request)
         args = user_filtering_args.parse_args(request)
         search_keyword = args.get('search', None)
         part_of_project_id = args.get('part_of_project_id', None)
@@ -48,8 +49,9 @@ class ProfileItem(Resource):
 
     @api.response(200, 'Users successfully queried', user_output)
     @api.response(400, 'Bad request', bad_request)
-    @api.marshal_with(user_output)
+    @api.marshal_with(user_output, authorization_header)
     def get(self, id):
+        process_firebase_authorization_field(request)
         user_profile = get_other_user(id)
         return user_profile
 
@@ -65,7 +67,6 @@ class LoggedUser(Resource):
     @api.marshal_with(user_output)
     def get(self):
         decoded_token = process_firebase_authorization_field(request)
-
         return get_self(decoded_token['uid']), 200
 
     @api.response(200, 'User profile successfully updated', message)

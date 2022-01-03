@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
 	TableContainer,
 	TableRow,
@@ -15,12 +15,9 @@ import {
 	lighten,
 	IconButton,
 	Popover,
-	Divider,
-	Chip,
 	ListItem,
 	List,
 	ListSubheader,
-	MenuItem,
 } from "@material-ui/core";
 
 import { green, pink, blue } from "@material-ui/core/colors";
@@ -77,9 +74,7 @@ function TableToolbar(props) {
 
 	return (
 		<>
-			<Toolbar
-				className={clsx(numIssuesSelected ? classes.toolbarHighlight : "", classes.toolbar)}
-			>
+			<Toolbar className={clsx(numIssuesSelected ? classes.toolbarHighlight : "", classes.toolbar)}>
 				<Box display="flex" style={{ gap: "1rem" }} alignItems="center">
 					{numIssuesSelected ? (
 						<>
@@ -126,15 +121,7 @@ function TableToolbar(props) {
 	);
 }
 
-function ColumnFilter({
-	anchorEl,
-	open,
-	onClose,
-	filterOptions,
-	filterHandler,
-	columnName,
-	setFilteredColumnValue,
-}) {
+function ColumnFilter({ anchorEl, open, onClose, filterOptions, filterHandler, columnName, setFilteredColumnValue }) {
 	const handleSelectFilter = (event, index) => {
 		filterHandler(columnName, Object.keys(filterOptions)[index]);
 		setFilteredColumnValue(filterOptions[index]);
@@ -340,8 +327,7 @@ export default function IssuesTable(props) {
 					case "number": {
 						setTableIssues([
 							...tableIssues.sort(
-								(firstItem, secondItem) =>
-									firstItem[columnName] - secondItem[columnName]
+								(firstItem, secondItem) => firstItem[columnName] - secondItem[columnName]
 							),
 						]);
 						break;
@@ -350,8 +336,7 @@ export default function IssuesTable(props) {
 						setTableIssues([
 							...tableIssues.sort(
 								(firstItem, secondItem) =>
-									new Date(firstItem[columnName]) -
-									new Date(secondItem[columnName])
+									new Date(firstItem[columnName]) - new Date(secondItem[columnName])
 							),
 						]);
 						break;
@@ -376,8 +361,7 @@ export default function IssuesTable(props) {
 					case "number": {
 						setTableIssues([
 							...tableIssues.sort(
-								(firstItem, secondItem) =>
-									secondItem[columnName] - firstItem[columnName]
+								(firstItem, secondItem) => secondItem[columnName] - firstItem[columnName]
 							),
 						]);
 						break;
@@ -386,8 +370,7 @@ export default function IssuesTable(props) {
 						setTableIssues([
 							...tableIssues.sort(
 								(firstItem, secondItem) =>
-									new Date(secondItem[columnName]) -
-									new Date(firstItem[columnName])
+									new Date(secondItem[columnName]) - new Date(firstItem[columnName])
 							),
 						]);
 						break;
@@ -421,15 +404,12 @@ export default function IssuesTable(props) {
 	const clearColumnFilter = (columnName, value) => {
 		setTableIssues(
 			tableIssues.map((issue) => {
-				if (issue[columnName] === value && value)
-					issue["filteredColumns"].delete(columnName);
+				if (issue[columnName] === value && value) issue["filteredColumns"].delete(columnName);
 				return issue;
 			})
 		);
 
-		setCurrentFilteredColumnNames([
-			...currentFilteredColumnNames.filter((item) => item !== columnName),
-		]);
+		setCurrentFilteredColumnNames([...currentFilteredColumnNames.filter((item) => item !== columnName)]);
 	};
 
 	const handleSelectionClick = (issueId) => {
@@ -467,15 +447,9 @@ export default function IssuesTable(props) {
 			...issuesList.map((issue) => {
 				issue["filteredColumns"] = new Set();
 
-				issue["trello_card_list_name"] = transformTrelloColumn(
-					issue["trello_card_list_name"]
-				);
-				issue["trello_card_due_is_completed"] = transformTrelloColumn(
-					issue["trello_card_due_is_completed"]
-				);
-				issue["trello_card_is_closed"] = transformTrelloColumn(
-					issue["trello_card_is_closed"]
-				);
+				issue["trello_card_list_name"] = transformTrelloColumn(issue["trello_card_list_name"]);
+				issue["trello_card_due_is_completed"] = transformTrelloColumn(issue["trello_card_due_is_completed"]);
+				issue["trello_card_is_closed"] = transformTrelloColumn(issue["trello_card_is_closed"]);
 				return issue;
 			}),
 		]);
@@ -512,9 +486,7 @@ export default function IssuesTable(props) {
 										isFilterable={true}
 										filterHandler={filterByColumn}
 										currentSortOrder={
-											currentSortedColumnName === "type"
-												? currentSortOrder
-												: "null"
+											currentSortedColumnName === "type" ? currentSortOrder : "null"
 										}
 										filterOptions={{
 											bug: <IssueTypesChip type="bug" />,
@@ -537,8 +509,7 @@ export default function IssuesTable(props) {
 												sortHandler={sortByColumn}
 												isFilterable={true}
 												currentSortOrder={
-													currentSortedColumnName ===
-													"trello_card_list_name"
+													currentSortedColumnName === "trello_card_list_name"
 														? currentSortOrder
 														: "null"
 												}
@@ -551,9 +522,7 @@ export default function IssuesTable(props) {
 												}}
 												filterHandler={filterByColumn}
 												clearFilter={clearColumnFilter}
-												currentFilteredColumnNames={
-													currentFilteredColumnNames
-												}
+												currentFilteredColumnNames={currentFilteredColumnNames}
 											/>
 										</TableCell>
 										<TableCell align="left">
@@ -565,8 +534,7 @@ export default function IssuesTable(props) {
 												isFilterable={true}
 												filterHandler={filterByColumn}
 												currentSortOrder={
-													currentSortedColumnName ===
-													"trello_card_due_is_completed"
+													currentSortedColumnName === "trello_card_due_is_completed"
 														? currentSortOrder
 														: "null"
 												}
@@ -576,9 +544,7 @@ export default function IssuesTable(props) {
 													Unknown: <Typography>Unknown</Typography>,
 												}}
 												clearFilter={clearColumnFilter}
-												currentFilteredColumnNames={
-													currentFilteredColumnNames
-												}
+												currentFilteredColumnNames={currentFilteredColumnNames}
 											/>
 										</TableCell>
 										<TableCell align="left">
@@ -590,8 +556,7 @@ export default function IssuesTable(props) {
 												isFilterable={true}
 												filterHandler={filterByColumn}
 												currentSortOrder={
-													currentSortedColumnName ===
-													"trello_card_is_closed"
+													currentSortedColumnName === "trello_card_is_closed"
 														? currentSortOrder
 														: "null"
 												}
@@ -601,9 +566,7 @@ export default function IssuesTable(props) {
 													Unknown: <Typography>Unknown</Typography>,
 												}}
 												clearFilter={clearColumnFilter}
-												currentFilteredColumnNames={
-													currentFilteredColumnNames
-												}
+												currentFilteredColumnNames={currentFilteredColumnNames}
 											/>
 										</TableCell>
 									</>
@@ -616,9 +579,7 @@ export default function IssuesTable(props) {
 										sortBy="date"
 										isFilterable={false}
 										currentSortOrder={
-											currentSortedColumnName === "created_at"
-												? currentSortOrder
-												: "null"
+											currentSortedColumnName === "created_at" ? currentSortOrder : "null"
 										}
 									/>
 								</TableCell>
@@ -631,20 +592,14 @@ export default function IssuesTable(props) {
 										sortHandler={sortByColumn}
 										sortBy="number"
 										currentSortOrder={
-											currentSortedColumnName === "priority"
-												? currentSortOrder
-												: "null"
+											currentSortedColumnName === "priority" ? currentSortOrder : "null"
 										}
 										filterOptions={Object.fromEntries(
 											Array.from({ length: 6 }, (item, index) => `${index}`)
 												.slice(1)
 												.map((item) => [
 													item,
-													<Box
-														display="flex"
-														alignItems="center"
-														style={{ gap: "2px" }}
-													>
+													<Box display="flex" alignItems="center" style={{ gap: "2px" }}>
 														<Typography>{item}</Typography>
 														<Star fontSize="small" />
 													</Box>,

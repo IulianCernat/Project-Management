@@ -15,19 +15,16 @@ const validationSchema = Yup.object({
 
 AddingDevsForm.props = {
 	teamId: PropTypes.number.isRequired,
-	setDevAdditionSuccess: PropTypes.func.isRequired,
+	insertNewTeamDevs: PropTypes.func.isRequired,
 	projectId: PropTypes.number.isRequired,
 };
-export default function AddingDevsForm(props) {
+export default function AddingDevsForm({ teamId, insertNewTeamDevs, projectId }) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { error, isLoading, isRejected, isResolved } = usePostFetch(
-		"api/teams_members/",
-		requestBody
-	);
+	const { error, isLoading, isRejected, isResolved, receivedData } = usePostFetch("api/teams_members/", requestBody);
 
 	useEffect(() => {
-		if (isResolved) props.setDevAdditionSuccess(true);
-	}, [isResolved]);
+		if (isResolved) insertNewTeamDevs(receivedData);
+	}, [isResolved, insertNewTeamDevs, receivedData]);
 
 	return (
 		<>
@@ -41,7 +38,7 @@ export default function AddingDevsForm(props) {
 					for (let foundPerson of JSON.parse(values.devs)) {
 						const team_member = {
 							created_at: new Date().toISOString(),
-							team_id: Number(props.teamId), // why teamId is string instead of number?
+							team_id: Number(teamId),
 							user_id: foundPerson.id,
 							user_type: "developer",
 						};
@@ -56,9 +53,9 @@ export default function AddingDevsForm(props) {
 					<Form>
 						<SearchField
 							multiple
-							fetchUrl="api/users/"
-							partOfProjectId={props.projectId}
-							setSelecteResource={(id) => {
+							fetchUrl="api/user_profiles/"
+							partOfProjectId={projectId}
+							setSelectedResource={(id) => {
 								setFieldValue("devs", id);
 							}}
 							inputNode={
@@ -85,28 +82,18 @@ export default function AddingDevsForm(props) {
 										justifyContent="flext-start"
 										style={{ gap: "1rem" }}
 									>
-										<Avatar src={option.avatar_url}>
-											{option.fullName.slice(0, 2)}
-										</Avatar>
+										<Avatar src={option.avatar_url}>{option.fullName.slice(0, 2)}</Avatar>
 										<Typography>{option.fullName}</Typography>
 									</Box>
 
-									<Typography>
-										{option.is_part_of_project ? "joined" : null}
-									</Typography>
+									<Typography>{option.is_part_of_project ? "joined" : null}</Typography>
 								</Box>
 							)}
 							optionLabel="fullName"
 							isOptionDisabled={(option) => option.is_part_of_project}
 						/>
 
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							color="primary"
-							disabled={isLoading}
-						>
+						<Button type="submit" fullWidth variant="contained" color="primary" disabled={isLoading}>
 							<Typography>Add developer</Typography>
 						</Button>
 

@@ -1,11 +1,5 @@
-import {
-	Dialog,
-	DialogContent,
-	DialogTitle,
-	IconButton,
-	useMediaQuery,
-	Box,
-} from "@material-ui/core";
+import { useEffect } from "react";
+import { Dialog, DialogContent, DialogTitle, IconButton, useMediaQuery, Box } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import CancelIcon from "@material-ui/icons/Cancel";
 import PropTypes from "prop-types";

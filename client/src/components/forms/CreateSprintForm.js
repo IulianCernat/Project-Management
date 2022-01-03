@@ -3,11 +3,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, Box } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
-import {
-	TextFieldWrapper,
-	DatetimePickerWrapper,
-	TextFieldSelectWrapper,
-} from "./InputFieldsWrappers";
+import { TextFieldWrapper, DatetimePickerWrapper, TextFieldSelectWrapper } from "./InputFieldsWrappers";
 import {
 	sprintGoalValidSchema,
 	sprintNameValidSchema,
@@ -49,7 +45,6 @@ export default function CreateSprintForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
 	const defaultDurationOption = "2";
 	const {
-		receivedData: postFetchReceivedData,
 		error: postFetchError,
 		isLoading: postFetchIsLoading,
 		isRejected: postFetchIsRejected,
@@ -65,13 +60,11 @@ export default function CreateSprintForm(props) {
 		return newEndDate;
 	};
 
-	const defaultEndDate = getNewEndDateAccordingToStartDate(
-		defaultStartDate,
-		defaultDurationOption
-	);
+	const defaultEndDate = getNewEndDateAccordingToStartDate(defaultStartDate, defaultDurationOption);
 
 	useEffect(() => {
 		if (postFetchIsResolved) history.push(`${match.url.replace("backlog", "sprints")}`);
+		/* eslint-disable */
 	}, [postFetchIsResolved]);
 
 	return (
@@ -113,13 +106,7 @@ export default function CreateSprintForm(props) {
 							name="name"
 							disabled={postFetchIsLoading}
 						/>
-						<Box
-							mt={2}
-							display="flex"
-							flexWrap="wrap"
-							alignItems="center"
-							style={{ gap: "1rem" }}
-						>
+						<Box mt={2} display="flex" flexWrap="wrap" alignItems="center" style={{ gap: "1rem" }}>
 							<DatetimePickerWrapper
 								id="startDate"
 								inputVariant="outlined"
@@ -129,10 +116,7 @@ export default function CreateSprintForm(props) {
 									setFieldValue("start_date", newDateValue);
 									setFieldValue(
 										"end_date",
-										getNewEndDateAccordingToStartDate(
-											newDateValue,
-											values.duration
-										)
+										getNewEndDateAccordingToStartDate(newDateValue, values.duration)
 									);
 								}}
 							/>
@@ -150,10 +134,7 @@ export default function CreateSprintForm(props) {
 
 										setFieldValue(
 											"end_date",
-											getNewEndDateAccordingToStartDate(
-												values.start_date,
-												newDuration
-											)
+											getNewEndDateAccordingToStartDate(values.start_date, newDuration)
 										);
 									}}
 								/>

@@ -70,7 +70,7 @@
         "prettier": "^2.3.2"
     },
     "prettier": {
-        "printWidth": 100,
+        "printWidth": 120,
         "useTabs": true,
         "tabWidth": 4
     },

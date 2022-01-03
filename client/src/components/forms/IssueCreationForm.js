@@ -53,10 +53,8 @@ IssueCreationForm.propTypes = {
 };
 export default function IssueCreationForm({ onClose, insertCreation, projectId }) {
 	const { additionalUserInfo } = useAuth();
-
 	const [requestBody, setRequestBody] = useState(null);
-	const [newIssueId, setNewIssueId] = useState(null);
-	const [startFetchingNewCreatedResource, setStartFetchingNewCreatedResource] = useState(false);
+
 	const {
 		receivedData: postFetchReceivedData,
 		error: postFetchError,
@@ -65,26 +63,11 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 		isResolved: postFetchIsResolved,
 	} = usePostFetch("api/issues/", requestBody);
 
-	const {
-		receivedData: fetchedNewCreatedResource,
-		error: fetchedNewCreatedResourceError,
-		isLoading: fetchedNewCreatedResourceIsLoading,
-		isRejected: fetchedNewCreatedResourceIsRejected,
-		isResolved: fetchedNewCreatedResourceIsResolved,
-	} = useGetFetch(`api/issues/${newIssueId}`, null, startFetchingNewCreatedResource);
-
 	useEffect(() => {
 		if (postFetchIsResolved) {
-			setNewIssueId(postFetchReceivedData.split("/").pop());
-			setStartFetchingNewCreatedResource(true);
+			insertCreation(postFetchReceivedData);
 		}
-	}, [postFetchReceivedData, postFetchIsResolved]);
-
-	useEffect(() => {
-		if (fetchedNewCreatedResourceIsResolved) {
-			insertCreation(fetchedNewCreatedResource);
-		}
-	}, [fetchedNewCreatedResource, fetchedNewCreatedResourceIsResolved]);
+	}, [postFetchIsResolved, postFetchReceivedData, insertCreation]);
 
 	return (
 		<>
@@ -123,13 +106,7 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 							name="title"
 							disabled={postFetchIsLoading}
 						/>
-						<Box
-							display="flex"
-							flexWrap="wrap"
-							flexDirection="row"
-							width="100%"
-							style={{ gap: "1rem" }}
-						>
+						<Box display="flex" flexWrap="wrap" flexDirection="row" width="100%" style={{ gap: "1rem" }}>
 							<Box flex="1 1 auto">
 								<TextFieldSelectWrapper
 									fullWidth
