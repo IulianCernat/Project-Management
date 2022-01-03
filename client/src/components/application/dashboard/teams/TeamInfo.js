@@ -26,9 +26,7 @@ TeamInfo.propTypes = {
 export default function TeamInfo(props) {
 	const classes = useStyles();
 	const [hideVersionControlAdditionForm, setHideVersionControlAdditionForm] = useState(true);
-	const [addedVersionControlUrl, setAddedVersionControlUrl] = useState(
-		props.version_control_link
-	);
+	const [addedVersionControlUrl, setAddedVersionControlUrl] = useState(props.version_control_link);
 
 	const handleFormAdditionClick = () => {
 		setHideVersionControlAdditionForm(false);
@@ -49,92 +47,66 @@ export default function TeamInfo(props) {
 	}, [addedVersionControlUrl]);
 
 	return (
-		<Grid container spacing={1}>
-			<Grid item xs={12} md={4}>
-				<Paper>
-					<Box
-						p={1}
-						display="flex"
-						flexDirection="column"
-						alignItems="center"
-						style={{ gap: "1rem" }}
-					>
-						{hideVersionControlAdditionForm ? (
-							<Button
-								className={classes.linkButton}
-								variant="contained"
-								color="primary"
-								onClick={handleFormAdditionClick}
-								disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
-							>
-								Add version control link
-							</Button>
-						) : (
-							<Box width="50ch">
-								<VersionSystemAdditionForm
-									teamId={props.teamId}
-									setAddedVersionControlUrl={setAddedVersionControlUrl}
-									hideForm={hideFormAddition}
-								/>
-							</Box>
-						)}
-						<Box>
-							{addedVersionControlUrl && (
-								<Button
-									onClick={openVersionControlLink}
-									className={classes.linkButton}
-									variant="contained"
+		<Paper>
+			<Box p={4}>
+				<Box>
+					<Typography color="primary" variant="h6">
+						Team Name
+					</Typography>
+					<TextDisplayWrapper className={classes.textContent}>{props.name}</TextDisplayWrapper>
+					<Box mt={2} />
+					<Typography color="primary" variant="h6">
+						Team Description
+					</Typography>
+					<TextDisplayWrapper className={classes.textContent}>{props.description}</TextDisplayWrapper>
+				</Box>
+				<Box
+					mt={2}
+					display="inline-flex"
+					flexDirection="column"
+					alignItems="center"
+					style={{ gap: "16px", width: "auto" }}
+				>
+					<Typography color="primary" variant="h6">
+						Version Control Link
+					</Typography>
+					<Box>
+						{addedVersionControlUrl && (
+							<Button onClick={openVersionControlLink} className={classes.linkButton} variant="contained">
+								<Box
+									display="flex"
+									flexWrap="wrap"
+									style={{ gap: "1rem", wordBreak: "break-all" }}
+									alignItems="center"
 								>
-									<Box
-										display="flex"
-										flexWrap="wrap"
-										style={{ gap: "1rem", wordBreak: "break-all" }}
-										alignItems="center"
-									>
-										<Avatar
-											src={
-												addedVersionControlUrl
-													? (function () {
-															const baseUrl =
-																addedVersionControlUrl.match(
-																	/https:\/\/.*?\/+/
-																);
-															if (baseUrl)
-																return baseUrl + "favicon.ico";
-															return "";
-													  })()
-													: null
-											}
-										/>
-										<Typography variant="subtitle2" color="primary">
-											{addedVersionControlUrl.match(/(https:\/\/)(.*)/)[2]}
-										</Typography>
-									</Box>
-								</Button>
-							)}
+									<Typography variant="subtitle2" color="primary">
+										{addedVersionControlUrl.match(/(https:\/\/)(.*)/)[2]}
+									</Typography>
+								</Box>
+							</Button>
+						)}
+					</Box>
+					{hideVersionControlAdditionForm ? (
+						<Button
+							className={classes.linkButton}
+							variant="contained"
+							color="primary"
+							onClick={handleFormAdditionClick}
+							disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
+						>
+							{addedVersionControlUrl ? "Change version control link" : "Add version control link"}
+						</Button>
+					) : (
+						<Box p={1}>
+							<VersionSystemAdditionForm
+								teamId={props.teamId}
+								setAddedVersionControlUrl={setAddedVersionControlUrl}
+								hideForm={hideFormAddition}
+							/>
 						</Box>
-					</Box>
-				</Paper>
-			</Grid>
-			<Grid item xs={12} md={8}>
-				<Paper>
-					<Box p={1} minHeight="50ch">
-						<Typography color="primary" variant="h6">
-							Team name
-						</Typography>
-						<TextDisplayWrapper className={classes.textContent}>
-							{props.name}
-						</TextDisplayWrapper>
-						<Box mt={2} />
-						<Typography color="primary" variant="h6">
-							Team description
-						</Typography>
-						<TextDisplayWrapper className={classes.textContent}>
-							{props.description}
-						</TextDisplayWrapper>
-					</Box>
-				</Paper>
-			</Grid>
-		</Grid>
+					)}
+				</Box>
+			</Box>
+		</Paper>
 	);
 }

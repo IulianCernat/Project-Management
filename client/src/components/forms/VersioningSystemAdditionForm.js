@@ -19,10 +19,7 @@ VersioningSystemAdditionForm.propTypes = {
 };
 export default function VersioningSystemAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
-	const { error, isLoading, isRejected, isResolved } = usePatchFetch(
-		`api/teams/${props.teamId}`,
-		requestBody
-	);
+	const { error, isLoading, isRejected, isResolved } = usePatchFetch(`api/teams/${props.teamId}`, requestBody);
 	useEffect(() => {
 		if (!isResolved) return;
 		const addedUrl = requestBody.match(/http.*[^}"]/);
@@ -30,7 +27,7 @@ export default function VersioningSystemAdditionForm(props) {
 		else props.setAddedVersionControlUrl("");
 
 		props.hideForm();
-	}, [isResolved]);
+	}, [isResolved, props, requestBody]);
 
 	return (
 		<>

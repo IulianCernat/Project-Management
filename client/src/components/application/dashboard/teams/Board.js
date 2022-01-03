@@ -129,7 +129,7 @@ export default function Board(props) {
 				</Box>
 			) : null}
 			{isLoadingGetBoardLists ? <LinearProgress style={{ width: "100%" }} /> : null}
-			{boardInfo.trello_board_lists.length ? (
+			{boardInfo?.trello_board_lists.length ? (
 				<Box
 					mt={4}
 					pb={"6rem"}
