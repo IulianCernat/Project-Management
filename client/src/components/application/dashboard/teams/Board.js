@@ -1,14 +1,5 @@
 import { useRef, useEffect } from "react";
-import {
-	Box,
-	Avatar,
-	LinearProgress,
-	Paper,
-	Typography,
-	Chip,
-	Divider,
-	Button,
-} from "@material-ui/core";
+import { Box, Avatar, LinearProgress, Paper, Typography, Chip, Divider, Button } from "@material-ui/core";
 import { useGetFetch } from "customHooks/useFetch";
 import { Alert } from "@material-ui/lab";
 import TrelloBoardAdditionForm from "components/forms/TrelloBoardAdditionForm";
@@ -48,9 +39,7 @@ function BoardCard({ card }) {
 				<Divider />
 				<Box p={2} display="flex" style={{ gap: "2px" }}>
 					{card.members_info.length
-						? card.members_info.map((item) => (
-								<Chip key={item.id} label={item.fullName} />
-						  ))
+						? card.members_info.map((item) => <Chip key={item.id} label={item.fullName} />)
 						: null}
 				</Box>
 			</Box>
@@ -83,9 +72,10 @@ Board.propTypes = {
 	boardId: PropTypes.string.isRequired,
 };
 export default function Board(props) {
-	const [startFetchingBoardLists, setStartFetchingBoardLists] = useState(false);
+	const [startFetchingBoardLists, setStartFetchingBoardLists] = useState(true);
 	const [boardId, setBoardId] = useState(props.boardId);
 	const [hideBoardAdditionform, setHideBoardAdditionform] = useState(true);
+	const [boardInfo, setBoardInfo] = useState();
 	const getBoardListsParameters = useRef({
 		data_arrangement: "board_lists",
 	});
@@ -96,17 +86,11 @@ export default function Board(props) {
 		isLoading: isLoadingGetBoardLists,
 		isResolved: isResolvedGetBoardLists,
 		isRejected: isRejectedGetBoardLists,
-	} = useGetFetch(
-		`api/trello/boards/${boardId}`,
-		getBoardListsParameters.current,
-		startFetchingBoardLists,
-		false
-	);
+	} = useGetFetch(`api/trello/boards/${boardId}`, getBoardListsParameters.current, startFetchingBoardLists);
 
 	useEffect(() => {
-		if (!isResolvedGetBoardLists) return;
-		setStartFetchingBoardLists(false);
-	}, [isResolvedGetBoardLists]);
+		if (isResolvedGetBoardLists) setBoardInfo(getBoardListsReceivedData);
+	}, [isResolvedGetBoardLists, getBoardListsReceivedData]);
 
 	useEffect(() => {
 		if (Boolean(boardId)) setStartFetchingBoardLists(true);
@@ -145,7 +129,7 @@ export default function Board(props) {
 				</Box>
 			) : null}
 			{isLoadingGetBoardLists ? <LinearProgress style={{ width: "100%" }} /> : null}
-			{isResolvedGetBoardLists ? (
+			{boardInfo.trello_board_lists.length ? (
 				<Box
 					mt={4}
 					pb={"6rem"}
@@ -157,7 +141,7 @@ export default function Board(props) {
 						cursor: "grab",
 					}}
 				>
-					{getBoardListsReceivedData.trello_board_lists.map((boardListItem) => {
+					{boardInfo.trello_board_lists.map((boardListItem) => {
 						return <BoardList key={boardListItem.id} boardList={boardListItem} />;
 					})}
 				</Box>

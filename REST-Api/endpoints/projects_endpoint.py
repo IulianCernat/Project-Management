@@ -26,7 +26,6 @@ class ProjectsCollection(Resource):
     @api.marshal_list_with(project_output)
     @api.expect(projects_sorting_arguments, authorization_header)
     def get(self):
-
         process_firebase_authorization_field(request)
         args = projects_sorting_arguments.parse_args(request)
         user_id = args.get('user_id', None)
