@@ -1,7 +1,7 @@
 from flask_restx import Resource
 from flask import request
 from utils.restx import api
-from utils.serializers import project_input, message, bad_request, project_output, location, user_role_output
+from utils.serializers import project_input, message, bad_request, project_output,  user_role_output, project_input_for_update
 from controllers.projects_controller import *
 from controllers.users_controller import get_user_id
 from utils.parsers import authorization_header, projects_sorting_arguments
@@ -42,6 +42,14 @@ class ProjectItem(Resource):
     def get(self, id):
         process_firebase_authorization_field(request)
         return get_project(id)
+
+    @api.response(200, 'Project successfully updated', project_output)
+    @api.marshal_with(project_output)
+    @api.expect(project_input_for_update, authorization_header)
+    def patch(self, id):
+        input_data = request.json
+        updated_project = update_project(id, input_data)
+        return updated_project, 200
 
     @api.response(200, 'Projects successfully queried', message)
     @api.expect(authorization_header)

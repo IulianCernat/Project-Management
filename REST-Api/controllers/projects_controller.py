@@ -79,6 +79,7 @@ def update_project(project_id, input_obj):
         setattr(project, field, value)
 
     db.session.commit()
+    return project
 
 
 def delete_project(project_id):

@@ -12,6 +12,7 @@ TextFieldWrapper.propTypes = {
 export function TextFieldWrapper({ label, maxTextWidth, children, value, ...props }) {
 	const [field, meta] = useField(props);
 	const currentText = useRef(null);
+
 	return (
 		<TextField
 			{...field}
@@ -25,8 +26,7 @@ export function TextFieldWrapper({ label, maxTextWidth, children, value, ...prop
 					{meta.touched && Boolean(meta.error) ? <span>{meta.error}</span> : null}
 					{maxTextWidth ? (
 						<span>
-							{currentText.current ? currentText.current.value.length : 0}/
-							{maxTextWidth}
+							{currentText.current ? currentText.current.value.length : 0}/{maxTextWidth}
 						</span>
 					) : null}
 				</Box>
@@ -52,13 +52,7 @@ export function DatetimePickerWrapper({ runChangeEffect, ...props }) {
 	);
 }
 
-export function TextFieldSelectWrapper({
-	label,
-	menuOptions,
-	runChangeEffect,
-	selectComponentMenuProps,
-	...props
-}) {
+export function TextFieldSelectWrapper({ label, menuOptions, runChangeEffect, selectComponentMenuProps, ...props }) {
 	const [field, meta] = useField(props);
 
 	return (

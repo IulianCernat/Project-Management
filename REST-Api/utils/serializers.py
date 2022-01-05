@@ -74,6 +74,12 @@ project_output = api.inherit('Project output', project_input, {
                                  description="The total number of members that work on this project, excluding the product owner")
 })
 
+project_input_for_update = api.model('Project update input', {
+    'name': String(required=False, description="Project name"),
+    'description': String(required=False, description="Project description"),
+    'product_owner_id': Integer(required=False, description="The id of the user that is the owner")
+})
+
 team_member_input = api.model('Team member input', {
     'user_id': Integer(required=True, description="The id of user which needs to be added to team"),
     'team_id': Integer(required=True, description="The id of the team on which a new team member is added"),

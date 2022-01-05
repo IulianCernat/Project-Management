@@ -208,6 +208,7 @@ export function usePostFetch(url, bodyContent) {
 	const { currentUser } = useAuth();
 	useEffect(() => {
 		if (!bodyContent) {
+			dispatch({ type: "idle" });
 			return;
 		}
 		async function doFetch() {
@@ -242,7 +243,7 @@ export function usePatchFetch(url, bodyContent) {
 	const { currentUser } = useAuth();
 	useEffect(() => {
 		async function doFetch() {
-			if (!bodyContent) {
+			if (!bodyContent || !url) {
 				dispatch({ type: "idle" });
 				return;
 			}

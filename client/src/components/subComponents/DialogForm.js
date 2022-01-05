@@ -24,14 +24,18 @@ export default function DialogForm({ title, onClose, children, open, ...other })
 			disableBackdropClick
 			{...other}
 		>
-			<Box display="flex" flexWrap="wrap" justifyContent="space-between" alignItems="center">
-				<DialogTitle id="dialog-title">{title}</DialogTitle>
-				<IconButton onClick={onClose}>
-					<CancelIcon />
-				</IconButton>
-			</Box>
+			{!open ? null : (
+				<>
+					<Box display="flex" flexWrap="wrap" justifyContent="space-between" alignItems="center">
+						<DialogTitle id="dialog-title">{title}</DialogTitle>
+						<IconButton onClick={onClose}>
+							<CancelIcon />
+						</IconButton>
+					</Box>
 
-			<DialogContent>{children}</DialogContent>
+					<DialogContent>{children}</DialogContent>
+				</>
+			)}
 		</Dialog>
 	);
 }

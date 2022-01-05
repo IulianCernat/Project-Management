@@ -28,6 +28,7 @@ ProjectComponentList.propTypes = {
 	projectsList: PropTypes.array.isRequired,
 	handleProjectDeletion: PropTypes.func.isRequired,
 	renderProjectsActions: PropTypes.bool.isRequired,
+	handleProjectUpdate: PropTypes.func.isRequired,
 };
 function ProjectComponentList(props) {
 	return (
@@ -37,6 +38,7 @@ function ProjectComponentList(props) {
 						<Box key={item.id} maxWidth="50ch" flex="1 1 40ch">
 							<ProjectCard
 								handleDelete={props.handleProjectDeletion}
+								handleProjectUpdate={props.handleProjectUpdate}
 								project={item}
 								renderActions={props.renderProjectsActions}
 							/>
@@ -59,6 +61,8 @@ function TabPanel(props) {
 	const [startGetFetch, setStartGetFetch] = useState(false);
 	const [projectIdToBeDeleted, setProjectIdToBeDeleted] = useState();
 	const [projectsList, setProjectsList] = useState([]);
+	const [performProjectUpdate, setPerformProjectUpdate] = useState(false);
+	const [projectUpdateData, setProjectUpdateData] = useState();
 	const projectDeletionStatus = useDeleteFetch(projectIdToBeDeleted ? `api/projects/${projectIdToBeDeleted}` : null);
 	const getParams = useRef({
 		user_id: "",
@@ -76,11 +80,29 @@ function TabPanel(props) {
 
 	const handleCancelProjectCreation = () => {
 		setOpenProjectCreation(false);
+		setPerformProjectUpdate(false);
+		setProjectUpdateData(null);
 	};
 
 	const insertNewCreatedProject = useCallback((newProjectObj) => {
 		setOpenProjectCreation(false);
 		setProjectsList((prevProjectsList) => [newProjectObj, ...prevProjectsList]);
+	}, []);
+
+	const handleProjectUpdate = (projectId) => {
+		setProjectUpdateData(projectsList.find((item) => item.id === projectId));
+		setPerformProjectUpdate(true);
+		setOpenProjectCreation(true);
+	};
+	const updateProjectsWithNewProject = useCallback((newUpdatedProjectObj) => {
+		setPerformProjectUpdate(false);
+		setProjectUpdateData(null);
+		setOpenProjectCreation(false);
+		setProjectsList((prevProjectsList) => {
+			const indexOfUpdatedProject = prevProjectsList.findIndex((item) => item.id === newUpdatedProjectObj.id);
+			prevProjectsList[indexOfUpdatedProject] = newUpdatedProjectObj;
+			return [...prevProjectsList];
+		});
 	}, []);
 
 	useEffect(() => {
@@ -131,13 +153,16 @@ function TabPanel(props) {
 							</Box>
 
 							<DialogForm
-								title="Create project"
+								title={performProjectUpdate ? "Update project" : "Create project"}
 								open={openProjectCreation}
 								onClose={handleCancelProjectCreation}
 								maxWidth="md"
 							>
 								<ProjectCreationForm
 									insertNewCreatedProject={insertNewCreatedProject}
+									performProjectUpdate={performProjectUpdate}
+									updateProjectsWithNewProject={updateProjectsWithNewProject}
+									projectUpdateData={projectUpdateData}
 									productOwnerId={props.userId}
 								/>
 							</DialogForm>
@@ -146,6 +171,7 @@ function TabPanel(props) {
 					{projectsList.length ? (
 						<ProjectComponentList
 							handleProjectDeletion={handleProjectDeletion}
+							handleProjectUpdate={handleProjectUpdate}
 							projectsList={projectsList}
 							renderProjectsActions={props.withProjectAdditionForm}
 						/>
