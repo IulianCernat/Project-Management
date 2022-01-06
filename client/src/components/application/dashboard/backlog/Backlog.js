@@ -18,9 +18,11 @@ export default function Backlog() {
 	const [openIssueCreationForm, setOpenIssueCreationForm] = useState(false);
 	const [openSprintCreationForm, setOpenSprintCreationForm] = useState(false);
 	const [openTransferIssuesToSprintForm, setOpenTransferIssuesToSprintForm] = useState(false);
-
 	const [issuesList, setIssuesList] = useState([]);
 	const [openErrorPopup, setOpenErrorPopup] = useState(false);
+	const [performIssueUpdate, setPerformIssueUpdate] = useState(false);
+	const [issueUpdateData, setIssueUpdateData] = useState();
+
 	let {
 		receivedData: getIssuesReceivedData,
 		error: getIssuesError,
@@ -40,6 +42,8 @@ export default function Backlog() {
 		setOpenIssueCreationForm(true);
 	}
 	function handleCancelIssueCreation() {
+		setPerformIssueUpdate(false);
+		setIssueUpdateData(null);
 		setOpenIssueCreationForm(false);
 	}
 
@@ -64,8 +68,23 @@ export default function Backlog() {
 		handleCancelIssueCreation();
 	}, []);
 
+	const updateIssuesWithNewIssue = useCallback((newUpdatedIssueObj) => {
+		handleCancelIssueCreation();
+		setIssuesList((prevIssuesList) => {
+			const indexOfUpdatedIssue = prevIssuesList.findIndex((item) => item.id === newUpdatedIssueObj.id);
+			prevIssuesList[indexOfUpdatedIssue] = newUpdatedIssueObj;
+			return [...prevIssuesList];
+		});
+	}, []);
+
 	const handleDeleteIssueClick = (issueId) => {
 		setIssueUrlToBeDeleted(`api/issues/${issueId}`);
+	};
+
+	const handleUpdateIssueClick = (issueId) => {
+		setIssueUpdateData(issuesList.find((item) => item.id === issueId));
+		setPerformIssueUpdate(true);
+		setOpenIssueCreationForm(true);
 	};
 
 	useEffect(() => {
@@ -91,6 +110,9 @@ export default function Backlog() {
 				maxWidth="md"
 			>
 				<IssueCreationForm
+					performIssueUpdate={performIssueUpdate}
+					updateIssuesWithNewIssue={updateIssuesWithNewIssue}
+					issueUpdateData={issueUpdateData}
 					projectId={projectId}
 					onClose={handleCancelIssueCreation}
 					insertCreation={insertNewIssues}
@@ -124,6 +146,7 @@ export default function Backlog() {
 							openTransferIssuesToSprintDialog,
 							setSelectedIssues,
 							handleDeleteIssueClick,
+							handleUpdateIssueClick,
 							isLoadingDeleteIssue,
 							selectedIssues,
 						}}

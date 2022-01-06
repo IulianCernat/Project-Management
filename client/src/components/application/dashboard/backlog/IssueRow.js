@@ -15,6 +15,7 @@ import {
 	Checkbox,
 	Tooltip,
 	CircularProgress,
+	Button,
 } from "@material-ui/core";
 import {
 	Star,
@@ -80,6 +81,7 @@ IssueRow.propTypes = {
 	 */
 	handleSelectionClick: PropTypes.func,
 	handleDeleteIssueClick: PropTypes.func,
+	handleUpdateIssueClick: PropTypes.func,
 	isBacklogIssue: PropTypes.bool.isRequired,
 	/**
 	 * Whether the issue is in the process of being deleted
@@ -124,6 +126,7 @@ export default function IssueRow(props) {
 		handleMoveIssueClick,
 		handleCopyIssueToTrelloClick,
 		handleDeleteIssueClick,
+		handleUpdateIssueClick,
 		idOfIssueToBeMovedToBacklog,
 		idOfIssueToBeCopiedToTrello,
 		isLoadingPostTrelloCard,
@@ -137,15 +140,26 @@ export default function IssueRow(props) {
 		<>
 			<TableRow classes={{ root: classes.rowTop }} selected={isSelected}>
 				{isBacklogIssue ? (
-					<TableCell padding="checkbox">
-						<Checkbox
-							checked={isSelected}
-							onChange={(event) => {
-								handleSelectionClick(row.id);
-							}}
-							disabled={UIRestrictionForRoles.includes(currentUserRole)}
-						/>
-					</TableCell>
+					<>
+						<TableCell padding="checkbox">
+							<Checkbox
+								checked={isSelected}
+								onChange={(event) => {
+									handleSelectionClick(row.id);
+								}}
+								disabled={UIRestrictionForRoles.includes(currentUserRole)}
+							/>
+						</TableCell>
+						<TableCell>
+							<Button
+								onClick={() => {
+									handleUpdateIssueClick(row.id);
+								}}
+							>
+								edit
+							</Button>
+						</TableCell>
+					</>
 				) : (
 					<TableCell padding="checkbox">
 						{isLoadingPostTrelloCard && row.id === idOfIssueToBeCopiedToTrello ? (

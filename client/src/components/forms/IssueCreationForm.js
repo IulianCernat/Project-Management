@@ -11,7 +11,7 @@ import {
 	issueTypeValidSchema,
 	maxIssueDescriptionLen,
 } from "utils/validationSchemas";
-import { usePostFetch, useGetFetch } from "customHooks/useFetch.js";
+import { usePostFetch, usePatchFetch } from "customHooks/useFetch.js";
 import PropTypes from "prop-types";
 import { useAuth } from "contexts/AuthContext";
 
@@ -47,13 +47,22 @@ const issuePriorityOptions = (function () {
 })();
 
 IssueCreationForm.propTypes = {
-	onClose: PropTypes.func,
-	insertCreation: PropTypes.func,
+	insertCreation: PropTypes.func.isRequired,
+	updateIssuesWithNewIssue: PropTypes.func.isRequired,
+	issueUpdateData: PropTypes.object.isRequired,
+	performIssueUpdate: PropTypes.func.isRequired,
 	projectId: PropTypes.number.isRequired,
 };
-export default function IssueCreationForm({ onClose, insertCreation, projectId }) {
+export default function IssueCreationForm({
+	updateIssuesWithNewIssue,
+	performIssueUpdate,
+	issueUpdateData,
+	insertCreation,
+	projectId,
+}) {
 	const { additionalUserInfo } = useAuth();
-	const [requestBody, setRequestBody] = useState(null);
+	const [requestBodyForPost, setRequestBodyForPost] = useState(null);
+	const [requestBodyForPatch, setRequestBodyForPatch] = useState(null);
 
 	const {
 		receivedData: postFetchReceivedData,
@@ -61,7 +70,9 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 		isLoading: postFetchIsLoading,
 		isRejected: postFetchIsRejected,
 		isResolved: postFetchIsResolved,
-	} = usePostFetch("api/issues/", requestBody);
+	} = usePostFetch("api/issues/", requestBodyForPost);
+
+	const updateIssueStatus = usePatchFetch(`api/issues/${issueUpdateData?.id}`, requestBodyForPatch);
 
 	useEffect(() => {
 		if (postFetchIsResolved) {
@@ -69,17 +80,25 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 		}
 	}, [postFetchIsResolved, postFetchReceivedData, insertCreation]);
 
+	useEffect(() => {
+		if (updateIssueStatus.isResolved) updateIssuesWithNewIssue(updateIssueStatus.receivedData);
+	}, [updateIssueStatus, updateIssuesWithNewIssue]);
+
 	return (
 		<>
 			<Formik
 				validationSchema={validationSchema}
 				initialValues={{
-					title: "",
-					description: "",
-					type: "story",
-					priority: "1",
+					title: performIssueUpdate ? issueUpdateData.title : "",
+					description: performIssueUpdate ? issueUpdateData.description : "",
+					type: performIssueUpdate ? issueUpdateData.type : "story",
+					priority: performIssueUpdate ? issueUpdateData.priority : "1",
 				}}
 				onSubmit={async (values) => {
+					if (performIssueUpdate) {
+						setRequestBodyForPatch(JSON.stringify(values));
+						return;
+					}
 					let requestObj = {};
 					requestObj["title"] = values.title;
 					requestObj["description"] = values.description;
@@ -91,12 +110,14 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 
 					const stringifiedData = JSON.stringify(requestObj);
 
-					setRequestBody(stringifiedData);
+					setRequestBodyForPost(stringifiedData);
 				}}
 			>
 				{({ setFieldValue }) => (
 					<Form>
 						<TextFieldWrapper
+							defaultValue={performIssueUpdate ? issueUpdateData.title : ""}
+							multiline
 							variant="outlined"
 							required
 							fullWidth
@@ -104,7 +125,7 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 							id="title"
 							label="Title"
 							name="title"
-							disabled={postFetchIsLoading}
+							disabled={postFetchIsLoading || updateIssueStatus.isLoading}
 						/>
 						<Box display="flex" flexWrap="wrap" flexDirection="row" width="100%" style={{ gap: "1rem" }}>
 							<Box flex="1 1 auto">
@@ -141,6 +162,7 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 							</Box>
 						</Box>
 						<TextFieldWrapper
+							defaultValue={performIssueUpdate ? issueUpdateData.description : ""}
 							multiline
 							variant="outlined"
 							fullWidth
@@ -150,7 +172,7 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 							id="description"
 							label="Description"
 							name="description"
-							disabled={postFetchIsLoading}
+							disabled={postFetchIsLoading || updateIssueStatus.isLoading}
 						/>
 
 						<Button
@@ -158,21 +180,31 @@ export default function IssueCreationForm({ onClose, insertCreation, projectId }
 							fullWidth
 							variant="contained"
 							color="primary"
-							disabled={postFetchIsLoading}
+							disabled={postFetchIsLoading || updateIssueStatus.isLoading}
 						>
-							<Typography>Create issue</Typography>
+							<Typography>{performIssueUpdate ? "Update issue" : "Create issue"}</Typography>
 						</Button>
 
-						{postFetchIsResolved && (
+						{postFetchIsResolved ? (
 							<Alert severity="success">
 								<Typography>New issue created</Typography>
 							</Alert>
-						)}
+						) : null}
+						{updateIssueStatus.isResolved ? (
+							<Alert severity="success">
+								<Typography>Issue updated</Typography>
+							</Alert>
+						) : null}
 						{postFetchIsRejected && (
 							<Alert severity="error">
 								<Typography>{postFetchError}</Typography>
 							</Alert>
 						)}
+						{updateIssueStatus.isRejected ? (
+							<Alert severity="error">
+								<Typography>{updateIssueStatus.error}</Typography>
+							</Alert>
+						) : null}
 					</Form>
 				)}
 			</Formik>

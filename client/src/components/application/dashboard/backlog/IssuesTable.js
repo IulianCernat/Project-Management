@@ -282,6 +282,7 @@ IssuesTable.propTypes = {
 			selectedIssues: PropTypes.array.isRequired,
 			setSelectedIssues: PropTypes.func.isRequired,
 			handleDeleteIssueClick: PropTypes.func.isRequired,
+			handleUpdateIssueClick: PropTypes.func.isRequired,
 			isLoadingDeleteIssue: PropTypes.bool.isRequired,
 		}),
 	]),
@@ -301,6 +302,7 @@ export default function IssuesTable(props) {
 		setSelectedIssues,
 		selectedIssues,
 		handleDeleteIssueClick,
+		handleUpdateIssueClick,
 		isLoadingDeleteIssue,
 		handleMoveIssueClick,
 		handleCopyIssueToTrelloClick,
@@ -636,6 +638,7 @@ export default function IssuesTable(props) {
 										isBacklogIssue={!isSprintIssuesTable}
 										handleSelectionClick={handleSelectionClick}
 										handleDeleteIssueClick={handleDeleteIssueClick}
+										handleUpdateIssueClick={handleUpdateIssueClick}
 										selectedRows={selectedIssues}
 										row={item}
 									/>

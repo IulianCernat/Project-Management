@@ -61,11 +61,12 @@ class IssueItem(Resource):
         delete_issue(id)
         return {"message": "Issue successfully deleted"}, 200
 
-    @api.response(200, 'Issue successfully updated', message)
+    @api.response(200, 'Issue successfully updated', issue_output)
     @api.response(400, 'Bad request', bad_request)
     @api.expect(issue_update_input, authorization_header)
+    @api.marshal_with(issue_output)
     def patch(self, id):
         process_firebase_authorization_field(request)
         input_data = request.json
-        update_issue(id, input_data)
-        return {'message': f"Issue with id {id} successfully updated"}, 200
+        updated_issue = update_issue(id, input_data)
+        return updated_issue, 200

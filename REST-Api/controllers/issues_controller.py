@@ -73,6 +73,8 @@ def update_issue(issue_id, input_obj=None, trello_token=None, clear_trello_data=
 
     db.session.commit()
 
+    return issue
+
 
 def update_issues(input_obj):
     found_issues = []

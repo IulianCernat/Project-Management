@@ -130,7 +130,7 @@ team_update_input = api.model('Team input for update', {
 
 issue_input = api.model('Issue input', {
     'title': String(required=True, description="A short description of the issue"),
-    'description': String(description="More details about this issue"),
+    'description': String(required=True, description="More details about this issue"),
     'type': String(required=True, enum=['story', 'bug', 'task'], description="What kind of issue it is"),
     'priority': String(required=True, enum=['1', '2', '3', '4', '5'],
                        description="Number after which the issue will be chosen for future sprints"),
@@ -142,6 +142,8 @@ issue_input = api.model('Issue input', {
 issue_update_input = api.model('Issue input for updating', {
     # 'is_trello_update_related': Boolean(description="Necessary for doing Trello related operations"),
     'sprint_id': Integer(description="The id of new sprint, 0 if you want issues to go back to backlog"),
+    'title': String(description="A short description of the issue"),
+    'description': String(description="More details about this issue"),
 
 })
 
