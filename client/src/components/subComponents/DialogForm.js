@@ -21,7 +21,6 @@ export default function DialogForm({ title, onClose, children, open, ...other })
 			onClose={onClose}
 			aria-labelledby="dialog-title"
 			fullWidth
-			disableBackdropClick
 			{...other}
 		>
 			{!open ? null : (

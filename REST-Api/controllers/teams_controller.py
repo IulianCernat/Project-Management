@@ -35,11 +35,12 @@ def get_teams(project_id):
 
 
 def update_team(team_id, input_obj):
-    issue = get_team(team_id)
+    team = get_team(team_id)
     for field, value in input_obj.items():
-        setattr(issue, field, value)
+        setattr(team, field, value)
 
     db.session.commit()
+    return team
 
 
 def delete_team(team_id):

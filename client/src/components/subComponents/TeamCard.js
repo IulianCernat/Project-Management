@@ -42,6 +42,7 @@ TeamCard.propTypes = {
 	linkTo: PropTypes.string.isRequired,
 	renderActions: PropTypes.bool.isRequired,
 	handleDelete: PropTypes.func.isRequired,
+	handleUpdate: PropTypes.func.isRequired,
 };
 export default function TeamCard(props) {
 	const styles = useStyles(props);
@@ -95,16 +96,27 @@ export default function TeamCard(props) {
 			</CardActionArea>
 			{!props.renderActions ? null : (
 				<CardActions>
-					<Button
-						size="small"
-						color="secondary"
-						variant="outlined"
-						onClick={() => {
-							props.handleDelete(props.id);
-						}}
-					>
-						delete
-					</Button>
+					<Box width="100%" display="flex" justifyContent="space-between">
+						<Button
+							size="small"
+							variant="outlined"
+							onClick={() => {
+								props.handleUpdate(props.id);
+							}}
+						>
+							edit
+						</Button>
+						<Button
+							size="small"
+							color="secondary"
+							variant="outlined"
+							onClick={() => {
+								props.handleDelete(props.id);
+							}}
+						>
+							delete
+						</Button>
+					</Box>
 				</CardActions>
 			)}
 		</Card>

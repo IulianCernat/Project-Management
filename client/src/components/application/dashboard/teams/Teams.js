@@ -15,9 +15,10 @@ const UIRestrictionForRoles = ["developer", "scrumMaster"];
 TeamComponentList.propTypes = {
 	teamList: PropTypes.arrayOf(PropTypes.object).isRequired,
 	handleDelete: PropTypes.func.isRequired,
+	handleUpdate: PropTypes.func.isRequired,
 	renderTeamCardActions: PropTypes.bool.isRequired,
 };
-function TeamComponentList({ teamList, handleDelete, renderTeamCardActions }) {
+function TeamComponentList({ teamList, handleDelete, handleUpdate, renderTeamCardActions }) {
 	let match = useRouteMatch();
 	return (
 		<>
@@ -30,6 +31,7 @@ function TeamComponentList({ teamList, handleDelete, renderTeamCardActions }) {
 									{...item}
 									renderActions={renderTeamCardActions}
 									handleDelete={handleDelete}
+									handleUpdate={handleUpdate}
 								/>
 							</Box>
 						);
@@ -45,7 +47,8 @@ export default function Teams() {
 	const [openTeamCreation, setOpenTeamCreation] = useState(false);
 	const [teamIdToBeDeleted, setTeamIdToBeDeleted] = useState();
 	const [teamsList, setTeamsList] = useState([]);
-
+	const [performTeamUpdate, setPerformTeamUpdate] = useState(false);
+	const [teamUpdateData, setTeamUpdateData] = useState();
 	const getParams = useRef({ project_id: projectId });
 	const getTeamsFetchStatus = useGetFetch("api/teams/", getParams.current);
 
@@ -55,6 +58,8 @@ export default function Teams() {
 		setOpenTeamCreation(true);
 	}
 	function handleCancelTeamCreation() {
+		setPerformTeamUpdate(false);
+		setTeamUpdateData(null);
 		setOpenTeamCreation(false);
 	}
 
@@ -62,9 +67,26 @@ export default function Teams() {
 		setTeamIdToBeDeleted(teamId);
 	}
 
+	function handleTeamUpdate(teamId) {
+		setTeamUpdateData(teamsList.find((item) => item.id === teamId));
+		setPerformTeamUpdate(true);
+		setOpenTeamCreation(true);
+	}
+
 	const insertNewTeam = useCallback((newTeamObj) => {
 		handleCancelTeamCreation();
 		setTeamsList((prevTeamsList) => [newTeamObj, ...prevTeamsList]);
+	}, []);
+
+	const updateTeamsWithNewTeam = useCallback((newUpdatedTeamObj) => {
+		setPerformTeamUpdate(false);
+		setTeamUpdateData(null);
+		setOpenTeamCreation(false);
+		setTeamsList((prevProjectsList) => {
+			const indexOfUpdatedProject = prevProjectsList.findIndex((item) => item.id === newUpdatedTeamObj.id);
+			prevProjectsList[indexOfUpdatedProject] = newUpdatedTeamObj;
+			return [...prevProjectsList];
+		});
 	}, []);
 
 	useEffect(() => {
@@ -98,12 +120,18 @@ export default function Teams() {
 					</Box>
 
 					<DialogForm
-						title="Add new team"
+						title={performTeamUpdate ? "Update team" : "Add new team"}
 						open={openTeamCreation}
 						onClose={handleCancelTeamCreation}
 						maxWidth="sm"
 					>
-						<TeamCreationForm insertNewTeam={insertNewTeam} projectId={projectId} />
+						<TeamCreationForm
+							performTeamUpdate={performTeamUpdate}
+							updateTeamsWithNewTeam={updateTeamsWithNewTeam}
+							teamUpdateData={teamUpdateData}
+							insertNewTeam={insertNewTeam}
+							projectId={projectId}
+						/>
 					</DialogForm>
 
 					<Box
@@ -119,6 +147,7 @@ export default function Teams() {
 							<TeamComponentList
 								teamList={teamsList}
 								handleDelete={handleTeamDeletion}
+								handleUpdate={handleTeamUpdate}
 								renderTeamCardActions={!UIRestrictionForRoles.includes(currentUserRole)}
 							/>
 						) : null}

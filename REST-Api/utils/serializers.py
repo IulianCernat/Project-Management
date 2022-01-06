@@ -122,7 +122,9 @@ team_output = api.inherit('Team output', team_input, {
 })
 
 team_update_input = api.model('Team input for update', {
-    'version_control_link': String(description="The public url that implements the version control system"),
+    'name': String(required=False, description="Team's name"),
+    'description': String(required=False, description="Team's role in project"),
+    'version_control_link': String(required=False, description="The public url that implements the version control system"),
     'trello_board_id': String(required=False, description="The public trello board id")
 })
 

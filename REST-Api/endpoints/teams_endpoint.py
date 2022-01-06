@@ -47,14 +47,15 @@ class TeamItem(Resource):
         process_firebase_authorization_field(request)
         return get_team(id), 200
 
-    @api.response(200, 'Team successfully updated', message)
+    @api.response(200, 'Team successfully updated', team_output)
     @api.response(404, 'Team was not found')
     @api.expect(team_update_input, authorization_header)
+    @api.marshal_with(team_output)
     def patch(self, id):
         process_firebase_authorization_field(request)
         input_data = request.json
-        update_team(id, input_data)
-        return {'message': f"Team with id {id} successfully updated"}, 200
+        updated_team = update_team(id, input_data)
+        return updated_team, 200
 
     @api.response(200, 'Teams successfully queried', message)
     @api.response(404, 'Team was not found', message)
