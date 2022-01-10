@@ -19,7 +19,7 @@ import { format } from "date-fns";
 import { lightBlue } from "@material-ui/core/colors";
 import { useAuth } from "contexts/AuthContext";
 import clsx from "clsx";
-
+import { ReactComponent as AvatarDefault } from "images/avatarDefault.svg";
 const useStyles = makeStyles((theme) => ({
 	paper: {
 		border: "5px dashed red",
@@ -81,7 +81,9 @@ export default function TeamCard(props) {
 					</TextDisplayWrapper>
 					<Box display="flex" justifyContent="center" alignItems="center" p={1}>
 						<Box mr={1}>
-							<Avatar className={styles.avatar} src={scrumMasterProfile.avatar_url} />
+							<Avatar className={styles.avatar} src={scrumMasterProfile.avatar_url}>
+								<AvatarDefault />
+							</Avatar>
 						</Box>
 						<Box>
 							<Typography align="center" variant="h6">
