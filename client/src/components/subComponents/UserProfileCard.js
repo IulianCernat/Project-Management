@@ -2,10 +2,11 @@ import { cloneElement, useState } from "react";
 
 import { Avatar, Card, CardContent, makeStyles, Typography, Box, Divider } from "@material-ui/core";
 import PropTypes from "prop-types";
-import { deepPurple, blueGrey, grey } from "@material-ui/core/colors";
-import { FaChessPawn, FaChessRook, FaChessKing } from "react-icons/fa";
+import { orange, blueGrey, grey } from "@material-ui/core/colors";
+import { GiCrown, GiLaurelCrown } from "react-icons/gi";
+import { DiCode } from "react-icons/di";
 import { IconContext } from "react-icons";
-
+import { ReactComponent as AvatarDefault } from "images/avatarDefault.svg";
 UserProfileCard.propTypes = {
 	width: PropTypes.string.isRequired,
 	user_profile: PropTypes.object.isRequired,
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 		position: "relative",
 	},
 	avatar: {
-		backgroundColor: deepPurple[700],
+		// backgroundColor: deepPurple[700],
 		width: "8rem",
 		height: "8rem",
 	},
@@ -78,32 +79,28 @@ export default function UserProfileCard(props) {
 			<IconContext.Provider
 				value={{
 					size: "2rem",
-					color: blueGrey[600],
+					color: orange[800],
 					className: classes.rankIcon,
 				}}
 			>
-				{(props.user_type === "scrumMaster" && <FaChessRook />) ||
-					(props.user_type === "developer" && <FaChessPawn />) ||
-					(props.user_type === "productOwner" && <FaChessKing />)}
+				{(props.user_type === "scrumMaster" && <GiCrown />) ||
+					(props.user_type === "developer" && <DiCode />) ||
+					(props.user_type === "productOwner" && <GiLaurelCrown />)}
 			</IconContext.Provider>
 			<CardContent>
 				<Box display="flex" alignItems="center" flexDirection="column">
 					<Avatar className={classes.avatar} src={props.user_profile.avatar_url}>
-						<Typography align="center" className={classes.avatarText}>
+						{/* <Typography align="center" className={classes.avatarText}>
 							{props.user_profile.fullName.slice(0, 2)}
-						</Typography>
+						</Typography> */}
+						<AvatarDefault />
 					</Avatar>
 
-					<Box
-						className={classes.textContent}
-						display="flex"
-						flexDirection="column"
-						alignItems="center"
-					>
+					<Box className={classes.textContent} display="flex" flexDirection="column" alignItems="center">
 						<Typography align="center" variant="h6" className={classes.name}>
 							{props.user_profile.fullName}
 						</Typography>
-						<Typography variant="h6" className={classes.role}>
+						<Typography variant="h6" className={classes.role} color="primary">
 							{(props.user_type === "scrumMaster" && "Scrum Master") ||
 								(props.user_type === "developer" && "Developer") ||
 								(props.user_type === "productOwner" && "Product Owner")}

@@ -61,25 +61,27 @@ export default function ProjectCard({ project, handleDelete, handleProjectUpdate
 			</CardActionArea>
 			{!renderActions ? null : (
 				<CardActions>
-					<Button
-						size="small"
-						color="secondary"
-						variant="outlined"
-						onClick={() => {
-							handleDelete(project.id);
-						}}
-					>
-						delete
-					</Button>
-					<Button
-						size="small"
-						variant="outlined"
-						onClick={() => {
-							handleProjectUpdate(project.id);
-						}}
-					>
-						edit
-					</Button>
+					<Box width="100%" display="flex" justifyContent="space-between">
+						<Button
+							size="small"
+							variant="outlined"
+							onClick={() => {
+								handleProjectUpdate(project.id);
+							}}
+						>
+							edit
+						</Button>
+						<Button
+							size="small"
+							color="secondary"
+							variant="outlined"
+							onClick={() => {
+								handleDelete(project.id);
+							}}
+						>
+							delete
+						</Button>
+					</Box>
 				</CardActions>
 			)}
 		</Card>

@@ -25,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Overview() {
 	const { projectId } = useProjectContext();
 	const {
-		status: getProjectStatus,
 		receivedData: getProjectReceivedData,
 		error: getProjectError,
 		isLoading: isLoadingGetProject,
@@ -39,80 +38,27 @@ export default function Overview() {
 		if (isResolvedGetProject) {
 			const progress = getProjectReceivedData.total_nr_of_issues
 				? Math.round(
-						(getProjectReceivedData.nr_of_finished_issues * 100) /
-							getProjectReceivedData.total_nr_of_issues
+						(getProjectReceivedData.nr_of_finished_issues * 100) / getProjectReceivedData.total_nr_of_issues
 				  )
 				: 0;
 
 			setProjectProgress(progress);
 		}
-	}, [isResolvedGetProject]);
+	}, [isResolvedGetProject, getProjectReceivedData]);
 
 	return (
 		<>
 			{isLoadingGetProject && <LinearProgress style={{ width: "100%" }} />}
 			{!isResolvedGetProject ? null : (
-				<Grid container spacing={2}>
-					<Grid item container justify="space-evenly" alignItems="flex-start" spacing={2}>
-						<Grid item xs={12} md={4} xl={3}>
-							<Paper className={classes.paper}>
-								<Box
-									p={4}
-									height="100%"
-									display="flex"
-									justifyContent="center"
-									alignItems="baseline"
-								>
-									<UserProfileCard
-										width="40ch"
-										user_profile={getProjectReceivedData.product_owner_profile}
-										user_type="productOwner"
-									/>
-								</Box>
-							</Paper>
-						</Grid>
-						<Grid item xs={12} md={8} xl={8}>
-							<Paper className={classes.paper}>
-								<Box p={2} height="100%">
-									<Typography color="primary" gutterBottom variant="h5">
-										Project Name
-									</Typography>
-									<Typography gutterBottom>
-										{getProjectReceivedData.name}
-									</Typography>
-									<Typography
-										align="justify"
-										color="primary"
-										gutterBottom
-										variant="h5"
-									>
-										Project description
-									</Typography>
-									<Typography className={classes.textContent}>
-										{getProjectReceivedData.description}
-									</Typography>
-								</Box>
-							</Paper>
-						</Grid>
-					</Grid>
-
+				<Grid container spacing={1}>
 					<Grid item xs={12}>
 						<Paper>
-							<Box
-								p={2}
-								display="flex"
-								flexWrap="wrap"
-								alignItems="center"
-								justifyContent="space-evenly"
-							>
+							<Box p={2} display="flex" flexWrap="wrap" alignItems="center" justifyContent="space-evenly">
 								<Box>
-									<Typography gutterBottom align="center" variant="h5">
-										Progress
-									</Typography>
 									{projectProgress !== null && (
 										<CircularProgressWithLabel
 											value={projectProgress}
-											size="10rem"
+											size="6rem"
 											label={
 												<Box>
 													<Typography variant="h6" color="textSecondary">
@@ -129,63 +75,74 @@ export default function Overview() {
 								<Hidden smDown>
 									<Divider orientation="vertical" flexItem />
 								</Hidden>
-
-								<Box display="flex" flexDirection="column" style={{ gap: "1rem" }}>
-									<Box>
-										<Typography
-											className={classes.headlineText}
-											display="inline"
-											variant="h6"
-										>
-											Number of opened issues
-										</Typography>
-										<Typography
-											className={classes.headlineNumber}
-											display="inline"
-											variant="h4"
-										>
-											{getProjectReceivedData.total_nr_of_issues}
-										</Typography>
-									</Box>
-
-									<Box>
-										<Typography
-											className={classes.headlineText}
-											display="inline"
-											variant="h6"
-										>
-											Number of finished issues
-										</Typography>
-										<Typography
-											className={classes.headlineNumber}
-											display="inline"
-											variant="h4"
-										>
-											{getProjectReceivedData.nr_of_finished_issues}
-										</Typography>
-									</Box>
+								<Box>
+									<Typography className={classes.headlineNumber} variant="h4">
+										{getProjectReceivedData.total_nr_of_issues}
+									</Typography>
+									<Typography className={classes.headlineText} variant="h6">
+										open issues
+									</Typography>
 								</Box>
 								<Hidden smDown>
 									<Divider orientation="vertical" flexItem />
 								</Hidden>
 								<Box>
-									<Typography
-										className={classes.headlineText}
-										display="inline"
-										variant="h6"
-									>
-										Members
+									<Typography className={classes.headlineNumber} variant="h4">
+										{getProjectReceivedData.nr_of_finished_issues}
 									</Typography>
-									<Typography
-										className={classes.headlineNumber}
-										display="inline"
-										variant="h4"
-									>
+									<Typography className={classes.headlineText} variant="h6">
+										finished issues
+									</Typography>
+								</Box>
+								<Hidden smDown>
+									<Divider orientation="vertical" flexItem />
+								</Hidden>
+								<Box>
+									<Typography className={classes.headlineNumber} variant="h4">
 										{getProjectReceivedData.number_of_members}
+									</Typography>
+									<Typography className={classes.headlineText} variant="h6">
+										members
 									</Typography>
 								</Box>
 							</Box>
 						</Paper>
+					</Grid>
+					<Grid
+						item
+						container
+						justify="space-evenly"
+						alignItems="flex-start"
+						spacing={1}
+						alignItems="stretch"
+					>
+						<Grid item xs={12} md={4} xl={3}>
+							<Paper className={classes.paper}>
+								<Box p={4} height="100%" display="flex" justifyContent="center" alignItems="baseline">
+									<UserProfileCard
+										width="30ch"
+										user_profile={getProjectReceivedData.product_owner_profile}
+										user_type="productOwner"
+									/>
+								</Box>
+							</Paper>
+						</Grid>
+						<Grid item xs={12} md={8} xl={9}>
+							<Paper className={classes.paper}>
+								<Box p={2} height="100%">
+									<Typography color="primary" gutterBottom variant="h5">
+										Project Name
+									</Typography>
+									<Typography gutterBottom>{getProjectReceivedData.name}</Typography>
+									<Typography align="justify" color="primary" gutterBottom variant="h5">
+										Project description
+									</Typography>
+									<Typography className={classes.textContent}>
+										{getProjectReceivedData.description}
+									</Typography>
+								</Box>
+							</Paper>
+						</Grid>
 					</Grid>
 				</Grid>
 			)}

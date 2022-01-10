@@ -31,16 +31,15 @@ export const passwordValidationSchema = Yup.string("Enter your password")
 	.min(minPasswordLen, `Password must be of minimum ${minPasswordLen} characters length`)
 	.required("Password is required");
 
+export const loginPasswordValidationSchema = Yup.string("Enter your password").required("Password is required");
+
 export const fullNameValidationSchema = Yup.string("Enter your full name")
 	.required("Full name is required")
 	.min(minFullNameLen, `Full name must be of minimum ${minFullNameLen} characters length`);
 
 export const projectNameValidSchema = Yup.string("Enter project name")
 	.required("Project name is required")
-	.min(
-		minProjectNameLen,
-		`Project name must be of minimum ${minProjectNameLen} characters length`
-	)
+	.min(minProjectNameLen, `Project name must be of minimum ${minProjectNameLen} characters length`)
 	.max(maxProjectNameLen, `Project name must be of maximum ${maxProjectNameLen}`);
 
 export const projectDescriptionValidSchema = Yup.string("Enter project description")
@@ -61,14 +60,8 @@ export const teamNameValidSchema = Yup.string("Enter team name")
 
 export const teamDescriptionValidSchema = Yup.string("Enter team description")
 	.required("Team description is required")
-	.min(
-		minTeamDescriptionLen,
-		`Team description must be of minimum ${minTeamDescriptionLen} characters length`
-	)
-	.max(
-		maxTeamDescriptionLen,
-		`Team description must be of maximum ${maxTeamDescriptionLen} characters length`
-	);
+	.min(minTeamDescriptionLen, `Team description must be of minimum ${minTeamDescriptionLen} characters length`)
+	.max(maxTeamDescriptionLen, `Team description must be of maximum ${maxTeamDescriptionLen} characters length`);
 
 export const searchTermValidSchema = Yup.string("Search")
 	.required("Search term is required")

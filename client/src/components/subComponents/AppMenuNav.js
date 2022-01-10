@@ -1,16 +1,8 @@
 import { useState } from "react";
-import {
-	Avatar,
-	Box,
-	IconButton,
-	Typography,
-	Button,
-	ClickAwayListener,
-	Slide,
-} from "@material-ui/core";
+import { Avatar, Box, IconButton, Typography, Button, ClickAwayListener, Slide } from "@material-ui/core";
 import { useAuth } from "contexts/AuthContext";
 import { useHistory } from "react-router-dom";
-
+import { ReactComponent as AvatarDefault } from "images/avatarDefault.svg";
 export default function AppMenuNav() {
 	const { additionalUserInfo, logout } = useAuth();
 	const [openAppbardOptions, setOpenAppbarOptions] = useState(false);
@@ -39,7 +31,9 @@ export default function AppMenuNav() {
 					<Box display="flex" style={{ gap: "4px" }} alignItems="center">
 						<Typography variant="subtitle2">{additionalUserInfo.fullName}</Typography>
 						<IconButton onClick={handleClick}>
-							<Avatar src={additionalUserInfo.avatar_url} />
+							<Avatar src={additionalUserInfo.avatar_url}>
+								<AvatarDefault />
+							</Avatar>
 						</IconButton>
 					</Box>
 					<Box>

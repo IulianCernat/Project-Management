@@ -4,12 +4,12 @@ import { Box, Typography, Button } from "@material-ui/core";
 import { TextFieldWrapper } from "./InputFieldsWrappers";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { emailValidationSchema, passwordValidationSchema } from "utils/validationSchemas";
+import { emailValidationSchema, loginPasswordValidationSchema } from "utils/validationSchemas";
 import { useAuth } from "contexts/AuthContext";
 
 const validationSchema = Yup.object({
 	email: emailValidationSchema,
-	password: passwordValidationSchema,
+	password: loginPasswordValidationSchema,
 });
 
 export default function LoginForm() {
@@ -56,13 +56,7 @@ export default function LoginForm() {
 							type="password"
 							id="password"
 						/>
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							color="primary"
-							disabled={isSubmitting}
-						>
+						<Button type="submit" fullWidth variant="contained" color="primary" disabled={isSubmitting}>
 							<Typography>Login</Typography>
 						</Button>
 					</Form>

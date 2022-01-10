@@ -4,6 +4,7 @@ import AddAPhotoIcon from "@material-ui/icons/AddAPhoto";
 import UploadProfileAvatar from "components/forms/UploadProfileAvatar";
 import PropTypes from "prop-types";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import { ReactComponent as AvatarDefault } from "images/avatarDefault.svg";
 const useStyles = makeStyles((theme) => ({
 	avatar: {
 		width: (props) => props.width,
@@ -52,8 +53,9 @@ export default function ProfilePageAvatar(props) {
 				alignItems="center"
 				justifyContent="center"
 			>
-				<Avatar variant="circular" className={classes.avatar} src={props.url} />
-
+				<Avatar variant="circular" className={classes.avatar} src={props.url}>
+					<AvatarDefault />
+				</Avatar>
 				<label htmlFor="uploadButton">
 					<Backdrop className={classes.backdrop} open={openBackdrop || uploadingFile}>
 						<Box display="flex" alignItems="center" justifyContent="center">
@@ -65,7 +67,6 @@ export default function ProfilePageAvatar(props) {
 						</Box>
 					</Backdrop>
 				</label>
-
 				<UploadProfileAvatar
 					setUploadingProgress={setUploadingFile}
 					uploadButtonLabel="uploadButton"

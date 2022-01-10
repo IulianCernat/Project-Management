@@ -112,7 +112,7 @@ export default function TeamMembers() {
 								flexWrap="wrap"
 								mb={2}
 								p={1}
-								bgcolor={indigo["A100"]}
+								// bgcolor={indigo["A100"]}
 							>
 								<Typography variant="h6">Scrum Master</Typography>
 
@@ -135,7 +135,7 @@ export default function TeamMembers() {
 					</Box>
 					<Box flex={"1 1 0"}>
 						<Paper elevation={2}>
-							<Box display="flex" justifyContent="space-between" mb={2} p={1} bgcolor={indigo["A100"]}>
+							<Box display="flex" justifyContent="space-between" mb={2} p={1}>
 								<Typography variant="h6">Developers</Typography>
 								<Button
 									size="small"
