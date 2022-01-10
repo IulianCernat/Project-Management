@@ -3,32 +3,22 @@ import { storage } from "utils/firebase";
 import PropTypes from "prop-types";
 import { usePatchFetch } from "customHooks/useFetch";
 import { useAuth } from "contexts/AuthContext";
-import { Alert } from "@material-ui/lab";
 
 UploadProfileAvatar.propTypes = {
 	uploadButtonLabel: PropTypes.string.isRequired,
 	setUploadingProgress: PropTypes.func.isRequired,
 	setUploadingFileError: PropTypes.func.isRequired,
 };
-export default function UploadProfileAvatar({
-	uploadButtonLabel,
-	setUploadingProgress,
-	setUploadingFileError,
-}) {
+export default function UploadProfileAvatar({ uploadButtonLabel, setUploadingProgress, setUploadingFileError }) {
 	const { currentUser, setAdditionalUserInfo } = useAuth();
 	const requestHeaders = useRef(null);
-	const [requestBodyForUpdatingCurrentUser, setRequestBodyForUpdatingCurrentUser] =
-		useState(null);
+	const [requestBodyForUpdatingCurrentUser, setRequestBodyForUpdatingCurrentUser] = useState(null);
 	const {
 		error: userUpdateError,
 		isLoading: isLoadingUserUpdate,
 		isRejected: isRejectedUserUpdate,
 		isResolved: isResolvedUserUpdate,
-	} = usePatchFetch(
-		"api/users/loggedUser",
-		requestBodyForUpdatingCurrentUser,
-		requestHeaders.current
-	);
+	} = usePatchFetch("api/user_profiles/loggedUser", requestBodyForUpdatingCurrentUser);
 
 	useEffect(() => {
 		currentUser.getIdToken().then((idToken) => {
