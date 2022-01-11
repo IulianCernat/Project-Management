@@ -15,7 +15,6 @@ import {
 	Checkbox,
 	Tooltip,
 	CircularProgress,
-	Button,
 } from "@material-ui/core";
 import {
 	Star,
@@ -25,6 +24,7 @@ import {
 	DeleteForever,
 	OpenWith,
 	Launch,
+	Edit,
 } from "@material-ui/icons";
 
 import { green, pink, blue } from "@material-ui/core/colors";
@@ -151,14 +151,17 @@ export default function IssueRow(props) {
 								disabled={UIRestrictionForRoles.includes(currentUserRole)}
 							/>
 						</TableCell>
-						<TableCell>
-							<Button
-								onClick={() => {
-									handleUpdateIssueClick(row.id);
-								}}
-							>
-								edit
-							</Button>
+						<TableCell padding="none">
+							<Tooltip title={<Typography variant="subtitle2">update issue</Typography>} arrow>
+								<IconButton
+									onClick={() => {
+										handleUpdateIssueClick(row.id);
+									}}
+									disabled={UIRestrictionForRoles.includes(currentUserRole)}
+								>
+									<Edit />
+								</IconButton>
+							</Tooltip>
 						</TableCell>
 					</>
 				) : (

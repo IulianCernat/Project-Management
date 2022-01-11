@@ -1,9 +1,8 @@
 import { forwardRef, useMemo } from "react";
-import { Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles } from "@material-ui/core";
+import { Divider, List, ListItem, ListItemIcon, ListItemText, Box } from "@material-ui/core";
 import { Link as RouterLink, useRouteMatch } from "react-router-dom";
-
-import { Home, GroupSharp, ViewList, Settings, Dashboard } from "@material-ui/icons";
-import { SiAffinitydesigner } from "react-icons/si";
+import { grey } from "@mui/material/colors";
+import { Home, GroupSharp, ViewList, Dashboard } from "@material-ui/icons";
 import { GiSprint } from "react-icons/gi";
 
 const iconArray = [
@@ -26,8 +25,8 @@ function ListItemLink(props) {
 
 	return (
 		<ListItem button component={CustomLink} style={{ whiteSpace: "nowrap" }}>
-			<ListItemIcon>{icon}</ListItemIcon>
-			<ListItemText primary={primary} />
+			<ListItemIcon style={{ color: grey[300] }}>{icon}</ListItemIcon>
+			<ListItemText style={{ color: grey[300] }} primary={primary} />
 		</ListItem>
 	);
 }
@@ -35,12 +34,12 @@ function ListItemLink(props) {
 export default function DrawerListItems() {
 	let match = useRouteMatch();
 	return (
-		<>
+		<Box>
 			<List>
 				<ListItemLink primary="Profile" icon={<Home />} to={"/"} />
 			</List>
 
-			<Divider />
+			<Divider style={{ backgroundColor: "hsla(209, 58%, 25%)" }} />
 			<List>
 				{["Overview", "Teams", "Product Backlog", "Sprints"].map((text, index) => (
 					<ListItemLink
@@ -51,6 +50,6 @@ export default function DrawerListItems() {
 					/>
 				))}
 			</List>
-		</>
+		</Box>
 	);
 }

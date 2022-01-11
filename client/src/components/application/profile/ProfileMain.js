@@ -279,11 +279,11 @@ function AdminManageUsersPanel(props) {
 	}, [userDeletionOperationStatus.isResolved, getUsersProfiles, uidOfDeletedUser]);
 
 	return (
-		<Box p={3} maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
+		<Box p={3} maxHeight="100%" maxWidth="100%" role="tabpanel" hidden={props.value !== props.index}>
 			<Button variant="outlined" onClick={handleOpenTeacherCreationForm}>
 				Create teacher account
 			</Button>
-			<div style={{ marginTop: "10px", height: 400, width: "100%" }}>
+			<div style={{ marginTop: "10px", height: 600, width: "100%" }}>
 				<DataGrid
 					disableSelectionOnClick
 					loading={isLoadingGetUsersProfiles}

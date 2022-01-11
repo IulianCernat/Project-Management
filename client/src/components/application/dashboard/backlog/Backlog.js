@@ -104,7 +104,7 @@ export default function Backlog() {
 	return (
 		<>
 			<DialogForm
-				title="Create new issue"
+				title={performIssueUpdate ? "Update issue" : "Create new issue"}
 				open={openIssueCreationForm}
 				onClose={handleCancelIssueCreation}
 				maxWidth="md"

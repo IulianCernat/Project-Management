@@ -12,7 +12,7 @@ import {
 	Fab,
 	Snackbar,
 } from "@material-ui/core";
-import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp, Close } from "@material-ui/icons";
+import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp, Close, Edit } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch, usePostFetch } from "customHooks/useFetch";
@@ -103,6 +103,18 @@ function SprintHeader({
 			</Box>
 			<Box display="flex" style={{ gap: "2rem" }} alignItems="center">
 				<Box>
+					<Tooltip title={<Typography variant="subtitle2">update issue</Typography>} arrow>
+						<IconButton
+							onClick={() => {
+								handleUpdateSprintClick(id);
+							}}
+							disabled={UIRestrictionForRoles.includes(currentUserRole)}
+						>
+							<Edit />
+						</IconButton>
+					</Tooltip>
+				</Box>
+				<Box>
 					<Typography color="primary" variant="h6">
 						Start date
 					</Typography>
@@ -153,17 +165,7 @@ function SprintHeader({
 						</Box>
 					)}
 				</Box>
-				<Box>
-					<Tooltip title={<Typography variant="subtitle2">Edit sprint info</Typography>} arrow>
-						<Button
-							onClick={() => {
-								handleUpdateSprintClick(id);
-							}}
-						>
-							edit
-						</Button>
-					</Tooltip>
-				</Box>
+
 				<Box>
 					<IconButton
 						color="secondary"

@@ -15,7 +15,7 @@ import { useAuth } from "contexts/AuthContext";
 import { ReactComponent as GearsSVG } from "images/gears.svg";
 import gearsAnimation from "styles/gearsAnimation.css";
 
-const drawerWidth = "18rem";
+const drawerWidth = "16rem";
 
 const useStyles = makeStyles((theme) => {
 	return {
@@ -64,13 +64,7 @@ export default function Dashboard() {
 		isLoading: isLoadingGetRole,
 		isResolved: isResolvedGetRole,
 		isRejected: isRejectedGetRole,
-	} = useGetFetch(
-		`api/projects/${projectId}/role`,
-		null,
-		startGetroleFetch,
-		false,
-		getRoleHeaders
-	);
+	} = useGetFetch(`api/projects/${projectId}/role`, null, startGetroleFetch, false, getRoleHeaders);
 
 	const {
 		receivedData: getProjectReceivedData,

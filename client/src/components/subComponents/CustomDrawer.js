@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
 	drawerPaper: {
 		width: (props) => props.width,
 	},
-
+	itemList: { color: theme.palette.background.paper },
 	drawerOpen: {
 		[theme.breakpoints.up("md")]: {
 			width: (props) => props.width,
@@ -32,6 +32,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 
 	toolbarSpace: theme.mixins.toolbar,
+	drawerProperties: {
+		"& .MuiDrawer-paper": {
+			backgroundColor: "hsla(209, 58%, 17%)",
+		},
+	},
 }));
 
 CustomDrawer.propTypes = {
@@ -48,9 +53,7 @@ export default function CustomDrawer(props) {
 			{/* Mobile Drawer */}
 			<Hidden mdUp>
 				<Drawer
-					classes={{
-						paper: classes.drawerPaper,
-					}}
+					className={clsx(classes.drawer, classes.drawerProperties)}
 					open={props.mobileOpen}
 					anchor="left"
 					variant="temporary"
@@ -70,13 +73,13 @@ export default function CustomDrawer(props) {
 							alignItems="center"
 							justifyContent="center"
 							className={classes.toolbarSpace}
-							bgcolor="grey.200"
+							bgcolor="#122C44"
 						>
-							<Typography color="primary" variant="h6">
+							<Typography className={classes.itemList} variant="h6">
 								Dashboard
 							</Typography>
 						</Box>
-						<Divider />
+						<Divider style={{ backgroundColor: "hsla(209, 58%, 35%)" }} />
 						<DrawerListItems />
 					</div>
 				</Drawer>
@@ -85,7 +88,7 @@ export default function CustomDrawer(props) {
 			{/* Desktop Drawer */}
 			<Hidden smDown>
 				<Drawer
-					className={clsx(classes.drawer, {
+					className={clsx(classes.drawer, classes.drawerProperties, {
 						[classes.drawerOpen]: !minimizedDrawer,
 						[classes.drawerClose]: minimizedDrawer,
 					})}
@@ -102,11 +105,11 @@ export default function CustomDrawer(props) {
 						alignItems="center"
 						justifyContent="center"
 						className={classes.toolbarSpace}
-						bgcolor="grey.200"
+						bgcolor="#051E34"
 					>
 						{!minimizedDrawer ? (
 							<>
-								<Typography color="primary" variant="h6">
+								<Typography className={classes.itemList} variant="h6">
 									Dashboard
 								</Typography>
 								<IconButton
@@ -115,7 +118,7 @@ export default function CustomDrawer(props) {
 										setMinimizedDrawer(true);
 									}}
 								>
-									<ChevronLeftIcon />
+									<ChevronLeftIcon color="secondary" />
 								</IconButton>
 							</>
 						) : (
@@ -125,11 +128,11 @@ export default function CustomDrawer(props) {
 									setMinimizedDrawer(false);
 								}}
 							>
-								<ChevronRightIcon />
+								<ChevronRightIcon color="secondary" />
 							</IconButton>
 						)}
 					</Box>
-					<Divider />
+					<Divider style={{ backgroundColor: "hsla(209, 58%, 25%)" }} />
 
 					<DrawerListItems />
 				</Drawer>

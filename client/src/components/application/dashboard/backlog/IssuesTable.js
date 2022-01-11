@@ -481,7 +481,8 @@ export default function IssuesTable(props) {
 							<TableRow>
 								<TableCell />
 								<TableCell />
-								<TableCell padding="none" align="center">
+								<TableCell />
+								<TableCell align="center">
 									<TableHeaderColumn
 										columnName="type"
 										facadeColumnName="type"
