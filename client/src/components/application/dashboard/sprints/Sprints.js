@@ -394,6 +394,7 @@ function SprintTable({
 					isLoadingIssueUpdate,
 					handleCopyIssueToTrelloClick,
 					handleMoveIssueClick,
+					isSprintCompleted: sprint.completed,
 				}}
 				issuesList={sprintIssues}
 			/>

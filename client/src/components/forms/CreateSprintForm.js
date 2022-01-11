@@ -37,7 +37,7 @@ const sprintDurationOptions = (function () {
 CreateSprintForm.propTypes = {
 	performSprintUpdate: PropTypes.bool,
 	updateSprintWithNewSprint: PropTypes.func,
-	sprintUpdateData: PropTypes.func,
+	sprintUpdateData: PropTypes.object,
 	projectId: PropTypes.number.isRequired,
 	issuesIds: PropTypes.array.isRequired,
 };

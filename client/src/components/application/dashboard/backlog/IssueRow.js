@@ -131,6 +131,7 @@ export default function IssueRow(props) {
 		idOfIssueToBeCopiedToTrello,
 		isLoadingPostTrelloCard,
 		isLoadingIssueUpdate,
+		isSprintCompleted,
 	} = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
 	const isSelected = selectedRows ? selectedRows.indexOf(row.id) !== -1 : false;
@@ -171,7 +172,8 @@ export default function IssueRow(props) {
 									UIRestrictionForRoles.includes(currentUserRole) ||
 									row.trello_card_list_name !== "Unknown" ||
 									isLoadingIssueUpdate ||
-									isLoadingPostTrelloCard
+									isLoadingPostTrelloCard ||
+									isSprintCompleted
 								}
 							>
 								<Tooltip
@@ -184,7 +186,8 @@ export default function IssueRow(props) {
 											UIRestrictionForRoles.includes(currentUserRole) ||
 											row.trello_card_list_name !== "Unknown" ||
 											isLoadingIssueUpdate ||
-											isLoadingPostTrelloCard
+											isLoadingPostTrelloCard ||
+											isSprintCompleted
 												? "disabled"
 												: "secondary"
 										}

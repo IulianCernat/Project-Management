@@ -48,9 +48,9 @@ const issuePriorityOptions = (function () {
 
 IssueCreationForm.propTypes = {
 	insertCreation: PropTypes.func.isRequired,
-	updateIssuesWithNewIssue: PropTypes.func.isRequired,
-	issueUpdateData: PropTypes.object.isRequired,
-	performIssueUpdate: PropTypes.func.isRequired,
+	updateIssuesWithNewIssue: PropTypes.func,
+	issueUpdateData: PropTypes.object,
+	performIssueUpdate: PropTypes.bool,
 	projectId: PropTypes.number.isRequired,
 };
 export default function IssueCreationForm({

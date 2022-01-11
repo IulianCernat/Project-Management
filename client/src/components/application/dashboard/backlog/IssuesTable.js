@@ -273,6 +273,7 @@ IssuesTable.propTypes = {
 			idOfIssueToBeCopiedToTrello: PropTypes.number.isRequired,
 			isLoadingPostTrelloCard: PropTypes.bool.isRequired,
 			isLoadingIssueUpdate: PropTypes.bool.isRequired,
+			isSprintCompleted: PropTypes.bool.isRequired,
 		}),
 
 		PropTypes.exact({
@@ -293,6 +294,7 @@ export default function IssuesTable(props) {
 	const isSprintIssuesTable = props.isSprintIssuesTable;
 	const {
 		isLoadingPostTrelloCard,
+		isSprintCompleted,
 		isLoadingIssueUpdate,
 		idOfIssueToBeMovedToBacklog,
 		idOfIssueToBeCopiedToTrello,
@@ -631,6 +633,7 @@ export default function IssuesTable(props) {
 										idOfIssueToBeCopiedToTrello={idOfIssueToBeCopiedToTrello}
 										isLoadingPostTrelloCard={isLoadingPostTrelloCard}
 										isLoadingIssueUpdate={isLoadingIssueUpdate}
+										isSprintCompleted={isSprintCompleted}
 										handleMoveIssueClick={handleMoveIssueClick}
 										handleCopyIssueToTrelloClick={handleCopyIssueToTrelloClick}
 										isBeingDeleted={isLoadingDeleteIssue}
