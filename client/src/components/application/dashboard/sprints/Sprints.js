@@ -16,9 +16,11 @@ import { DeleteForever, KeyboardArrowDown, KeyboardArrowUp, Close } from "@mater
 import { Alert } from "@material-ui/lab";
 import { format } from "date-fns";
 import { useDeleteFetch, useGetFetch, usePatchFetch, usePostFetch } from "customHooks/useFetch";
-import PropTypes, { instanceOf } from "prop-types";
+import PropTypes from "prop-types";
 import { useProjectContext } from "contexts/ProjectContext";
 import IssuesTable from "../backlog/IssuesTable";
+import CreateSprintForm from "components/forms/CreateSprintForm";
+import DialogForm from "components/subComponents/DialogForm";
 
 const useStyles = makeStyles({
 	table: {
@@ -41,6 +43,7 @@ const useStyles = makeStyles({
 const UIRestrictionForRoles = ["developer"];
 
 function SprintHeader({
+	handleUpdateSprintClick,
 	id,
 	name,
 	startDate,
@@ -151,6 +154,17 @@ function SprintHeader({
 					)}
 				</Box>
 				<Box>
+					<Tooltip title={<Typography variant="subtitle2">Edit sprint info</Typography>} arrow>
+						<Button
+							onClick={() => {
+								handleUpdateSprintClick(id);
+							}}
+						>
+							edit
+						</Button>
+					</Tooltip>
+				</Box>
+				<Box>
 					<IconButton
 						color="secondary"
 						onClick={() => {
@@ -228,6 +242,7 @@ SprintTable.propTypes = {
 	sprint: PropTypes.object.isRequired,
 	currentUserRole: PropTypes.string.isRequired,
 	handleDeleteSprintClick: PropTypes.func.isRequired,
+	handleUpdateSprintClick: PropTypes.func.isRequired,
 	startedSprintId: PropTypes.number.isRequired,
 	setStartedSprintId: PropTypes.func.isRequired,
 	firstTrelloBoardListId: PropTypes.string.isRequired,
@@ -237,6 +252,7 @@ function SprintTable({
 	sprint,
 	currentUserRole,
 	handleDeleteSprintClick,
+	handleUpdateSprintClick,
 	doUpdateIssueForSprint,
 	setStartedSprintId,
 	startedSprintId,
@@ -356,6 +372,7 @@ function SprintTable({
 			/>
 			<SprintHeader
 				handleDeleteSprintClick={handleDeleteSprintClick}
+				handleUpdateSprintClick={handleUpdateSprintClick}
 				currentUserRole={currentUserRole}
 				name={sprint.name}
 				startDate={sprint.start_date}
@@ -405,6 +422,9 @@ export default function Sprints() {
 	});
 
 	const [startedSprintId, setStartedSprintId] = useState();
+	const [performSprintUpdate, setPerformSprintUpdate] = useState();
+	const [sprintUpdateData, setSprintUpdateData] = useState();
+	const [openSprintUpdateForm, setOpenSprintUpdateForm] = useState();
 
 	function doUpdateIssueForSprint({ issueForUpdateId, newIssueProperties = null, deleteIssue = false }) {
 		let indexOfIssueForUpdate;
@@ -472,6 +492,29 @@ export default function Sprints() {
 		setStartFetchingSprints(true);
 	};
 
+	const handleCancelSprintUpdate = () => {
+		setPerformSprintUpdate(false);
+		setOpenSprintUpdateForm(false);
+		setSprintUpdateData(null);
+	};
+
+	const handleUpdateSprintClick = (sprintId) => {
+		setSprintUpdateData(sprintsList.find((item) => item.id === sprintId));
+		setPerformSprintUpdate(true);
+		setOpenSprintUpdateForm(true);
+	};
+
+	const updateSprintWithNewSprint = useCallback((newUpdatedSprint) => {
+		setPerformSprintUpdate(false);
+		setSprintUpdateData(null);
+		setOpenSprintUpdateForm(false);
+		setSprintsList((prevSprintsList) => {
+			const indexOfUpdatedSprint = prevSprintsList.findIndex((item) => item.id === newUpdatedSprint.id);
+			prevSprintsList[indexOfUpdatedSprint] = newUpdatedSprint;
+			return [...prevSprintsList];
+		});
+	}, []);
+
 	useEffect(() => {
 		if (!isResolvedGetSprints) return;
 		setSprintsList(getSprintsReceivedData);
@@ -532,6 +575,18 @@ export default function Sprints() {
 
 	return (
 		<>
+			<DialogForm
+				title="Update sprint info"
+				open={openSprintUpdateForm}
+				onClose={handleCancelSprintUpdate}
+				maxWidth="md"
+			>
+				<CreateSprintForm
+					performSprintUpdate={performSprintUpdate}
+					updateSprintWithNewSprint={updateSprintWithNewSprint}
+					sprintUpdateData={sprintUpdateData}
+				/>
+			</DialogForm>
 			{isRejectedGetTrelloData ? <Alert severity="error">{getTrelloDataError}</Alert> : null}
 			{isLoadingGetSprints || isLoadingGetTrelloData ? <LinearProgress style={{ width: "100%" }} /> : null}
 			<Box my={2}>
@@ -545,6 +600,7 @@ export default function Sprints() {
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable
+							handleUpdateSprintClick={handleUpdateSprintClick}
 							startedSprintId={startedSprintId}
 							setStartedSprintId={setStartedSprintId}
 							handleDeleteSprintClick={handleDeleteSprintClick}

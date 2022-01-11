@@ -10,7 +10,7 @@ import {
 	sprintDurationValidSchema,
 	maxSprintGoalLen,
 } from "utils/validationSchemas";
-import { usePostFetch } from "customHooks/useFetch.js";
+import { usePatchFetch, usePostFetch } from "customHooks/useFetch.js";
 import { useRouteMatch, useHistory } from "react-router-dom";
 import { useAuth } from "contexts/AuthContext";
 
@@ -35,6 +35,9 @@ const sprintDurationOptions = (function () {
 })();
 
 CreateSprintForm.propTypes = {
+	performSprintUpdate: PropTypes.bool,
+	updateSprintWithNewSprint: PropTypes.func,
+	sprintUpdateData: PropTypes.func,
 	projectId: PropTypes.number.isRequired,
 	issuesIds: PropTypes.array.isRequired,
 };
@@ -42,14 +45,18 @@ export default function CreateSprintForm(props) {
 	const { additionalUserInfo } = useAuth();
 	let match = useRouteMatch();
 	let history = useHistory();
-	const [requestBody, setRequestBody] = useState(null);
+	const [requestBodyForPost, setRequestBodyForPost] = useState(null);
+	const [requestBodyForPatch, setRequestBodyForPatch] = useState(null);
 	const defaultDurationOption = "2";
+
 	const {
 		error: postFetchError,
 		isLoading: postFetchIsLoading,
 		isRejected: postFetchIsRejected,
 		isResolved: postFetchIsResolved,
-	} = usePostFetch("api/sprints/", requestBody);
+	} = usePostFetch("api/sprints/", requestBodyForPost);
+
+	const sprintUpdateStatus = usePatchFetch(`api/sprints/${props.sprintUpdateData?.id}`, requestBodyForPatch);
 
 	const defaultStartDate = new Date();
 	defaultStartDate.setHours(defaultStartDate.getHours() + 2);
@@ -67,18 +74,30 @@ export default function CreateSprintForm(props) {
 		/* eslint-disable */
 	}, [postFetchIsResolved]);
 
+	useEffect(() => {
+		if (sprintUpdateStatus.isResolved) {
+			props.updateSprintWithNewSprint(sprintUpdateStatus.receivedData);
+		}
+	}, [sprintUpdateStatus]);
+
 	return (
 		<>
 			<Formik
 				validationSchema={validationSchema}
 				initialValues={{
-					name: "",
-					goal: "",
-					duration: defaultDurationOption,
-					start_date: defaultStartDate,
-					end_date: defaultEndDate,
+					name: props.performSprintUpdate ? props.sprintUpdateData.name : "",
+					goal: props.performSprintUpdate ? props.sprintUpdateData.goal : "",
+					duration: props.performSprintUpdate ? props.sprintUpdateData.duration : defaultDurationOption,
+					start_date: props.performSprintUpdate
+						? new Date(props.sprintUpdateData.start_date)
+						: defaultStartDate,
+					end_date: props.performSprintUpdate ? new Date(props.sprintUpdateData.end_date) : defaultEndDate,
 				}}
 				onSubmit={async (values) => {
+					if (props.performSprintUpdate) {
+						setRequestBodyForPatch(JSON.stringify(values));
+						return;
+					}
 					let requestObj = {};
 					requestObj["name"] = values.name;
 					requestObj["duration"] = values.duration;
@@ -91,12 +110,14 @@ export default function CreateSprintForm(props) {
 					requestObj["issues_ids"] = props.issuesIds;
 					const stringifiedData = JSON.stringify(requestObj);
 
-					setRequestBody(stringifiedData);
+					setRequestBodyForPost(stringifiedData);
 				}}
 			>
 				{({ setFieldValue, values }) => (
 					<Form>
 						<TextFieldWrapper
+							defaultValue={props.performSprintUpdate ? props.sprintUpdateData.name : ""}
+							multiline
 							variant="outlined"
 							required
 							fullWidth
@@ -104,7 +125,7 @@ export default function CreateSprintForm(props) {
 							id="name"
 							label="Sprint name"
 							name="name"
-							disabled={postFetchIsLoading}
+							disabled={postFetchIsLoading || sprintUpdateStatus.isLoading}
 						/>
 						<Box mt={2} display="flex" flexWrap="wrap" alignItems="center" style={{ gap: "1rem" }}>
 							<DatetimePickerWrapper
@@ -122,13 +143,15 @@ export default function CreateSprintForm(props) {
 							/>
 							<Box flex="1 1 auto">
 								<TextFieldSelectWrapper
+									defaultValue={props.performSprintUpdate ? props.sprintUpdateData.duration : ""}
+									multiline
 									fullWidth
 									variant="outlined"
 									id="duration"
 									label="Select duration"
 									name="duration"
 									menuOptions={sprintDurationOptions}
-									disabled={postFetchIsLoading}
+									disabled={postFetchIsLoading || sprintUpdateStatus.isLoading}
 									runChangeEffect={(newDuration) => {
 										setFieldValue("duration", newDuration);
 
@@ -149,6 +172,7 @@ export default function CreateSprintForm(props) {
 							/>
 						</Box>
 						<TextFieldWrapper
+							defaultValue={props.performSprintUpdate ? props.sprintUpdateData.goal : ""}
 							multiline
 							variant="outlined"
 							fullWidth
@@ -158,27 +182,37 @@ export default function CreateSprintForm(props) {
 							id="goal"
 							label="Sprint goal"
 							name="goal"
-							disabled={postFetchIsLoading}
+							disabled={postFetchIsLoading || sprintUpdateStatus.isLoading}
 						/>
 						<Button
 							type="submit"
 							fullWidth
 							variant="contained"
 							color="primary"
-							disabled={postFetchIsLoading}
+							disabled={postFetchIsLoading || sprintUpdateStatus.isLoading}
 						>
-							<Typography>Create sprint</Typography>
+							<Typography>{props.performSprintUpdate ? "Update sprint" : "Create sprint"}</Typography>
 						</Button>
-						{postFetchIsResolved && (
+						{postFetchIsResolved ? (
 							<Alert severity="success">
 								<Typography>Sprint Created</Typography>
 							</Alert>
-						)}
-						{postFetchIsRejected && (
+						) : null}
+						{postFetchIsRejected ? (
 							<Alert severity="error">
 								<Typography>{postFetchError}</Typography>
 							</Alert>
-						)}
+						) : null}
+						{sprintUpdateStatus.isResolved ? (
+							<Alert severity="success">
+								<Typography>Sprint Updated</Typography>
+							</Alert>
+						) : null}
+						{sprintUpdateStatus.isRejected ? (
+							<Alert severity="error">
+								<Typography>{sprintUpdateStatus.error}</Typography>
+							</Alert>
+						) : null}
 					</Form>
 				)}
 			</Formik>

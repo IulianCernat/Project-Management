@@ -43,10 +43,19 @@ def get_sprints_with_minimal_info(project_id):
 
 
 def update_sprint(sprint_id, input_obj):
+
+    if 'start_date' in input_obj:
+        input_obj['start_date'] = zulu.parse(input_obj['start_date']).datetime
+    if 'end_date' in input_obj:
+        input_obj['end_date'] = zulu.parse(input_obj['end_date']).datetime
+
     sprint = get_sprint(sprint_id)
     for field, value in input_obj.items():
         setattr(sprint, field, value)
+    is_sprint_completed(sprint)
+
     db.session.commit()
+    return sprint
 
 
 def delete_sprint(sprint_id):
@@ -62,5 +71,3 @@ def is_sprint_completed(sprint):
     if zulu.parse(sprint.end_date).datetime <= zulu.now().datetime:
         setattr(sprint, 'completed', True)
         setattr(sprint, 'start', True)
-    else:
-        setattr(sprint, 'completed', False)

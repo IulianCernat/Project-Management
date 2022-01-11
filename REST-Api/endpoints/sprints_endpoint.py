@@ -56,10 +56,11 @@ class SprintItem(Resource):
         delete_sprint(id)
         return {"message": "Sprint successfully deleted"}, 200
 
-    @api.response(200, 'Sprint successfully updated', message)
+    @api.response(200, 'Sprint successfully updated', sprint_output)
     @api.expect(sprint_update_input, authorization_header)
+    @api.marshal_with(sprint_output)
     def patch(self, id):
         process_firebase_authorization_field(request)
         input_data = request.json
-        update_sprint(id, input_data)
-        return {'message': f"Sprint with id {id} successfully updated"}, 200
+        updated_sprint = update_sprint(id, input_data)
+        return updated_sprint, 200

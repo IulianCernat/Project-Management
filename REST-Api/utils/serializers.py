@@ -186,6 +186,10 @@ sprint_output = api.inherit('Sprint output', sprint_input, {
 })
 
 sprint_update_input = api.model('Sprint fields to be updated', {
+    'name': String(description="Name to identify the sprint"),
+    'start_date': DateTime(description="Planned date to start this sprint"),
+    'duration': String(enum=['1', '2', '3', '4'], description="The duration of sprint in weeks"),
+    'end_date': DateTime(description="The deadline date"),
     'start': Boolean(description="Whether sprint should start or not"),
     'completed': Boolean(description="Whether sprint should be marked as completed or not")
 })
