@@ -90,7 +90,9 @@ export default function Teams() {
 	}, []);
 
 	useEffect(() => {
-		if (getTeamsFetchStatus.isResolved) setTeamsList(getTeamsFetchStatus.receivedData);
+		if (getTeamsFetchStatus.isResolved) {
+			setTeamsList(getTeamsFetchStatus.receivedData);
+		}
 	}, [getTeamsFetchStatus]);
 
 	useEffect(() => {

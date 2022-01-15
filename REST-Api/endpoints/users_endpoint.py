@@ -36,11 +36,10 @@ class ProfilesCollection(Resource):
         process_firebase_authorization_field(request)
         args = user_filtering_args.parse_args(request)
         search_keyword = args.get('search', None)
-        part_of_project_id = args.get('part_of_project_id', None)
 
-        if search_keyword is None and part_of_project_id is None:
+        if search_keyword is None:
             return get_all_users(), 200
-        return get_users_by_filters(search_keyword, part_of_project_id), 200
+        return get_users_by_filters(search_keyword,), 200
 
 
 @api.response(404, 'User not found', message)

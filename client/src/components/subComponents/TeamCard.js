@@ -54,7 +54,7 @@ export default function TeamCard(props) {
 		<Card
 			className={clsx(
 				styles.root,
-				additionalUserInfo.id === scrumMasterProfile.id ||
+				additionalUserInfo.id === scrumMasterProfile?.id ||
 					props.team_members.find((item) => item.user_profile.id === additionalUserInfo.id)
 					? styles.paperHighlight
 					: ""
@@ -79,21 +79,21 @@ export default function TeamCard(props) {
 					<TextDisplayWrapper gutterBottom>
 						{props.description.length > 200 ? props.description.slice(0, 200) + "..." : props.description}
 					</TextDisplayWrapper>
-					<Box display="flex" justifyContent="center" alignItems="center" p={1}>
-						<Box mr={1}>
-							<Avatar className={styles.avatar} src={scrumMasterProfile.avatar_url}>
-								<AvatarDefault />
-							</Avatar>
+					{scrumMasterProfile ? (
+						<Box display="flex" justifyContent="center" alignItems="center" p={1}>
+							<Box mr={1}>
+								<Avatar className={styles.avatar} src={scrumMasterProfile.avatar_url}>
+									<AvatarDefault />
+								</Avatar>
+							</Box>
+							<Box>
+								<Typography align="center" variant="h6">
+									Scrum master
+								</Typography>
+								<Typography align="center">{scrumMasterProfile.fullName}</Typography>
+							</Box>
 						</Box>
-						<Box>
-							<Typography align="center" variant="h6">
-								Scrum master
-							</Typography>
-							<Typography align="center">
-								{scrumMasterProfile ? scrumMasterProfile.fullName : "No scrum master"}
-							</Typography>
-						</Box>
-					</Box>
+					) : null}
 				</CardContent>
 			</CardActionArea>
 			{!props.renderActions ? null : (

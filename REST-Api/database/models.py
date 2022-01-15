@@ -42,8 +42,7 @@ class Project(db.Model):
 
     product_owner_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='cascade'), nullable=False)
-    product_owner_profile = db.relationship(
-        'User', backref="projects", lazy=True)
+    product_owner_profile = db.relationship('User',  lazy=True)
 
     def __init__(self, input_obj):
         self.name = input_obj['name']
@@ -63,9 +62,9 @@ class Team(db.Model):
     version_control_link = db.Column(db.String(255))
     project_id = db.Column(db.Integer, db.ForeignKey(
         'projects.id', ondelete='cascade'), nullable=False)
-    team_members = db.relationship('TeamMember', backref="teams",
-                                   order_by="desc(TeamMember.user_type)", cascade="all,delete",
-                                   lazy=True)
+    team_members = db.relationship('TeamMember',
+                                   order_by="desc(TeamMember.user_type)",
+                                   cascade="all,delete-orphan", lazy=True)
 
     def __init__(self, input_obj):
         self.name = input_obj['name']
@@ -77,14 +76,10 @@ class Team(db.Model):
 
 class TeamMember(db.Model):
     __tablename__ = 'team_members'
-    __table_args__ = (
-        db.UniqueConstraint('user_id', 'team_id'),
-    )
+    __table_args__ = (db.UniqueConstraint('user_id'),)
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey(
-        'users.id', ondelete='cascade'), nullable=False)
-    team_id = db.Column(db.Integer, db.ForeignKey(
-        'teams.id', ondelete='cascade'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('teams.id', ondelete='cascade'), nullable=False)
     user_type = db.Column(db.Enum('developer', 'scrumMaster'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
@@ -106,13 +101,13 @@ class Issue(db.Model):
     priority = db.Column(db.Enum('1', '2', '3', '4', '5'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
 
-    creator_user_profile = db.relationship('User', backref="issues", lazy=True)
+    creator_user_profile = db.relationship('User',  lazy=True)
     project_id = db.Column(db.Integer, db.ForeignKey(
         'projects.id', ondelete='cascade'), nullable=False)
     creator_user_id = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='cascade'), nullable=False)
     sprint_id = db.Column(db.Integer, db.ForeignKey(
-        'sprints.id', ondelete='cascade'), nullable=True)
+        'sprints.id'), nullable=True)
 
     trello_card_id = db.Column(db.String(24), nullable=True)
     trello_webhook_id = db.Column(db.String(24), nullable=True)
@@ -147,8 +142,9 @@ class Sprint(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey(
         'projects.id', ondelete='cascade'), nullable=False)
     creator_user_profile = db.relationship(
-        'User', backref="sprints", lazy=True)
-    issues = db.relationship('Issue', backref='issues', lazy=True)
+        'User',  lazy=True)
+    issues = db.relationship('Issue',
+                             order_by="desc(Issue.created_at)", lazy=True)
 
     def __init__(self, input_obj):
         self.name = input_obj['name']

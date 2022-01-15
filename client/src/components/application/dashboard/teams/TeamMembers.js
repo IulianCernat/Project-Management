@@ -66,8 +66,8 @@ export default function TeamMembers() {
 
 	useEffect(() => {
 		if (teamMembersFetchingStatus.isResolved) {
-			setTeamDevelopers(teamMembersFetchingStatus.receivedData.slice(1));
 			setScrumMaster(teamMembersFetchingStatus.receivedData[0]);
+			setTeamDevelopers(teamMembersFetchingStatus.receivedData.slice(1));
 		}
 	}, [teamMembersFetchingStatus]);
 
@@ -87,93 +87,93 @@ export default function TeamMembers() {
 			{teamMembersFetchingStatus.isRejected ? (
 				<Alert severity="error">{teamMembersFetchingStatus.error} </Alert>
 			) : null}
+
 			<DialogForm title="Add new team member" open={openDevAddition} onClose={handleCancelDevAddition}>
 				<AddingDevsForm teamId={teamId} insertNewTeamDevs={insertNewTeamDevs} projectId={projectId} />
 			</DialogForm>
-			{!teamDevelopers.length ? null : (
-				<>
-					<DialogForm
-						title="Change Scrum master"
-						open={openScrumMasterChangingFrom}
-						onClose={handleCancelOpenScrumMasterChanging}
-					>
-						<ChangingScrumMasterForm
-							teamId={teamId}
-							projectId={projectId}
-							currentScrumMasterId={scrumMaster.user_id}
-							setNewScrumMaster={setScrumMaster}
-						/>
-					</DialogForm>
-					<Box flex="0 0 auto">
-						<Paper elevation={2}>
-							<Box
-								style={{ gap: "1rem" }}
-								display="flex"
-								flexWrap="wrap"
-								mb={2}
-								p={1}
-								// bgcolor={indigo["A100"]}
-							>
-								<Typography variant="h6">Scrum Master</Typography>
+			{scrumMaster ? (
+				<DialogForm
+					title="Change Scrum master"
+					open={openScrumMasterChangingFrom}
+					onClose={handleCancelOpenScrumMasterChanging}
+				>
+					<ChangingScrumMasterForm
+						teamId={teamId}
+						projectId={projectId}
+						currentScrumMasterId={scrumMaster.user_id}
+						setNewScrumMaster={setScrumMaster}
+					/>
+				</DialogForm>
+			) : null}
 
-								<Button
-									size="small"
-									variant="contained"
-									color="primary"
-									onClick={() => {
-										openScrumMasterChangingForm();
-									}}
-									disabled={scrumMasterChangeRestrictionForRoles.includes(currentUserRole)}
-								>
-									<Typography>Change</Typography>
-								</Button>
-							</Box>
-						</Paper>
-						<Box display="flex" justifyContent="center">
-							{scrumMaster ? <UserProfile width={"30ch"} {...scrumMaster} /> : null}
-						</Box>
-					</Box>
-					<Box flex={"1 1 0"}>
-						<Paper elevation={2}>
-							<Box display="flex" justifyContent="space-between" mb={2} p={1}>
-								<Typography variant="h6">Developers</Typography>
-								<Button
-									size="small"
-									variant="contained"
-									color="primary"
-									onClick={() => {
-										openDevsAdditionForm();
-									}}
-									disabled={
-										developersAdditionRestrictionForRoles.includes(currentUserRole) ||
-										!(scrumMaster.user_id === additionalUserInfo.id)
-									}
-								>
-									<Typography>Add new developers</Typography>
-								</Button>
-							</Box>
-						</Paper>
-						<Box
-							style={{
-								gap: "1rem",
+			<Box flex="0 0 auto">
+				<Paper elevation={2}>
+					<Box
+						style={{ gap: "1rem" }}
+						display="flex"
+						flexWrap="wrap"
+						mb={2}
+						p={1}
+						// bgcolor={indigo["A100"]}
+					>
+						<Typography variant="h6">Scrum Master</Typography>
+
+						<Button
+							size="small"
+							variant="contained"
+							color="primary"
+							onClick={() => {
+								openScrumMasterChangingForm();
 							}}
-							bgcolor="blueGrey.500"
-							display="flex"
-							justifyContent="flex-start"
-							flexWrap="wrap"
+							disabled={scrumMasterChangeRestrictionForRoles.includes(currentUserRole)}
 						>
-							{teamDevelopers.length ? (
-								<DevelopersList
-									currentUserRole={currentUserRole}
-									developers={teamDevelopers}
-									isCurrentUserScrumMasterOfThisTeam={scrumMaster.user_id === additionalUserInfo.id}
-									handleDevDeletion={handleDevDeletion}
-								/>
-							) : null}
-						</Box>
+							<Typography>Change</Typography>
+						</Button>
 					</Box>
-				</>
-			)}
+				</Paper>
+				<Box display="flex" justifyContent="center">
+					{scrumMaster ? <UserProfile width={"30ch"} {...scrumMaster} /> : null}
+				</Box>
+			</Box>
+			<Box flex={"1 1 0"}>
+				<Paper elevation={2}>
+					<Box display="flex" justifyContent="space-between" mb={2} p={1}>
+						<Typography variant="h6">Developers</Typography>
+						<Button
+							size="small"
+							variant="contained"
+							color="primary"
+							onClick={() => {
+								openDevsAdditionForm();
+							}}
+							disabled={
+								developersAdditionRestrictionForRoles.includes(currentUserRole) ||
+								!(scrumMaster.user_id === additionalUserInfo.id)
+							}
+						>
+							<Typography>Add new developers</Typography>
+						</Button>
+					</Box>
+				</Paper>
+				<Box
+					style={{
+						gap: "1rem",
+					}}
+					bgcolor="blueGrey.500"
+					display="flex"
+					justifyContent="flex-start"
+					flexWrap="wrap"
+				>
+					{teamDevelopers.length ? (
+						<DevelopersList
+							currentUserRole={currentUserRole}
+							developers={teamDevelopers}
+							isCurrentUserScrumMasterOfThisTeam={scrumMaster.user_id === additionalUserInfo.id}
+							handleDevDeletion={handleDevDeletion}
+						/>
+					) : null}
+				</Box>
+			</Box>
 		</Box>
 	);
 }

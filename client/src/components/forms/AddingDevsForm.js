@@ -54,7 +54,6 @@ export default function AddingDevsForm({ teamId, insertNewTeamDevs, projectId })
 						<SearchField
 							multiple
 							fetchUrl="api/user_profiles/"
-							partOfProjectId={projectId}
 							setSelectedResource={(id) => {
 								setFieldValue("devs", id);
 							}}

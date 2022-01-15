@@ -481,7 +481,7 @@ export default function IssuesTable(props) {
 							<TableRow>
 								<TableCell />
 								<TableCell />
-								<TableCell />
+								{!isSprintIssuesTable ? <TableCell /> : null}
 								<TableCell align="center">
 									<TableHeaderColumn
 										columnName="type"

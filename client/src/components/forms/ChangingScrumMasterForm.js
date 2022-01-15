@@ -21,8 +21,7 @@ ChangingScrumMasterForm.props = {
 };
 export default function ChangingScrumMasterForm(props) {
 	const [requestBodyForAddingScrumMaster, setRequestBodyForAddingScrumMaster] = useState(null);
-	const [requestBodyForUpdatingCurrentScrumMaster, setRequestBodyForUpdatingCurrentScrumMaster] =
-		useState(null);
+	const [requestBodyForUpdatingCurrentScrumMaster, setRequestBodyForUpdatingCurrentScrumMaster] = useState(null);
 
 	const {
 		receivedData: scrumMasterChangingReceivedData,
@@ -30,10 +29,7 @@ export default function ChangingScrumMasterForm(props) {
 		isLoading: isLoadingScrumMasterChanging,
 		isRejected: isRejectedScrumMasterChanging,
 		isResolved: isResolvedScrumMasterChanging,
-	} = usePatchFetch(
-		`api/teams_members/${props.currentScrumMasterId}`,
-		requestBodyForUpdatingCurrentScrumMaster
-	);
+	} = usePatchFetch(`api/teams_members/${props.currentScrumMasterId}`, requestBodyForUpdatingCurrentScrumMaster);
 
 	const {
 		receivedData: scrumMasterAdditionReceivedData,
@@ -41,10 +37,7 @@ export default function ChangingScrumMasterForm(props) {
 		isLoading: isLoadingScrumMasterAddition,
 		isRejected: isRejectedScrumMasterAddition,
 		isResolved: isResolvedScrumMasterAddition,
-	} = usePostFetch(
-		"api/teams_members/",
-		isResolvedScrumMasterChanging ? requestBodyForAddingScrumMaster : null
-	);
+	} = usePostFetch("api/teams_members/", isResolvedScrumMasterChanging ? requestBodyForAddingScrumMaster : null);
 
 	useEffect(() => {
 		if (!requestBodyForAddingScrumMaster) return;
@@ -86,8 +79,7 @@ export default function ChangingScrumMasterForm(props) {
 				{({ setFieldValue }) => (
 					<Form>
 						<SearchField
-							fetchUrl="api/users/"
-							partOfProjectId={props.projectId}
+							fetchUrl="api/user_profiles/"
 							setSelecteResource={(resource) => {
 								setFieldValue("scrum_master", resource);
 							}}
@@ -109,13 +101,9 @@ export default function ChangingScrumMasterForm(props) {
 									justifyContent="space-between"
 									px={4}
 								>
-									<Avatar src={option.avatar_url}>
-										{option.fullName.slice(0, 2)}
-									</Avatar>
+									<Avatar src={option.avatar_url}>{option.fullName.slice(0, 2)}</Avatar>
 									<Typography>{option.fullName}</Typography>
-									<Typography>
-										{option.is_part_of_project ? "joined" : null}
-									</Typography>
+									<Typography>{option.is_part_of_project ? "joined" : null}</Typography>
 								</Box>
 							)}
 							optionLabel="fullName"

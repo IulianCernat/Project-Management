@@ -3,15 +3,17 @@ import logging
 from flask_restx import Api
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import MethodNotAllowed, BadRequest
-from utils.custom_exceptions import AuthorizationFailed, TrelloRequestFailure, TrelloResourceUnavailable
+from utils.custom_exceptions import AuthorizationFailed, TrelloRequestFailure, TrelloResourceUnavailable, FirebaseException
 from sqlalchemy.orm.exc import NoResultFound
 from flask_cors import cross_origin
 
 log = logging.getLogger(__name__)
 
 # For development cors is set to * for every route
-api = Api(version='1.0', title="Projects management API",
-          description="A REST api which serves as backend for the client side", decorators=[cross_origin()])
+api = Api(
+    version='1.0', title="Projects management API",
+    description="A REST api which serves as backend for the client side",
+    decorators=[cross_origin()])
 
 
 @api.errorhandler(NoResultFound)
@@ -56,7 +58,13 @@ def trello_request_error(e):
     return {"message": f"{e}"}, 500
 
 
-@api.errorhandler(Exception)
+@api.errorhandler(FirebaseException)
+def firebase_error(e):
+    log.error(e)
+    return {"message": f"{e}"}, 500
+
+
+@ api.errorhandler(Exception)
 def default_error_handler(e):
     message = "An unhandled exception occurred"
     log.error(e)
