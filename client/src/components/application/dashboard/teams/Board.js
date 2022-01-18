@@ -70,10 +70,12 @@ function BoardList({ boardList }) {
 
 Board.propTypes = {
 	boardId: PropTypes.string.isRequired,
+	teamId: PropTypes.number.isRequired,
+	currentUserRole: PropTypes.string.isRequired,
+	handleTeamFieldsUpdate: PropTypes.func.isRequired,
 };
-export default function Board(props) {
-	const [startFetchingBoardLists, setStartFetchingBoardLists] = useState(true);
-	const [boardId, setBoardId] = useState(props.boardId);
+export default function Board({ boardId, teamId, currentUserRole, handleTeamFieldsUpdate }) {
+	const [startFetchingBoardLists, setStartFetchingBoardLists] = useState(false);
 	const [hideBoardAdditionform, setHideBoardAdditionform] = useState(true);
 	const [boardInfo, setBoardInfo] = useState();
 	const getBoardListsParameters = useRef({
@@ -89,11 +91,17 @@ export default function Board(props) {
 	} = useGetFetch(`api/trello/boards/${boardId}`, getBoardListsParameters.current, startFetchingBoardLists);
 
 	useEffect(() => {
-		if (isResolvedGetBoardLists) setBoardInfo(getBoardListsReceivedData);
+		if (isResolvedGetBoardLists) {
+			setBoardInfo(getBoardListsReceivedData);
+			setStartFetchingBoardLists(false);
+		}
 	}, [isResolvedGetBoardLists, getBoardListsReceivedData]);
 
 	useEffect(() => {
-		if (Boolean(boardId)) setStartFetchingBoardLists(true);
+		if (boardId) {
+			console.log(boardId);
+			setStartFetchingBoardLists(true);
+		}
 	}, [boardId]);
 
 	const handleFormAdditionClick = () => {
@@ -107,21 +115,21 @@ export default function Board(props) {
 					variant="contained"
 					color="primary"
 					onClick={handleFormAdditionClick}
-					disabled={UIRestrictionForRoles.includes(props.currentUserRole)}
+					disabled={UIRestrictionForRoles.includes(currentUserRole)}
 				>
 					Create Trello Board
 				</Button>
 			) : (
 				<Box width="50ch">
 					<TrelloBoardAdditionForm
-						teamId={props.teamId}
-						setAddedBoardId={setBoardId}
+						handleTeamFieldsUpdate={handleTeamFieldsUpdate}
+						teamId={teamId}
 						hideForm={handleFormAdditionClick}
 					/>
 				</Box>
 			)}
 
-			{isRejectedGetBoardLists && !props.boardId ? (
+			{isRejectedGetBoardLists && !boardId ? (
 				<Box my={2}>
 					<Alert severity="error">
 						<Typography>Couldnt't load trello board. {getBoardListsError}</Typography>

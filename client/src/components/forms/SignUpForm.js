@@ -38,11 +38,7 @@ export default function SignUpForm() {
 	const headers = useRef({
 		Authorization: "",
 	});
-	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
-		"api/user_profiles/",
-		requestBody,
-		headers.current
-	);
+	const { error, isLoading, isRejected, isResolved } = usePostFetch("api/user_profiles/", requestBody);
 
 	useEffect(() => {
 		if (isResolved) {
@@ -63,9 +59,7 @@ export default function SignUpForm() {
 				validationSchema={validationSchema}
 				onSubmit={async (values, { setSubmitting }) => {
 					try {
-						let userCredential = await signUp(values.email, values.password);
-						let userIdToken = await userCredential.user.getIdToken();
-						headers.current.Authorization = `firebase_id_token=${userIdToken}`;
+						await signUp(values.email, values.password);
 						let requestObj = {};
 						requestObj["fullName"] = values.fullName;
 						requestObj["contact"] = values.email;
@@ -90,33 +84,38 @@ export default function SignUpForm() {
 							name="email"
 							autoComplete="email"
 						/>
-						<Box display="flex" style={{ gap: "5px" }}>
-							<TextFieldWrapper
-								variant="outlined"
-								margin="normal"
-								required
-								fullWidth
-								name="fullName"
-								label="Full name"
-								type="text"
-								id="fullName"
-							/>
-							<TextFieldSelectWrapper
-								margin="normal"
-								required
-								variant="outlined"
-								id="studentGroup"
-								label="Student Group"
-								name="studentGroup"
-								menuOptions={studentGroupOptions}
-								disabled={isLoading}
-								runChangeEffect={(studentGroup) => {
-									setFieldValue("studentGroup", studentGroup);
-								}}
-								selectComponentMenuProps={{
-									classes: { paper: classes.menuPaper },
-								}}
-							/>
+						<Box width="100%" display="flex" flexDirection="row" style={{ gap: "5px" }}>
+							<Box flex="2 1 auto">
+								<TextFieldWrapper
+									variant="outlined"
+									margin="normal"
+									required
+									fullWidth
+									name="fullName"
+									label="Full name"
+									type="text"
+									id="fullName"
+								/>
+							</Box>
+							<Box flex="1 1 15ch">
+								<TextFieldSelectWrapper
+									fullWidth
+									margin="normal"
+									required
+									variant="outlined"
+									id="studentGroup"
+									label="Student Group"
+									name="studentGroup"
+									menuOptions={studentGroupOptions}
+									disabled={isLoading}
+									runChangeEffect={(studentGroup) => {
+										setFieldValue("studentGroup", studentGroup);
+									}}
+									selectComponentMenuProps={{
+										classes: { paper: classes.menuPaper },
+									}}
+								/>
+							</Box>
 						</Box>
 
 						<TextFieldWrapper

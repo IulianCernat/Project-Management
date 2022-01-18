@@ -15,16 +15,15 @@ users_namespace = api.namespace(
 @api.response(400, 'Bad request', bad_request)
 class ProfilesCollection(Resource):
 
-    @api.response(201, 'Profile successfully created', message)
+    @api.response(201, 'Profile successfully created', user_output)
     @api.response(401, 'Authorization failed', message)
     @api.expect(user_input, authorization_header)
+    @api.marshal_with(user_output)
     def post(self):
         decoded_token = process_firebase_authorization_field(request)
         user_profile = request.json
-        profile_id = create_user(decoded_token['uid'], user_profile)
-        firebase_user = get_firebase_user_by_uid(decoded_token['uid'])
-        create_custom_claim_for_user()
-        return {"location": f"{api.base_url}{users_namespace.path[1:]}/{profile_id}"}, 201
+        profile = create_user(decoded_token['uid'], user_profile)
+        return profile, 201
 
     @api.response(200, 'Users successfully queried')
     @api.marshal_list_with(user_output)

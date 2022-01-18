@@ -148,7 +148,7 @@ export default function TeamMembers() {
 							}}
 							disabled={
 								developersAdditionRestrictionForRoles.includes(currentUserRole) ||
-								!(scrumMaster.user_id === additionalUserInfo.id)
+								!(scrumMaster?.user_id === additionalUserInfo.id)
 							}
 						>
 							<Typography>Add new developers</Typography>

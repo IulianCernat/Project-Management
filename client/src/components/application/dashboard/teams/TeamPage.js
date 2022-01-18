@@ -26,6 +26,7 @@ export default function TeamPage() {
 	let { teamId } = useParams();
 	const [currentTab, setCurrentTab] = useState(0);
 	const [currentUserTeamRole, setCurrentUserTeamRole] = useState();
+	const [teamFetchedObject, setTeamFetchedObject] = useState();
 	const getTeamFetchStatus = useGetFetch(`api/teams/${teamId}`);
 
 	const getTeamRole = useCallback(() => {
@@ -42,8 +43,18 @@ export default function TeamPage() {
 		setCurrentTab(newValue);
 	};
 
+	const handleTeamFieldsUpdate = (newFieldValuesObj) => {
+		console.log(newFieldValuesObj);
+		for (const [fieldName, newFieldValue] of Object.entries(newFieldValuesObj))
+			teamFetchedObject[fieldName] = newFieldValue;
+		setTeamFetchedObject({ ...teamFetchedObject });
+	};
+
 	useEffect(() => {
-		if (getTeamFetchStatus.isResolved) setCurrentUserTeamRole(getTeamRole());
+		if (getTeamFetchStatus.isResolved) {
+			setCurrentUserTeamRole(getTeamRole());
+			setTeamFetchedObject(getTeamFetchStatus.receivedData);
+		}
 		/* eslint-disable*/
 	}, [getTeamFetchStatus]);
 
@@ -51,7 +62,7 @@ export default function TeamPage() {
 		<>
 			{getTeamFetchStatus.isLoading && <LinearProgress style={{ width: "100%" }} />}
 			{getTeamFetchStatus.isRejected ? <Alert severity="error">{getTeamFetchStatus.error} </Alert> : null}
-			{getTeamFetchStatus.isResolved && currentUserTeamRole ? (
+			{teamFetchedObject && currentUserTeamRole ? (
 				<>
 					<AppBar position="static" color="default">
 						<Tabs
@@ -70,31 +81,33 @@ export default function TeamPage() {
 
 					<TabPanel value={currentTab} index={0}>
 						<TeamInfo
+							handleTeamFieldsUpdate={handleTeamFieldsUpdate}
 							currentUserTeamRole={currentUserTeamRole}
 							teamId={Number(teamId)}
-							description={getTeamFetchStatus.receivedData.description}
-							version_control_link={getTeamFetchStatus.receivedData.version_control_link}
-							name={getTeamFetchStatus.receivedData.name}
-							nrMembers={getTeamFetchStatus.receivedData.team_members.length}
+							description={teamFetchedObject.description}
+							version_control_link={teamFetchedObject.version_control_link}
+							name={teamFetchedObject.name}
+							nrMembers={teamFetchedObject.team_members.length}
 							currentUserRole={currentUserRole}
 						/>
 					</TabPanel>
 					<TabPanel value={currentTab} index={1}>
 						<Board
+							handleTeamFieldsUpdate={handleTeamFieldsUpdate}
 							currentUserTeamRole={currentUserTeamRole}
 							currentUserRole={currentUserRole}
-							teamId={Number(getTeamFetchStatus.receivedData.id)}
-							boardId={getTeamFetchStatus.receivedData.trello_board_id}
+							teamId={Number(teamFetchedObject.id)}
+							boardId={teamFetchedObject.trello_board_id}
 						/>
 					</TabPanel>
 					<TabPanel value={currentTab} index={2}>
-						<TeamMembers currentUserTeamRole={currentUserTeamRole} />
+						<TeamMembers
+							handleTeamFieldsUpdate={handleTeamFieldsUpdate}
+							currentUserTeamRole={currentUserTeamRole}
+						/>
 					</TabPanel>
 					<TabPanel value={currentTab} index={3}>
-						<TeamMessages
-							currentUserTeamRole={currentUserTeamRole}
-							teamId={Number(getTeamFetchStatus.receivedData.id)}
-						/>
+						<TeamMessages currentUserTeamRole={currentUserTeamRole} teamId={Number(teamFetchedObject.id)} />
 					</TabPanel>
 				</>
 			) : null}

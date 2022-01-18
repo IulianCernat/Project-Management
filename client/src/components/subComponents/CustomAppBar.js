@@ -35,10 +35,7 @@ CustomAppBar.propTypes = {
 export default function CustomAppBar(props) {
 	const classes = useStyles({ drawerWidth: props.drawerWidth });
 	return (
-		<AppBar
-			className={props.minimizedDrawer ? classes.appBarForMinimizedDrawer : classes.appBar}
-			position="fixed"
-		>
+		<AppBar className={props.minimizedDrawer ? classes.appBarForMinimizedDrawer : classes.appBar} position="fixed">
 			<Toolbar>
 				<Box width="100%" display="flex" alignItems="center" justifyContent="space-between">
 					<Box>
@@ -51,8 +48,8 @@ export default function CustomAppBar(props) {
 					<Hidden xsDown>
 						<Box flex="1 1 auto">
 							<Typography variant="subtitle2">
-								{props.projectName.length >= 20
-									? props.projectName.slice(0, 20) + "..."
+								{props.projectName.length >= 50
+									? props.projectName.slice(0, 50) + "..."
 									: props.projectName}
 							</Typography>
 						</Box>

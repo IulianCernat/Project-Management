@@ -15,7 +15,7 @@ const validationSchema = Yup.object({
 VersioningSystemAdditionForm.propTypes = {
 	teamId: PropTypes.number.isRequired,
 	hideForm: PropTypes.func.isRequired,
-	setAddedVersionControlUrl: PropTypes.func.isRequired,
+	handleTeamFieldsUpdate: PropTypes.func.isRequired,
 };
 export default function VersioningSystemAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
@@ -23,8 +23,8 @@ export default function VersioningSystemAdditionForm(props) {
 	useEffect(() => {
 		if (!isResolved) return;
 		const addedUrl = requestBody.match(/http.*[^}"]/);
-		if (addedUrl) props.setAddedVersionControlUrl(requestBody.match(/http.*[^}"]/)[0]);
-		else props.setAddedVersionControlUrl("");
+		if (addedUrl) props.handleTeamFieldsUpdate({ version_control_link: requestBody.match(/http.*[^}"]/)[0] });
+		else props.handleTeamFieldsUpdate("");
 
 		props.hideForm();
 	}, [isResolved, props, requestBody]);

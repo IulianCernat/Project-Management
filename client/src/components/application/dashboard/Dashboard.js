@@ -48,15 +48,6 @@ export default function Dashboard() {
 	const classes = useStyles();
 	const [mobileOpen, setmobileOpen] = useState(false);
 	const [minimizedDrawer, setMinimizedDrawer] = useState(false);
-	const [getRoleHeaders, setGetRoleHeaders] = useState();
-	const [startGetroleFetch, setStartGetRoleFetch] = useState(false);
-
-	useEffect(() => {
-		currentUser.getIdToken().then((idToken) => {
-			setGetRoleHeaders({ Authorization: idToken });
-			setStartGetRoleFetch(true);
-		});
-	}, [currentUser]);
 
 	const {
 		receivedData: getRoleReceivedData,
@@ -64,7 +55,7 @@ export default function Dashboard() {
 		isLoading: isLoadingGetRole,
 		isResolved: isResolvedGetRole,
 		isRejected: isRejectedGetRole,
-	} = useGetFetch(`api/projects/${projectId}/role`, null, startGetroleFetch, false, getRoleHeaders);
+	} = useGetFetch(`api/projects/${projectId}/role`);
 
 	const {
 		receivedData: getProjectReceivedData,
@@ -77,24 +68,27 @@ export default function Dashboard() {
 	function handleDrawerToggle() {
 		setmobileOpen(!mobileOpen);
 	}
+
 	return (
 		<>
 			{isRejectedGetProject && <Alert severity="error">{getProjectError}</Alert>}
 			{isRejectedGetRole && <Alert severity="error">{getRoleError}</Alert>}
 			{(isLoadingGetProject || isLoadingGetRole) && (
-				<Box
-					display="flex"
-					alignItems="center"
-					justifyContent="center"
-					position="absolute"
-					style={{
-						position: "absolute",
-						top: "50%",
-						left: "50%",
-						transform: "translate(-50%, -50%)",
-					}}
-				>
-					<GearsSVG className="gears" />
+				<Box width="100vw" height="100vh" style={{ backgroundColor: "#BDDAF2" }}>
+					<Box
+						display="flex"
+						alignItems="center"
+						justifyContent="center"
+						position="absolute"
+						style={{
+							position: "absolute",
+							top: "50%",
+							left: "50%",
+							transform: "translate(-50%, -50%)",
+						}}
+					>
+						<GearsSVG className="gears" />
+					</Box>
 				</Box>
 			)}
 			{isResolvedGetRole && isResolvedGetProject && (

@@ -9,7 +9,7 @@ def create_user(uid, data):
     db.session.add(profile)
     db.session.commit()
 
-    return profile.id
+    return profile
 
 
 def get_other_user(user_id):

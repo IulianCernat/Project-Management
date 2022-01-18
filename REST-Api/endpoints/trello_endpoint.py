@@ -8,6 +8,18 @@ from utils.authorization import process_trello_authorization_field, process_fire
 trello_namespace = api.namespace('trello', description="Operations related trello")
 
 
+@trello_namespace.route('/boards/')
+class TrelloBoardsCollection(Resource):
+    @api.response(201, "Trello board successfully created", location)
+    @api.marshal_with(location)
+    @api.expect(trello_board_input, authorization_header)
+    def post(self):
+        trello_user_token = process_trello_authorization_field(request)
+        input_data = request.json
+        created_board = create_trello_board(input_data, trello_user_token)
+        return {'location': created_board['id']}, 201
+
+
 @trello_namespace.route('/boards/<id>')
 @api.expect(authorization_header)
 class TrelloBoard(Resource):

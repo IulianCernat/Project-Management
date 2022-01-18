@@ -17,24 +17,20 @@ TrelloBoardAdditionForm.propTypes = {
 	teamId: PropTypes.number.isRequired,
 	hideForm: PropTypes.func.isRequired,
 	setAddedBoardId: PropTypes.func.isRequired,
+	handleTeamFieldsUpdate: PropTypes.func.isRequired,
 };
 export default function TrelloBoardAdditionForm(props) {
 	const [requestBody, setRequestBody] = useState(null);
 	const { setTrelloBoards, trelloBoards } = useProjectContext();
-	const headers = useRef({
-		Authorization: `trello_token=${localStorage.getItem("trello_token")}`,
-	});
-	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(
-		`api/trello/boards/`,
-		requestBody,
-		headers.current
-	);
+	const { receivedData, error, isLoading, isRejected, isResolved } = usePostFetch(`api/trello/boards/`, requestBody);
+
 	useEffect(() => {
-		if (!isResolved) return;
-		const newBoardId = receivedData.split("/").pop();
-		setTrelloBoards([...trelloBoards, { trello_board_id: newBoardId, is_added_by_user: true }]);
-		props.setAddedBoardId(newBoardId);
-		props.hideForm();
+		if (isResolved) {
+			const newBoardId = receivedData;
+			setTrelloBoards([...trelloBoards, { trello_board_id: newBoardId, is_added_by_user: true }]);
+			props.handleTeamFieldsUpdate({ trello_board_id: newBoardId });
+			props.hideForm();
+		}
 	}, [isResolved, receivedData, setTrelloBoards, props, trelloBoards]);
 
 	return (

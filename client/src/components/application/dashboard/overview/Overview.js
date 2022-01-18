@@ -60,7 +60,12 @@ export default function Overview() {
 											value={projectProgress}
 											size="6rem"
 											label={
-												<Box>
+												<Box
+													display="flex"
+													justifyContent="center"
+													flexDirection="column"
+													alignItems="center"
+												>
 													<Typography variant="h6" color="textSecondary">
 														{`${projectProgress}%`}
 													</Typography>
@@ -108,14 +113,7 @@ export default function Overview() {
 							</Box>
 						</Paper>
 					</Grid>
-					<Grid
-						item
-						container
-						justify="space-evenly"
-						alignItems="flex-start"
-						spacing={1}
-						alignItems="stretch"
-					>
+					<Grid item container justify="space-evenly" spacing={1} alignItems="stretch">
 						<Grid item xs={12} md={4} xl={3}>
 							<Paper className={classes.paper}>
 								<Box p={4} height="100%" display="flex" justifyContent="center" alignItems="baseline">

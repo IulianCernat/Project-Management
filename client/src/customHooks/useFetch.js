@@ -207,7 +207,7 @@ export function usePostFetch(url, bodyContent) {
 	const [transformedState, setTransformedState] = useState(state);
 	const { currentUser } = useAuth();
 	useEffect(() => {
-		if (!bodyContent) {
+		if (!bodyContent || !currentUser) {
 			dispatch({ type: "idle" });
 			return;
 		}
@@ -228,7 +228,7 @@ export function usePostFetch(url, bodyContent) {
 		}
 
 		doFetch(url, bodyContent);
-	}, [url, bodyContent]);
+	}, [url, bodyContent, currentUser]);
 
 	useEffect(() => {
 		setTransformedState(transformState(state));

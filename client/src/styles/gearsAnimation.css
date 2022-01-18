@@ -23,6 +23,8 @@
     }
 }
 
+
+
 #bigGear,
 #mediumGear,
 #smallGear {
@@ -30,13 +32,14 @@
     transform-origin: center;
     transform-box: fill-box;
 
-    animation-duration: 2.5s;
+    animation-duration: 3s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 
 }
 
 #bigGear {
+
     animation-name: gearAnimationRight;
 }
 

@@ -57,6 +57,7 @@ export default function CircularProgressWithLabel({ label: LabelComponent, ...pr
 				alignItems="center"
 				flexDirection="column"
 				justifyContent="center"
+				alignContent="center"
 			>
 				{cloneElement(LabelComponent)}
 			</Box>
