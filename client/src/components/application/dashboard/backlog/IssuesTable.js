@@ -295,6 +295,7 @@ export default function IssuesTable(props) {
 	const {
 		isLoadingPostTrelloCard,
 		isSprintCompleted,
+		isSprintStarted,
 		isLoadingIssueUpdate,
 		idOfIssueToBeMovedToBacklog,
 		idOfIssueToBeCopiedToTrello,
@@ -635,6 +636,7 @@ export default function IssuesTable(props) {
 										isLoadingPostTrelloCard={isLoadingPostTrelloCard}
 										isLoadingIssueUpdate={isLoadingIssueUpdate}
 										isSprintCompleted={isSprintCompleted}
+										isSprintStarted={isSprintStarted}
 										handleMoveIssueClick={handleMoveIssueClick}
 										handleCopyIssueToTrelloClick={handleCopyIssueToTrelloClick}
 										isBeingDeleted={isLoadingDeleteIssue}

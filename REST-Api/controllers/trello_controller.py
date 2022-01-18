@@ -151,6 +151,7 @@ def copy_issue_to_trello_board_list(payload, user_token):
     board_list_name = payload['board_list_name']
     del payload['issue_id']
     del payload['board_list_name']
+    card_was_created_flag = False
     try:
         trello_api_request_obj = requests.post(
             url, data=payload, timeout=5, headers=headers)
@@ -164,11 +165,13 @@ def copy_issue_to_trello_board_list(payload, user_token):
         issue_to_be_updated.trello_card_due_is_completed = False
         issue_to_be_updated.trello_card_is_closed = False
 
-        create_trello_webhook(
-            created_card['id'], user_token, issue_to_be_updated)
+        card_was_created_flag = True
+        create_trello_webhook(created_card['id'], user_token, issue_to_be_updated)
         db.session.commit()
         return created_card
     except Exception as e:
+        if card_was_created_flag:
+            delete_trello_card(created_card['id'], user_token)
         raise e
 
 

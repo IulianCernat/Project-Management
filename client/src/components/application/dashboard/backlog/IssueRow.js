@@ -132,6 +132,7 @@ export default function IssueRow(props) {
 		isLoadingPostTrelloCard,
 		isLoadingIssueUpdate,
 		isSprintCompleted,
+		isSprintStarted,
 	} = props;
 	const [openMoreInfo, setOpenMoreInfo] = useState(false);
 	const isSelected = selectedRows ? selectedRows.indexOf(row.id) !== -1 : false;
@@ -176,7 +177,8 @@ export default function IssueRow(props) {
 									row.trello_card_list_name !== "Unknown" ||
 									isLoadingIssueUpdate ||
 									isLoadingPostTrelloCard ||
-									isSprintCompleted
+									isSprintCompleted ||
+									!isSprintStarted
 								}
 							>
 								<Tooltip
@@ -190,7 +192,8 @@ export default function IssueRow(props) {
 											row.trello_card_list_name !== "Unknown" ||
 											isLoadingIssueUpdate ||
 											isLoadingPostTrelloCard ||
-											isSprintCompleted
+											isSprintCompleted ||
+											!isSprintStarted
 												? "disabled"
 												: "secondary"
 										}

@@ -43,6 +43,7 @@ const useStyles = makeStyles({
 const UIRestrictionForRoles = ["developer"];
 
 function SprintHeader({
+	updateSprintWithNewSprint,
 	handleUpdateSprintClick,
 	id,
 	name,
@@ -55,13 +56,11 @@ function SprintHeader({
 	currentUserRole,
 	handleDeleteSprintClick,
 	startedSprintId,
-	setStartedSprintId,
 }) {
+	console.log(startedSprintId);
 	const [showMoreGoalInfo, setShowMoreGoalInfo] = useState(false);
 	const classes = useStyles();
 	const [requestBodyForUpdate, setRequesBodyForUpdate] = useState(null);
-	const [isStartedState, setIsStartedState] = useState(isStarted);
-	const [isCompletedState, setIsCompletedState] = useState(isCompleted);
 
 	const {
 		status: updateStatus,
@@ -85,15 +84,7 @@ function SprintHeader({
 		setRequesBodyForUpdate(JSON.stringify({ completed: true }));
 	};
 	useEffect(() => {
-		if (!isResolvedUpdate) return;
-		if (requestBodyForUpdate.includes("start")) {
-			setIsStartedState(true);
-			setStartedSprintId(id);
-		}
-		if (requestBodyForUpdate.includes("completed")) {
-			setIsCompletedState(true);
-			setStartedSprintId(undefined);
-		}
+		if (isResolvedUpdate) updateSprintWithNewSprint(updatedReveivedData);
 	}, [isResolvedUpdate]);
 
 	return (
@@ -134,7 +125,7 @@ function SprintHeader({
 				</Box>
 
 				<Box flex="1 1 auto">
-					{!isStartedState ? (
+					{!isStarted ? (
 						<Button
 							onClick={() => {
 								handleStartSprintClick();
@@ -143,12 +134,12 @@ function SprintHeader({
 							color="primary"
 							disabled={
 								UIRestrictionForRoles.includes(currentUserRole) ||
-								(startedSprintId !== undefined && startedSprintId !== id)
+								(startedSprintId === null && startedSprintId !== id)
 							}
 						>
 							Start sprint
 						</Button>
-					) : !isCompletedState ? (
+					) : !isCompleted ? (
 						<Button
 							onClick={() => {
 								handleCompleteSprintClick();
@@ -249,14 +240,15 @@ SprintTable.propTypes = {
 	setStartedSprintId: PropTypes.func.isRequired,
 	firstTrelloBoardListId: PropTypes.string.isRequired,
 	trelloLabelsObj: PropTypes.object.isRequired,
+	updateSprintWithNewSprint: PropTypes.func.isRequired,
 };
 function SprintTable({
 	sprint,
 	currentUserRole,
+	updateSprintWithNewSprint,
 	handleDeleteSprintClick,
 	handleUpdateSprintClick,
 	doUpdateIssueForSprint,
-	setStartedSprintId,
 	startedSprintId,
 	added_trello_board_id_by_user,
 	firstTrelloBoardListId,
@@ -373,6 +365,7 @@ function SprintTable({
 				}
 			/>
 			<SprintHeader
+				updateSprintWithNewSprint={updateSprintWithNewSprint}
 				handleDeleteSprintClick={handleDeleteSprintClick}
 				handleUpdateSprintClick={handleUpdateSprintClick}
 				currentUserRole={currentUserRole}
@@ -385,7 +378,6 @@ function SprintTable({
 				isCompleted={sprint.completed}
 				id={sprint.id}
 				startedSprintId={startedSprintId}
-				setStartedSprintId={setStartedSprintId}
 			/>
 			<IssuesTable
 				isSprintIssuesTable
@@ -397,6 +389,7 @@ function SprintTable({
 					handleCopyIssueToTrelloClick,
 					handleMoveIssueClick,
 					isSprintCompleted: sprint.completed,
+					isSprintStarted: sprint.start,
 				}}
 				issuesList={sprintIssues}
 			/>
@@ -525,6 +518,9 @@ export default function Sprints() {
 	}, [isResolvedGetSprints, getSprintsReceivedData]);
 
 	useEffect(() => {
+		const startedSprintIndex = sprintsList.findIndex((sprint) => sprint.start === true);
+		if (startedSprintIndex !== -1) setStartedSprintId(sprintsList[startedSprintIndex].id);
+
 		if (!websockeWithRealtimeService.current) return;
 		websockeWithRealtimeService.current.onmessage = (event) => {
 			const parsedMessageObj = JSON.parse(event.data);
@@ -603,9 +599,9 @@ export default function Sprints() {
 				<Box display="flex" flexWrap="wrap" flexDirection="column" style={{ gap: "2rem" }}>
 					{sprintsList.map((item) => (
 						<SprintTable
+							updateSprintWithNewSprint={updateSprintWithNewSprint}
 							handleUpdateSprintClick={handleUpdateSprintClick}
 							startedSprintId={startedSprintId}
-							setStartedSprintId={setStartedSprintId}
 							handleDeleteSprintClick={handleDeleteSprintClick}
 							doUpdateIssueForSprint={doUpdateIssueForSprint}
 							currentUserRole={currentUserRole}
