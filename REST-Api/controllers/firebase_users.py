@@ -21,8 +21,7 @@ def create_user(creator_admin_user, user_to_be_created_input_obj, claims_dict_fo
         del user_to_be_created_input_obj['email'],
         del user_to_be_created_input_obj['password']
 
-        create_custom_claim_for_user(
-            creator_admin_user, created_user, claims_dict_for_created_user)
+        create_custom_claim_for_user(creator_admin_user, created_user, claims_dict_for_created_user)
         new_user_profile = User(created_user.uid, user_to_be_created_input_obj)
         db.session.add(new_user_profile)
         db.session.commit()

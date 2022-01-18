@@ -13,7 +13,7 @@ const validationSchema = Yup.object({
 });
 
 export default function LoginForm() {
-	const { login } = useAuth();
+	const { login, authIsLoading } = useAuth();
 	const [firebaseError, setFirebaseError] = useState(null);
 
 	return (
@@ -45,6 +45,7 @@ export default function LoginForm() {
 							label="Email Address"
 							name="email"
 							autoComplete="email"
+							disabled={authIsLoading || isSubmitting}
 						/>
 						<TextFieldWrapper
 							variant="outlined"
@@ -55,8 +56,15 @@ export default function LoginForm() {
 							label="Password"
 							type="password"
 							id="password"
+							disabled={authIsLoading || isSubmitting}
 						/>
-						<Button type="submit" fullWidth variant="contained" color="primary" disabled={isSubmitting}>
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							color="primary"
+							disabled={isSubmitting || authIsLoading}
+						>
 							<Typography>Login</Typography>
 						</Button>
 					</Form>

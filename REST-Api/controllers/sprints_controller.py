@@ -61,8 +61,7 @@ def update_sprint(sprint_id, input_obj):
 def delete_sprint(sprint_id):
     sprint = get_sprint(sprint_id)
     for sprint_issue in sprint.issues:
-        sprint_issue.status = "pending"
-        sprint_issue.sprint_id = None
+        update_issue(sprint_issue.id, {'sprint_id': 0})
     db.session.delete(sprint)
     db.session.commit()
 
@@ -70,4 +69,3 @@ def delete_sprint(sprint_id):
 def is_sprint_completed(sprint):
     if zulu.parse(sprint.end_date).datetime <= zulu.now().datetime:
         setattr(sprint, 'completed', True)
-        setattr(sprint, 'start', True)

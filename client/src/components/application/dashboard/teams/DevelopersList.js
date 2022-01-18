@@ -48,7 +48,7 @@ export default function DevelopersList({
 			{developers.map((item) => (
 				<Box key={item.id} className={classes.profileCard}>
 					<UserProfileCard
-						width={"30ch"}
+						width={"36ch"}
 						{...item}
 						backdrop={
 							UIRestrictionForRoles.includes(currentUserRole) ||

@@ -28,10 +28,8 @@ def get_users_by_filters(keyword):
 
     for user in keyword_filtered_users:
         is_team_member = TeamMember.query.join(Team).filter(TeamMember.user_id == user.id)
-        print(is_team_member)
         is_team_member = bool(db.session.query(
             literal(True)).filter(is_team_member.exists()).scalar())
-        print(is_team_member)
 
         if is_team_member:
             setattr(user, 'is_part_of_project', is_team_member)

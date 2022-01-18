@@ -57,7 +57,6 @@ function SprintHeader({
 	handleDeleteSprintClick,
 	startedSprintId,
 }) {
-	console.log(startedSprintId);
 	const [showMoreGoalInfo, setShowMoreGoalInfo] = useState(false);
 	const classes = useStyles();
 	const [requestBodyForUpdate, setRequesBodyForUpdate] = useState(null);
@@ -77,16 +76,16 @@ function SprintHeader({
 	endDate = format(endDate, "dd/MM/yyyy HH:mm");
 
 	const handleStartSprintClick = () => {
-		setRequesBodyForUpdate(JSON.stringify({ start: true }));
+		setRequesBodyForUpdate(JSON.stringify({ start: true, completed: false }));
 	};
 
 	const handleCompleteSprintClick = () => {
-		setRequesBodyForUpdate(JSON.stringify({ completed: true }));
+		setRequesBodyForUpdate(JSON.stringify({ start: false, completed: true }));
 	};
 	useEffect(() => {
 		if (isResolvedUpdate) updateSprintWithNewSprint(updatedReveivedData);
 	}, [isResolvedUpdate]);
-
+	console.log(startedSprintId);
 	return (
 		<Box p={1} display="flex" flexDirection="column" flexWrap="wrap" style={{ gap: "1rem" }}>
 			<Box>
@@ -125,7 +124,7 @@ function SprintHeader({
 				</Box>
 
 				<Box flex="1 1 auto">
-					{!isStarted ? (
+					{!isStarted && !isCompleted ? (
 						<Button
 							onClick={() => {
 								handleStartSprintClick();
@@ -134,7 +133,7 @@ function SprintHeader({
 							color="primary"
 							disabled={
 								UIRestrictionForRoles.includes(currentUserRole) ||
-								(startedSprintId === null && startedSprintId !== id)
+								(startedSprintId && startedSprintId !== id)
 							}
 						>
 							Start sprint
@@ -520,6 +519,7 @@ export default function Sprints() {
 	useEffect(() => {
 		const startedSprintIndex = sprintsList.findIndex((sprint) => sprint.start === true);
 		if (startedSprintIndex !== -1) setStartedSprintId(sprintsList[startedSprintIndex].id);
+		else setStartedSprintId(null);
 
 		if (!websockeWithRealtimeService.current) return;
 		websockeWithRealtimeService.current.onmessage = (event) => {
@@ -588,11 +588,11 @@ export default function Sprints() {
 			</DialogForm>
 			{isRejectedGetTrelloData ? <Alert severity="error">{getTrelloDataError}</Alert> : null}
 			{isLoadingGetSprints || isLoadingGetTrelloData ? <LinearProgress style={{ width: "100%" }} /> : null}
-			<Box my={2}>
+			{/* <Box my={2}>
 				<Button color="primary" variant="contained" onClick={handleSyncWithTrelloClick}>
 					Sync with Trello
 				</Button>
-			</Box>
+			</Box> */}
 
 			{isRejectedGetSprints ? <Alert severity="error">{getSprintsError} </Alert> : null}
 			{sprintsList.length && (added_trello_board_id_by_user ? (isResolvedGetTrelloData ? true : false) : true) ? (

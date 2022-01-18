@@ -365,9 +365,12 @@ export default function IssuesTable(props) {
 					}
 					case "number": {
 						setTableIssues([
-							...tableIssues.sort(
-								(firstItem, secondItem) => secondItem[columnName] - firstItem[columnName]
-							),
+							...tableIssues.sort((firstItem, secondItem) => {
+								// if value is 'Unknown" sort it as last
+								if (isNaN(secondItem[columnName] - firstItem[columnName])) return 999999999;
+
+								return secondItem[columnName] - firstItem[columnName];
+							}),
 						]);
 						break;
 					}
@@ -441,6 +444,10 @@ export default function IssuesTable(props) {
 		switch (columnValue) {
 			case null:
 				return "Unknown";
+			case false:
+				return "false";
+			case true:
+				return "true";
 			default:
 				return columnValue;
 		}
@@ -545,8 +552,8 @@ export default function IssuesTable(props) {
 														: "null"
 												}
 												filterOptions={{
-													Yes: <Typography>Yes</Typography>,
-													No: <Typography>No</Typography>,
+													true: <Typography>Yes</Typography>,
+													false: <Typography>No</Typography>,
 													Unknown: <Typography>Unknown</Typography>,
 												}}
 												clearFilter={clearColumnFilter}
@@ -567,8 +574,8 @@ export default function IssuesTable(props) {
 														: "null"
 												}
 												filterOptions={{
-													Yes: <Typography>Yes</Typography>,
-													No: <Typography>No</Typography>,
+													true: <Typography>Yes</Typography>,
+													false: <Typography>No</Typography>,
 													Unknown: <Typography>Unknown</Typography>,
 												}}
 												clearFilter={clearColumnFilter}

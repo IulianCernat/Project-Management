@@ -227,23 +227,24 @@ export default function IssueRow(props) {
 							<Chip color="primary" label={row.trello_card_list_name} />
 						</TableCell>
 						<TableCell align="center">
-							{typeof row.trello_card_due_is_completed === "string" ? (
+							{row.trello_card_due_is_completed !== "true" &&
+							row.trello_card_due_is_completed !== "false" ? (
 								<Chip color="primary" label={row.trello_card_due_is_completed} />
 							) : (
 								<Checkbox
 									disableRipple
-									checked={row.trello_card_due_is_completed}
+									checked={row.trello_card_due_is_completed === "true" ? true : false}
 									inputProps={{ "aria-label": "primary checkbox" }}
 								/>
 							)}
 						</TableCell>
 						<TableCell align="center">
-							{typeof row.trello_card_is_closed === "string" ? (
+							{row.trello_card_is_closed !== "true" && row.trello_card_is_closed !== "false" ? (
 								<Chip color="primary" label={row.trello_card_is_closed} />
 							) : (
 								<Checkbox
 									disableRipple
-									checked={row.trello_card_is_closed}
+									checked={row.trello_card_is_closed === "true" ? true : false}
 									inputProps={{ "aria-label": "primary checkbox" }}
 								/>
 							)}

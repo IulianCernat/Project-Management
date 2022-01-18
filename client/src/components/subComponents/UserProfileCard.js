@@ -2,9 +2,10 @@ import { cloneElement, useState } from "react";
 
 import { Avatar, Card, CardContent, makeStyles, Typography, Box, Divider } from "@material-ui/core";
 import PropTypes from "prop-types";
-import { orange, blueGrey, grey } from "@material-ui/core/colors";
+import { orange, grey } from "@material-ui/core/colors";
 import { GiCrown, GiLaurelCrown } from "react-icons/gi";
 import { DiCode } from "react-icons/di";
+import { Email } from "@material-ui/icons";
 import { IconContext } from "react-icons";
 import { ReactComponent as AvatarDefault } from "images/avatarDefault.svg";
 UserProfileCard.propTypes = {
@@ -97,7 +98,7 @@ export default function UserProfileCard(props) {
 					</Avatar>
 
 					<Box className={classes.textContent} display="flex" flexDirection="column" alignItems="center">
-						<Typography align="center" variant="h6" className={classes.name}>
+						<Typography align="center" variant="subtitle2" className={classes.name}>
 							{props.user_profile.fullName}
 						</Typography>
 						<Typography variant="h6" className={classes.role} color="primary">
@@ -107,9 +108,19 @@ export default function UserProfileCard(props) {
 						</Typography>
 					</Box>
 					<Divider variant="fullWidth" flexItem classes={{ root: classes.divider }} />
-					<Typography className={classes.contact}>
-						{props.user_profile.contact || "No contact info"}
-					</Typography>
+
+					<Box
+						display="flex"
+						flexDirection="row"
+						alignItems="center"
+						justifyContent="center"
+						style={{ gap: "4px" }}
+					>
+						<Email fontSize="large" color="primary" />
+						<Typography className={classes.contact} variant="subtitle2">
+							{props.user_profile.contact || "No contact info"}
+						</Typography>
+					</Box>
 				</Box>
 			</CardContent>
 		</Card>

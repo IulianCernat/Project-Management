@@ -58,7 +58,7 @@ def create_profiles(profile_list, headers):
 
     api_path = api_path_base_url + '/firebase_users/'
     teacher_profiles = profile_list[:1]
-    student_profiles = profile_list[1:12]
+    student_profiles = profile_list[1:]
     created_teachers_ids = []
     created_students_ids = []
     for profile in teacher_profiles:
@@ -198,7 +198,7 @@ def generate_issues(projects_with_teams, headers):
                 'project_scrum_master_id': team['scrum_master_id'],
                 'issues_ids': []
             }
-            for _ in range(5):
+            for _ in range(20):
                 post_request_data = {
                     'title': faker.text()[:255],
                     'description': faker.text(max_nb_chars=1000),
@@ -268,7 +268,7 @@ def generate_sprints(projects_issues, headers):
 
 
 if __name__ == '__main__':
-    delete_firebase_users()
+    # delete_firebase_users()
     admin_id_token = get_admin_id_token()
     headers = {'Authorization': f'firebase_id_token={admin_id_token}'}
     with open('profiles.json') as f:

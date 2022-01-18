@@ -77,15 +77,12 @@ def update_issue(issue_id, input_obj=None, trello_token=None, clear_trello_data=
 
 
 def update_issues(input_obj):
-    found_issues = []
+    found_issues_ids = []
     for issue in input_obj['issues']:
-        found_issues.append(get_issue(issue['id']))
+        found_issues_ids.append(get_issue(issue['id']))
 
-    for issue_list_index, found_issue in enumerate(found_issues):
-        for field, value in input_obj['issues'][issue_list_index]['updates'].items():
-            setattr(found_issue, field, value)
-
-    db.session.commit()
+    for issue_list_index, found_issue in enumerate(found_issues_ids):
+        update_issue(found_issue, input_obj['issues'][issue_list_index]['updates'])
 
 
 def delete_issue(issue_id):

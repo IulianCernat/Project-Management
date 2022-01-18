@@ -132,7 +132,7 @@ export default function TeamMembers() {
 					</Box>
 				</Paper>
 				<Box display="flex" justifyContent="center">
-					{scrumMaster ? <UserProfile width={"30ch"} {...scrumMaster} /> : null}
+					{scrumMaster ? <UserProfile width={"36ch"} {...scrumMaster} /> : null}
 				</Box>
 			</Box>
 			<Box flex={"1 1 0"}>
@@ -151,7 +151,7 @@ export default function TeamMembers() {
 								!(scrumMaster?.user_id === additionalUserInfo.id)
 							}
 						>
-							<Typography>Add new developers</Typography>
+							<Typography>Add developers</Typography>
 						</Button>
 					</Box>
 				</Paper>

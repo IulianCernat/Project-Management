@@ -36,11 +36,13 @@ export function AuthProvider({ children }) {
 					const userIdToken = await user.getIdToken();
 					const idTokenResult = await user.getIdTokenResult();
 					const firebaseUserClaims = idTokenResult.claims;
-					await new Promise((r) => setTimeout(r, 1000));
+					await new Promise((r) => setTimeout(r, 200));
 					let { error, receivedData: profile } = await doGet("api/user_profiles/loggedUser", null, {
 						Authorization: `firebase_id_token=${userIdToken}`,
 					});
 					setAdditionalUserInfo({ firebaseUserClaims, ...profile });
+
+					if (error) throw error;
 				} catch (err) {
 					console.log(err);
 				}
@@ -51,6 +53,7 @@ export function AuthProvider({ children }) {
 	}, []);
 
 	const value = {
+		authIsLoading: loading,
 		additionalUserInfo,
 		setAdditionalUserInfo,
 		currentUser,
