@@ -1,9 +1,30 @@
-import { Typography, Box, CardActionArea, Card, CardHeader, Button, Badge, CardActions } from "@material-ui/core";
+import {
+	Typography,
+	Box,
+	CardActionArea,
+	Card,
+	CardHeader,
+	Button,
+	Badge,
+	CardActions,
+	makeStyles,
+} from "@material-ui/core";
 import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 import { People } from "@material-ui/icons";
 import CircularProgressWithLabel from "components/subComponents/Progress";
 import { format } from "date-fns";
+import { lightBlue, grey } from "@material-ui/core/colors";
+import clsx from "clsx";
+
+const useStyles = makeStyles(() => ({
+	paper: {
+		border: `1px solid ${grey[400]}`,
+	},
+	paperHighlight: {
+		backgroundColor: lightBlue[100],
+	},
+}));
 
 ProjectCard.propTypes = {
 	project: PropTypes.object.isRequired,
@@ -12,12 +33,13 @@ ProjectCard.propTypes = {
 	renderActions: PropTypes.bool.isRequired,
 };
 export default function ProjectCard({ project, handleDelete, handleProjectUpdate, renderActions }) {
+	const styles = useStyles();
 	const progressValue = project.total_nr_of_issues
 		? Math.round((project.nr_of_finished_issues * 100) / project.total_nr_of_issues)
 		: 0;
 
 	return (
-		<Card>
+		<Card className={clsx(styles.paper)}>
 			<CardActionArea to={`dashboard/project/${project.id}`} component={RouterLink}>
 				<CardHeader
 					title={

@@ -16,13 +16,14 @@ import PropTypes from "prop-types";
 import { Link as RouterLink } from "react-router-dom";
 import TextDisplayWrapper from "../subComponents/TextDisplayWrapper";
 import { format } from "date-fns";
-import { lightBlue } from "@material-ui/core/colors";
+import { lightBlue, grey } from "@material-ui/core/colors";
 import { useAuth } from "contexts/AuthContext";
 import clsx from "clsx";
 import { ReactComponent as AvatarDefault } from "images/avatarDefault.svg";
+
 const useStyles = makeStyles((theme) => ({
 	paper: {
-		border: "5px dashed red",
+		border: `1px solid ${grey[400]}`,
 	},
 	avatar: {
 		width: "4rem",
@@ -53,7 +54,7 @@ export default function TeamCard(props) {
 	return (
 		<Card
 			className={clsx(
-				styles.root,
+				styles.paper,
 				additionalUserInfo.id === scrumMasterProfile?.id ||
 					props.team_members.find((item) => item.user_profile.id === additionalUserInfo.id)
 					? styles.paperHighlight

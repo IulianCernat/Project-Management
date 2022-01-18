@@ -1,21 +1,13 @@
 import { useState } from "react";
-import {
-	Avatar,
-	Box,
-	Typography,
-	Button,
-	Grid,
-	Paper,
-	makeStyles,
-	Divider,
-	Hidden,
-} from "@material-ui/core";
+import { Avatar, Box, Typography, Button, Grid, Paper, makeStyles, Divider, Hidden } from "@material-ui/core";
 import { useAuth } from "contexts/AuthContext";
 import ProfilePageAvatar from "components/subComponents/ProfilePageAvatar";
 import TextDisplayWrapper from "../../subComponents/TextDisplayWrapper";
 import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 import TrelloAuthorization from "components/subComponents/TrelloAuthorization";
+import { Email } from "@material-ui/icons";
+
 const useStyles = makeStyles((theme) => ({
 	identity: {
 		display: "flex",
@@ -31,9 +23,7 @@ ProfileAside.propTypes = {
 	currentUser: PropTypes.object.isRequired,
 };
 export default function ProfileAside({ additionalUserInfo, currentUser }) {
-	const [isTrelloTokenExisting, setIsTrelloTokenExisting] = useState(
-		Boolean(localStorage.getItem("trello_token"))
-	);
+	const [isTrelloTokenExisting, setIsTrelloTokenExisting] = useState(Boolean(localStorage.getItem("trello_token")));
 	const { logout } = useAuth();
 	const [logoutError, setLogoutError] = useState();
 	const history = useHistory();
@@ -59,10 +49,7 @@ export default function ProfileAside({ additionalUserInfo, currentUser }) {
 						<Grid item xs md={12}>
 							<Box className={classes.identity}>
 								{additionalUserInfo.firebaseUserClaims.admin ? (
-									<Avatar
-										variant="circular"
-										style={{ width: "10rem", height: "10rem" }}
-									/>
+									<Avatar variant="circular" style={{ width: "10rem", height: "10rem" }} />
 								) : (
 									<ProfilePageAvatar
 										width="10rem"
@@ -88,33 +75,24 @@ export default function ProfileAside({ additionalUserInfo, currentUser }) {
 							</Hidden>
 						</Grid>
 
-						<Grid
-							item
-							container
-							xs
-							md={12}
-							direction="column"
-							spacing={3}
-							alignItems="flex-start"
-						>
+						<Grid item container xs md={12} direction="column" spacing={3} alignItems="flex-start">
 							<Grid item>
-								<Typography variant="h6">Contact</Typography>
-								<Typography>
-									{additionalUserInfo.contact || currentUser?.email}
-								</Typography>
+								<Box display="flex" alignItems="center" style={{ gap: 4 }}>
+									<Email color="primary" fontSize="small" />
+									<Typography>{additionalUserInfo.contact || currentUser?.email}</Typography>
+								</Box>
+
 								{additionalUserInfo.is_user_student ? (
 									<>
 										<Typography variant="h6">Student Group</Typography>
-										<Typography>
-											{`Group ${additionalUserInfo.student_group}`}
-										</Typography>
+										<Typography>{`Group ${additionalUserInfo.student_group}`}</Typography>
 									</>
 								) : null}
 							</Grid>
 						</Grid>
 					</Grid>
 				)}
-				{additionalUserInfo.firebaseUserClaims.admin ? null : (
+				{additionalUserInfo.firebaseUserClaims.admin || additionalUserInfo.firebaseUserClaims.teacher ? null : (
 					<Box mt={2} display="flex" justifyContent="center">
 						{!isTrelloTokenExisting ? (
 							<TrelloAuthorization

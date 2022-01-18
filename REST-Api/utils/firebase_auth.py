@@ -45,6 +45,8 @@ if user_to_be_promoted:
 
 
 def check_if_user_is_admin(firebase_user):
+    if firebase_user is None:
+        return False
     user_firebase_custom_claims = firebase_user.custom_claims
     if user_firebase_custom_claims is None:
         return False
@@ -54,9 +56,11 @@ def check_if_user_is_admin(firebase_user):
     return False
 
 
-def create_custom_claim_for_user(firebase_admin_user, firebase_user_to_receive_claims, claims_dict):
+def create_custom_claim_for_user(
+        firebase_user_to_receive_claims, claims_dict, firebase_admin_user=None):
     if not check_if_user_is_admin(firebase_admin_user):
-        raise AuthorizationFailed("Creator user doesn't have admin rights")
+        if firebase_admin_user is not None:
+            raise AuthorizationFailed("Creator user doesn't have admin rights")
     try:
         auth.set_custom_user_claims(firebase_user_to_receive_claims.uid, claims_dict)
     except firebase_exceptions.FirebaseError as e:

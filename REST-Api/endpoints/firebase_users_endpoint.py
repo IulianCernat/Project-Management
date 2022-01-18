@@ -25,8 +25,7 @@ class FirebaseUsersCollection(Resource):
         admin_user = get_firebase_user_by_uid(decoded_token['uid'])
         firebase_claims_for_user = input_data['firebase_claims']
         del input_data['firebase_claims']
-        created_user_profile = create_user(
-            admin_user, input_data, firebase_claims_for_user)
+        created_user_profile = create_user(admin_user, input_data, firebase_claims_for_user)
         return created_user_profile, 201
 
 

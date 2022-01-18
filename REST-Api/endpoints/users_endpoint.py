@@ -5,6 +5,7 @@ from utils.serializers import user_input, message, bad_request, user_output, use
 from controllers.users_controller import *
 from utils.parsers import authorization_header, user_filtering_args
 from utils.authorization import process_firebase_authorization_field
+from utils.firebase_auth import get_firebase_user_by_uid, create_custom_claim_for_user
 
 users_namespace = api.namespace(
     'user_profiles', description='Operations related to user profiles')
@@ -20,13 +21,9 @@ class ProfilesCollection(Resource):
     def post(self):
         decoded_token = process_firebase_authorization_field(request)
         user_profile = request.json
-
-        # for when populating database with script
-        # decoded_token = {
-        #     'uid': f"{user_profile['contact']}{user_profile['fullName']}"}
-
         profile_id = create_user(decoded_token['uid'], user_profile)
-
+        firebase_user = get_firebase_user_by_uid(decoded_token['uid'])
+        create_custom_claim_for_user()
         return {"location": f"{api.base_url}{users_namespace.path[1:]}/{profile_id}"}, 201
 
     @api.response(200, 'Users successfully queried')
