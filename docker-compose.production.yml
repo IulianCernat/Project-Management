@@ -60,6 +60,6 @@ services:
         command: nginx -g "daemon off;"
 
 # For populating de database with existing data run:
-# docker exec -i 933b4a829367  mysql -uroot -proot projectsmanager < Database/projectsManagerExportedDB.sql
+# docker exec -i 4e05393ec602  mysql -uroot -proot projectsmanager < Database/projectsManagerExportedDB.sql
 volumes:
     projectsmanager-mariadb-data:

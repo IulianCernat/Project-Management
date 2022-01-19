@@ -38,3 +38,4 @@ def update_team_member_info(team_member_id, input_data):
         setattr(team_member, field, value)
 
     db.session.commit()
+    return team_member

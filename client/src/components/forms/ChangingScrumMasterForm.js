@@ -16,8 +16,10 @@ const validationSchema = Yup.object({
 ChangingScrumMasterForm.props = {
 	teamId: PropTypes.number.isRequired,
 	currentScrumMasterId: PropTypes.number.isRequired,
-	setScrumMasterChangingSuccess: PropTypes.func.isRequired,
+	setNewScrumMaster: PropTypes.func.isRequired,
 	projectId: PropTypes.number.isRequired,
+	onSuccess: PropTypes.func.isRequired,
+	addNewDeveloper: PropTypes.func.isRequired,
 };
 export default function ChangingScrumMasterForm(props) {
 	const [requestBodyForAddingScrumMaster, setRequestBodyForAddingScrumMaster] = useState(null);
@@ -50,8 +52,12 @@ export default function ChangingScrumMasterForm(props) {
 	}, [requestBodyForAddingScrumMaster]);
 
 	useEffect(() => {
-		if (isResolvedScrumMasterAddition) props.setScrumMasterChangingSuccess(true);
-	}, [isResolvedScrumMasterAddition]);
+		if (isResolvedScrumMasterAddition && isResolvedScrumMasterChanging) {
+			props.setNewScrumMaster(scrumMasterAdditionReceivedData[0]);
+			props.addNewDeveloper(scrumMasterChangingReceivedData);
+			props.onSuccess();
+		}
+	}, [isResolvedScrumMasterAddition, isResolvedScrumMasterChanging]);
 
 	return (
 		<>
@@ -80,7 +86,7 @@ export default function ChangingScrumMasterForm(props) {
 					<Form>
 						<SearchField
 							fetchUrl="api/user_profiles/"
-							setSelecteResource={(resource) => {
+							setSelectedResource={(resource) => {
 								setFieldValue("scrum_master", resource);
 							}}
 							inputNode={

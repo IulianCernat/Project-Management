@@ -56,10 +56,11 @@ class TeamMemberItem(Resource):
         delete_team_member(id)
         return {'message': f'Team member with id {id} successfully deleted '}, 200
 
-    @api.response(200, 'Teams member successfully updated', message)
+    @api.response(200, 'Teams member successfully updated', team_member_output)
     @api.expect(team_member_update_input, authorization_header)
+    @api.marshal_with(team_member_output)
     def patch(self, id):
         process_firebase_authorization_field(request)
         input_data = request.json
-        update_team_member_info(id, input_data)
-        return {'message': f"Team member with id {id} successfully updated"}, 200
+        updated_team_member = update_team_member_info(id, input_data)
+        return updated_team_member, 200

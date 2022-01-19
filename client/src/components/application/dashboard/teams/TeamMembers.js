@@ -39,6 +39,9 @@ export default function TeamMembers() {
 	const teamMembersFetchingStatus = useGetFetch(`api/teams_members/`, getParams.current);
 	const devDeletionStatus = useDeleteFetch(developerUriToDelete);
 
+	function addNewDeveloper(newDeveloper) {
+		setTeamDevelopers([...teamDevelopers, newDeveloper]);
+	}
 	function openDevsAdditionForm() {
 		setOpenDevAddition(true);
 	}
@@ -100,8 +103,10 @@ export default function TeamMembers() {
 					<ChangingScrumMasterForm
 						teamId={teamId}
 						projectId={projectId}
-						currentScrumMasterId={scrumMaster.user_id}
+						currentScrumMasterId={scrumMaster.id}
 						setNewScrumMaster={setScrumMaster}
+						onSuccess={handleCancelOpenScrumMasterChanging}
+						addNewDeveloper={addNewDeveloper}
 					/>
 				</DialogForm>
 			) : null}
