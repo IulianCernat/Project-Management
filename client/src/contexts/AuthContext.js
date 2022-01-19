@@ -41,12 +41,13 @@ export function AuthProvider({ children }) {
 						Authorization: `firebase_id_token=${userIdToken}`,
 					});
 					setAdditionalUserInfo({ firebaseUserClaims, ...profile });
+
 					if (error) throw error;
-					setCurrentUser(user);
-					setLoading(false);
 				} catch (err) {
 					console.log(err);
 				}
+			setCurrentUser(user);
+			setLoading(false);
 		});
 		return unsubscribe;
 	}, []);
