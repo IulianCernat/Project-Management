@@ -53,14 +53,23 @@ def get_project_role(user_id, project_id):
     def get_user_trello_board_ids():
         teams_and_members = Team.query.join(TeamMember).filter(
             Team.project_id == project_id, Team.trello_board_id != None).all()
-        return [
-            {
+        trello_board_ids = []
+        for team in teams_and_members:
+            is_added_by_user = False
+            try:
+                is_added_by_user = next(filter(lambda item: item.user_id == user_id,
+                                               team.team_members)).user_type == 'scrumMaster'
+            except StopIteration:
+                pass
+
+            board_id = {
                 'trello_board_id': team.trello_board_id,
-                'is_added_by_user': next(
-                    filter(lambda item: item.user_id == user_id, team.team_members)).user_type == 'scrumMaster'
+                'is_added_by_user':  is_added_by_user
             }
-            for team in teams_and_members
-        ]
+
+            trello_board_ids.append(board_id)
+
+        return trello_board_ids
 
     trello_boards = get_user_trello_board_ids()
     project_role = {}
