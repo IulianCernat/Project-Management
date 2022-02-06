@@ -260,7 +260,7 @@ trello_card_input = api.model("Input for copying an issue to a trello board", {
 })
 
 team_message_input = api.model("Input for creating a team message", {
-    'body': String(description="The message text content", required=True),
+    'body': String(required=True, description="The message text content"),
     'team_id': Integer(required=True, description="The id of team which will see this message"),
     'created_at': DateTime(required=True, description="The date when this message was created"),
 })
