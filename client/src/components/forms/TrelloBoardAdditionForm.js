@@ -27,6 +27,7 @@ export default function TrelloBoardAdditionForm(props) {
 	useEffect(() => {
 		if (isResolved) {
 			const newBoardId = receivedData;
+			trelloBoards.filter((item) => item.is_added_by_user !== true);
 			setTrelloBoards([...trelloBoards, { trello_board_id: newBoardId, is_added_by_user: true }]);
 			props.handleTeamFieldsUpdate({ trello_board_id: newBoardId });
 			props.hideForm();
