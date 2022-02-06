@@ -131,8 +131,7 @@ websocketServer.on("connection", (ws) => {
 			ws.send(JSON.stringify(errorMesage));
 		}
 	});
-	ws.on("close", () => {
-		for (var room in roomsWithSameBoard)
-			if (roomsWithSameBoard.hasOwnProperty(room)) delete roomsWithSameBoard[room];
-	});
+	// ws.on("close", () => {
+	// 	leaveRoom(clientMessage.sessionId);
+	// });
 });
