@@ -85,7 +85,7 @@ function SprintHeader({
 	useEffect(() => {
 		if (isResolvedUpdate) updateSprintWithNewSprint(updatedReveivedData);
 	}, [isResolvedUpdate]);
-	console.log(startedSprintId);
+
 	return (
 		<Box p={1} display="flex" flexDirection="column" flexWrap="wrap" style={{ gap: "1rem" }}>
 			<Box>

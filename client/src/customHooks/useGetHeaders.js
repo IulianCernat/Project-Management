@@ -7,7 +7,6 @@ export default function useHeaders() {
 	const { currentUser } = useAuth();
 
 	useEffect(() => {
-		console.log("header builder");
 		const getCurrentUserIdToken = async () => {
 			const idToken = await currentUser.getIdToken();
 			setFirebaseIdToken(idToken);

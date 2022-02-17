@@ -99,7 +99,6 @@ export default function Board({ boardId, teamId, currentUserRole, handleTeamFiel
 
 	useEffect(() => {
 		if (boardId) {
-			console.log(boardId);
 			setStartFetchingBoardLists(true);
 		}
 	}, [boardId]);

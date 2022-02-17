@@ -44,7 +44,6 @@ export default function TeamPage() {
 	};
 
 	const handleTeamFieldsUpdate = (newFieldValuesObj) => {
-		console.log(newFieldValuesObj);
 		for (const [fieldName, newFieldValue] of Object.entries(newFieldValuesObj))
 			teamFetchedObject[fieldName] = newFieldValue;
 		setTeamFetchedObject({ ...teamFetchedObject });
