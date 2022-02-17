@@ -147,7 +147,7 @@ export default function TeamCreationForm({
 							rows={20}
 							margin="normal"
 							id="description"
-							label="description"
+							label="Description"
 							name="description"
 							maxTextWidth={maxTeamDescriptionLen}
 							disabled={teamCreationStatus.isLoading || teamUpdateStatus.isLoading}

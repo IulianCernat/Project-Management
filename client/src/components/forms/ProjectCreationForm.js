@@ -47,8 +47,8 @@ export default function ProjectCreationForm({
 		<>
 			<Formik
 				initialValues={{
-					name: performProjectUpdate ? projectUpdateData.name : null,
-					description: performProjectUpdate ? projectUpdateData.description : null,
+					name: performProjectUpdate ? projectUpdateData.name : "",
+					description: performProjectUpdate ? projectUpdateData.description : "",
 				}}
 				validationSchema={validationSchema}
 				onSubmit={async (values) => {
@@ -72,7 +72,7 @@ export default function ProjectCreationForm({
 						fullWidth
 						margin="normal"
 						id="name"
-						label="name"
+						label="Name"
 						name="name"
 						disabled={projectCreationStatus.isLoading || projectUpdateStatus.isloading}
 					/>
@@ -87,7 +87,7 @@ export default function ProjectCreationForm({
 						maxTextWidth={maxProjectDescriptionLen}
 						margin="normal"
 						id="description"
-						label="description"
+						label="Description"
 						name="description"
 						disabled={projectCreationStatus.isLoading || projectUpdateStatus.isloading}
 					/>
