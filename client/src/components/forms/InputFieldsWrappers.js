@@ -15,6 +15,7 @@ export function TextFieldWrapper({ label, maxTextWidth, children, value, ...prop
 
 	return (
 		<TextField
+			InputProps={{ spellcheck: "false" }}
 			{...field}
 			{...props}
 			label={label}
