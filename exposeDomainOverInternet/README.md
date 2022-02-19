@@ -2,13 +2,13 @@ Uses `localtunnel` and `Node.js` to expose localhost to the world.
 Available scripts:
 
 ```sh
-    npm init
+npm init
 ```
 
 Installs the dependencies
 
 ```sh
-    npm start
+npm start
 ```
 
 Starts the app

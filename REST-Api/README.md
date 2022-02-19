@@ -1,8 +1,8 @@
 ## Setup
 
-Requires `firebase-adminsdk.json` to be present in this folder or it's path can\
-be specified through environment variable `GOOGLE_APPLICATION_CREDENTIALS`\
-`FIREBASE_WEB_API_KEY` is another environment variable which needs to be set beforehand\
+Requires `firebase-adminsdk.json` to be present in this folder or it's path can
+be specified via environment variable `GOOGLE_APPLICATION_CREDENTIALS`.\
+`FIREBASE_WEB_API_KEY` is another environment variable which needs to be set beforehand.\
 This project requires python 3.7 +
 
 ```sh
