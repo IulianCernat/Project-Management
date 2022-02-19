@@ -93,12 +93,12 @@ export default function AddingDevsForm({ teamId, insertNewTeamDevs, projectId })
 						/>
 
 						<Button type="submit" fullWidth variant="contained" color="primary" disabled={isLoading}>
-							<Typography>Add developer</Typography>
+							<Typography>Add developers</Typography>
 						</Button>
 
 						{isResolved && (
 							<Alert severity="success">
-								<Typography>Developer added</Typography>
+								<Typography>Developers added</Typography>
 							</Alert>
 						)}
 						{isRejected && (

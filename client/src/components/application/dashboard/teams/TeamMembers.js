@@ -91,7 +91,7 @@ export default function TeamMembers() {
 				<Alert severity="error">{teamMembersFetchingStatus.error} </Alert>
 			) : null}
 
-			<DialogForm title="Add new team member" open={openDevAddition} onClose={handleCancelDevAddition}>
+			<DialogForm title="Add new team members" open={openDevAddition} onClose={handleCancelDevAddition}>
 				<AddingDevsForm teamId={teamId} insertNewTeamDevs={insertNewTeamDevs} projectId={projectId} />
 			</DialogForm>
 			{scrumMaster ? (
