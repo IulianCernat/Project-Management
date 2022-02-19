@@ -1,17 +1,36 @@
-## Installation
+## Setup
 
+Requires `firebase-adminsdk.json` to be present in this folder or it's path can\
+be specified through environment variable `GOOGLE_APPLICATION_CREDENTIALS`\
+`FIREBASE_WEB_API_KEY` is another environment variable which needs to be set beforehand\
 This project requires python 3.7 +
 
-### `python -m venv env`
+```sh
+python -m venv env
+```
+
 Creates a virtual environment
 
-### `Select env`
+```sh
+(Windows) venv\scripts\activate
+```
 
-### `pip install -r requirements.txt`
+Selects env
+
+```sh
+pip install -r requirements.txt
+```
+
 Installs all the necessary packages
 
-### `python main.py`
+```sh
+python app.py
+```
+
 Runs project in development mode
 
-### `waitress-serve --listen=[address] main:app`
+```
+waitress-serve --listen=[address:port] app:app
+```
+
 Runs project in production mode
