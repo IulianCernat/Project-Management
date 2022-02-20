@@ -1,9 +1,19 @@
+This project requires python 3.7 +
+
 ## Setup
 
-Requires `firebase-adminsdk.json` to be present in this folder or it's path can
-be specified via environment variable `GOOGLE_APPLICATION_CREDENTIALS`.\
-`FIREBASE_WEB_API_KEY` is another environment variable which needs to be set beforehand.\
-This project requires python 3.7 +
+Requires an '.env' files configureg with the following variables
+
+```
+TRELLO_API_KEY=
+GOOGLE_APPLICATION_CREDENTIALS=[path of firebase-adminsdk.json file]
+PROJECTS_MANAGER_DEV_DB_URI=
+FIREBASE_APP_ADMIN_EMAIL=
+TRELLO_API_URL=https://api.trello.com/1
+TUNNELED_API_ADDRESS=https://fdgnvbngjhtkorestapitunnel.loca.lt
+REALTIME_UPDATES_SERVICE_URL=http://localhost:3001/updatesFeeder
+FIREBASE_WEB_API_KEY=
+```
 
 ```sh
 python -m venv env
@@ -12,7 +22,7 @@ python -m venv env
 Creates a virtual environment
 
 ```sh
-(Windows) venv\scripts\activate
+(Windows) env\scripts\activate
 ```
 
 Selects env

@@ -13,7 +13,7 @@ python -m venv env
 Creates a virtual environment
 
 ```sh
-(Windows) venv\scripts\activate
+(Windows) env\scripts\activate
 ```
 
 Selects env
