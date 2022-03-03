@@ -27,7 +27,7 @@ Projects Manager is a web application for teachers and students which borrows fu
 ![backlog](ShowcaseImages/backlog.png)
 ![sprints](ShowcaseImages/sprints.png)
 
-Features are also fully showcased [here](https://youtu.be/).
+Features are also fully showcased [here](https://youtu.be/pX_okhIoHt8).
 
 # Applications
 
