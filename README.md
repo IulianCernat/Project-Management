@@ -18,6 +18,17 @@ Projects Manager is a web application for teachers and students which borrows fu
     -   Copy issues from current started sprint to Trello;
 -   Changes in issues (cards) from Trello are seen in real time in application;
 
+# Showcase
+
+![profile](ShowcaseImages/profile.gif)
+![overview](ShowcaseImages/overview.png)
+![teams](ShowcaseImages/teams.png)
+![team members](ShowcaseImages/teamMembers.png)
+![backlog](ShowcaseImages/backlog.png)
+![sprints](ShowcaseImages/sprints.png)
+
+Features are also fully showcased [here](https://youtu.be/).
+
 # Applications
 
 Each application has it's own README.md file which describes it's setup and running steps.
