@@ -1,5 +1,6 @@
 Uses `localtunnel` and `Node.js` to expose localhost to the world.
-Available scripts:
+
+## Available scripts
 
 ```sh
 npm init

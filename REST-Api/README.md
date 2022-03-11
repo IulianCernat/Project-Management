@@ -2,7 +2,7 @@ This project requires python 3.7 +
 
 ## Setup
 
-Requires an '.env' files configureg with the following variables
+Requires an '.env' files with the following variables
 
 ```
 TRELLO_API_KEY=

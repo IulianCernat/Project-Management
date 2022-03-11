@@ -1,5 +1,6 @@
 Uses `Node.js` and `ws` to implement a mini REST API and a Websockets server
-Available scripts:
+
+## Available scripts:
 
 ```sh
     npm init

@@ -59,7 +59,7 @@ Features:
 ### Tech stack
 
 -   `Python`, `Flask`
--   `RESTX`: offers suppport for creating REST APIs more easily and helps generating Swagger documentation
+-   `RESTX`: offers support for creating REST APIs more easily and helps generating Swagger documentation
 -   `SQLAlchemy ORM`: maps the SQL tables into python objects
 
 ## RealTimeUpdatesFeeder
@@ -85,7 +85,7 @@ It exposes an endpoint of REST-Api which will act as a callback used by Trello t
 
 The application can be run using Docker Containers, both in development and production mode.
 These containers are configured and orchestrated using Docker Compose which uses base instructions
-specified in Dockerfiles of every sub-applicatios for development and production.
+specified in Dockerfiles of every sub-application for development and production.
 
 For building app in production mode run:
 
