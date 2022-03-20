@@ -1,6 +1,8 @@
-# Projects Manager
+# Project Management
 
-Projects Manager is a web application for teachers and students which borrows functionalities from Jira and customizes them for the academic environment.
+This is my project associated with my Bachelor Degree.
+
+**Project Management** is a web application for teachers and students which borrows functionalities from Jira and customizes them for the academic environment.
 
 # Features
 
@@ -8,7 +10,7 @@ Projects Manager is a web application for teachers and students which borrows fu
 -   SCRUM role system: teacher - Product Owner, team leader - SCRUM Master, team member - Developer
 -   Product Owners can:
     -   create projects;
-    -   asign teams with SCRUM Masters;
+    -   assign teams with SCRUM Masters;
     -   Change SCRUM Masters;
 -   SCRUM Masters and Product Owners can:
     -   manage a Backlog with issues (tasks, stories and bugs) which can be sorted and filtered;
@@ -85,7 +87,7 @@ It exposes an endpoint of REST-Api which will act as a callback used by Trello t
 
 The application can be run using Docker Containers, both in development and production mode.
 These containers are configured and orchestrated using Docker Compose which uses base instructions
-specified in Dockerfiles of every sub-application for development and production.
+specified in Dockerfiles of every sub-application for both development and production.
 
 For building app in production mode run:
 
