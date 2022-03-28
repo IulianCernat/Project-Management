@@ -33,7 +33,7 @@ Features are also fully showcased [here](https://youtu.be/pX_okhIoHt8).
 
 # Applications
 
-Each application has it's own README.md file which describes it's setup and running steps.
+Each application has its own README.md file which describes setup and running steps.
 
 ## Client
 
